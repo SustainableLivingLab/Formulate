@@ -3,7 +3,7 @@ from utils.auth import authenticate, login, logout
 
 from admin_dashboard import survey_management, survey_responses, survey_reports, survey_recommendations
 
-st.set_page_config(page_title="Formulate", layout="wide")
+st.set_page_config(page_title="Formulate", page_icon="./Images/trainer.png")
 
 # Initialize session state for login status if it doesn't exist
 if "logged_in" not in st.session_state:
@@ -11,7 +11,7 @@ if "logged_in" not in st.session_state:
 
 # Enhanced Home Page with Login Functionality
 def show_login_page():
-    st.title("Welcome to Formulate")
+    st.title("Welcome to Formulate 📚")
     st.markdown("""
     ### Unlock the Power of Data-Driven Training
     **Formulate** is your all-in-one solution for creating, managing, and analyzing dynamic training surveys. Streamline training needs assessment, customize content to meet trainee expectations, and drive impactful learning outcomes.
@@ -43,28 +43,30 @@ def show_login_page():
 
 # Enhanced Dashboard with Sidebar and Navigation
 def show_dashboard():
-    st.title("Formulate - Admin Dashboard")
-    st.sidebar.header("Navigation")
+    st.title("Formulate 📚")
+
+    st.sidebar.image("./Images/trainer.png")
+    st.sidebar.header("Formulate - Admin Dashboard")
+
+    # Sidebar navigation
+    section = st.sidebar.radio("Select a section", ["📝 Survey Management", "📋 Survey Responses", "📊 Survey Reports", "📈 Survey Recommendations"])
 
     # Logout button
     if st.sidebar.button("Log Out"):
         logout()
         st.experimental_rerun()  # Refresh the page to show the login form
 
-    # Sidebar navigation
-    section = st.sidebar.radio("Select a section", ["Survey Management", "Survey Responses", "Survey Reports", "Survey Recommendations"])
-
     # Navigation logic for different sections
-    if section == "Survey Management":
+    if section == "📝 Survey Management":
         survey_management.show_survey_management()
 
-    elif section == "Survey Responses":
+    elif section == "📋 Survey Responses":
         survey_responses.show_survey_responses()
 
-    elif section == "Survey Reports":
+    elif section == "📊 Survey Reports":
         survey_reports.show_survey_reports()
 
-    elif section == "Survey Recommendations":
+    elif section == "📈 Survey Recommendations":
         survey_recommendations.show_survey_recommendations()
 
 # Main Application Flow

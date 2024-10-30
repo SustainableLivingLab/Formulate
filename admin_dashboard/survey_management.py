@@ -1,10 +1,10 @@
 import streamlit as st
 
 def show_survey_management():
-    st.header("Survey Management")
+    st.header("📝 Survey Management")
 
     # Section for creating a new survey
-    with st.expander("Create New Survey", expanded=True):
+    with st.expander("✨ Create New Survey"):
         
         # 1. Course Title
         st.write("**1. What is the title of the training course?**")
