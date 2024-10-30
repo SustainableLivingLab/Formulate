@@ -1,0 +1,9 @@
+[theme]
+primaryColor = "#FF4500"        # Red Orange
+backgroundColor = "#121212"     # Black
+secondaryBackgroundColor = "#2E2E2E" # Dark Grey
+textColor = "#E0E0E0"           # Light Grey for contrast
+font = "sans serif"
+
+[browser]
+gatherUsageStats = false
