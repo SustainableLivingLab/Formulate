@@ -1,6 +1,8 @@
-# from ai.ai_service import generate_survey_questions
-
+from ai.ai_service import generate_survey_questions_mock as generate_survey_questions
 import streamlit as st
+import uuid
+import json
+from pathlib import Path
 
 
 def show_survey_management():
@@ -68,9 +70,32 @@ def show_survey_management():
                 
                 questions = generate_survey_questions(survey_data)
                 st.success("Survey questions generated successfully!")
-                st.write("Generated Questions:")
-                for i, question in enumerate(questions, 1):
-                    st.write(f"{i}. {question['question']}")
+                
+                # Generate unique survey ID
+                survey_id = f"s{uuid.uuid4().hex[:8]}"
+                
+                # Create survey_jsons directory if it doesn't exist
+                Path("survey_jsons").mkdir(exist_ok=True)
+                
+                # Prepare survey JSON
+                survey_json = {
+                    "id": survey_id,
+                    "title": course_title,
+                    "description": course_overview,
+                    "target_audience": target_audience,
+                    "survey_questions": questions
+                }
+                
+                # Save to JSON file
+                with open(f"survey_jsons/{survey_id}.json", "w") as f:
+                    json.dump(survey_json, f, indent=2)
+                
+                # Generate and display survey link
+                survey_link = f"/trainee_form?id={survey_id}"
+                st.write("---")
+                st.subheader("📋 Survey Link Generated")
+                st.code(survey_link)
+                st.markdown(f"[Open Survey]({survey_link})")
             else:
                 st.error("Please fill in all required fields to create a survey.")
 
