@@ -24,21 +24,28 @@ def render_multiple_choice(question):
 
 def render_checkbox(question):
     """Render a checkbox question."""
-    return st.multiselect(
-        question["question_text"],
-        options=question["options"],
-        key=f"cb_{question['question_text']}"
-    )
+    responses = []
+    for option in question["options"]:
+        if st.checkbox(option, key=f"cb_{question['question_text']}_{option}"):
+            responses.append(option)
+    return responses
 
 def render_likert_scale(question):
     """Render a Likert scale question."""
     scale = question["scale"]
-    return st.select_slider(
+    
+    # Render slider with only numbers shown above
+    value = st.select_slider(
         question["question_text"],
         options=scale["range"],
-        format_func=lambda x: f"{x} - {scale['max_label'] if x == max(scale['range']) else scale['min_label'] if x == min(scale['range']) else ''}",
+        format_func=lambda x: str(x),
         key=f"ls_{question['question_text']}"
     )
+    
+    # Display min and max labels with their numbers, max label aligned to right
+    st.markdown(f"{scale['min_label']} <span style='float: right;'>{scale['max_label']}</span>", unsafe_allow_html=True)
+    
+    return value
 
 def render_open_ended(question):
     """Render an open-ended question."""
@@ -52,7 +59,7 @@ def main():
     st.write("Please complete this survey to help us customize the training to your needs.")
 
     # Load survey configuration
-    survey_data = load_survey_json("sample_output.json")
+    survey_data = load_survey_json("sample_input.json")
     
     if not survey_data:
         return
