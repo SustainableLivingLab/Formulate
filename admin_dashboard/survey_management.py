@@ -1,4 +1,7 @@
+from ai.ai_service import generate_survey_questions
+
 import streamlit as st
+
 
 def show_survey_management():
     st.header("📝 Survey Management")
