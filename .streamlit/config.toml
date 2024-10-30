@@ -1,8 +1,8 @@
 [theme]
-primaryColor = "#FF4500"        # Red Orange
-backgroundColor = "#121212"     # Black
-secondaryBackgroundColor = "#2E2E2E" # Dark Grey
-textColor = "#E0E0E0"           # Light Grey for contrast
+primaryColor = "#4CAF50"        # Primary color changed to green
+backgroundColor = "#003300"     # Dark green background color
+secondaryBackgroundColor = "#006400" # Darker green secondary background color
+textColor = "#E0E0E0"           # Light gray text color for contrast
 font = "sans serif"
 
 [browser]
