@@ -2,7 +2,7 @@ from openai import OpenAI
 
 
 
-api_key = "dummy_api_key"
+api_key = "dummy_api_key_1"
 
 # Inisialisasi client dengan API key
 client = OpenAI(
