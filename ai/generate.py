@@ -10,7 +10,7 @@ from typing import Dict, Any
 from ai.config import GptModels, client
 from system_content import SYSTEM_PROMPT, SYSTEM_PROMPT2, multiple_choice, checkbox, likert_scale, open_ended
 
-model = GptModels.OPENAI_API_FT_MODEL
+model = GptModels.OPENAI_MODEL
 
 @cached(ttl=3600)
 @retry(wait=wait_random_exponential(min=1, max=50), stop=stop_after_attempt(5))
