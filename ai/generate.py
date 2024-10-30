@@ -2,13 +2,13 @@ import asyncio
 import openai
 import json
 
-from config import GptModels
+from ai.config import GptModels
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from aiocache import cached, Cache
 from typing import Dict, Any
 
 from ai.config import GptModels, client
-from system_content import SYSTEM_PROMPT, SYSTEM_PROMPT2, multiple_choice, checkbox, likert_scale, open_ended
+from ai.system_content import SYSTEM_PROMPT, SYSTEM_PROMPT2, multiple_choice, checkbox, likert_scale, open_ended
 
 model = GptModels.OPENAI_MODEL
 
