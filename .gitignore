@@ -1,1 +1,4 @@
 .venv
+*.pyc
+*.pyc
+/admin_dashboard/__pycache__
