@@ -74,28 +74,16 @@ def show_survey_management():
                 # Generate unique survey ID
                 survey_id = f"s{uuid.uuid4().hex[:8]}"
                 
-                # Create survey_jsons directory if it doesn't exist
+                # Save survey JSON
                 Path("survey_jsons").mkdir(exist_ok=True)
-                
-                # Prepare survey JSON
-                survey_json = {
-                    "id": survey_id,
-                    "title": course_title,
-                    "description": course_overview,
-                    "target_audience": target_audience,
-                    "survey_questions": questions
-                }
-                
-                # Save to JSON file
                 with open(f"survey_jsons/{survey_id}.json", "w") as f:
-                    json.dump(survey_json, f, indent=2)
+                    json.dump(questions, f, indent=2)
                 
-                # Generate and display survey link
-                survey_link = f"/trainee_form?id={survey_id}"
-                st.write("---")
-                st.subheader("📋 Survey Link Generated")
+                # Display survey link
+                base_url = st.secrets.get("BASE_URL", "http://localhost:8501")
+                survey_link = f"{base_url}/trainee_form?id={survey_id}"
+                st.success("Survey created successfully!")
                 st.code(survey_link)
-                st.markdown(f"[Open Survey]({survey_link})")
             else:
                 st.error("Please fill in all required fields to create a survey.")
 
