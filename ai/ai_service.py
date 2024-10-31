@@ -12,12 +12,16 @@ async def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, st
     open_ended = await openED(data=survey_data, analysed_data=analyse)
     
     # Menggabungkan semua hasil menjadi satu daftar `survey_questions`
-    survey_questions = []
+    survey_results = {
+    "analysed_data": [],
+    "questions": []
+}
 
-    survey_questions.extend(json.loads(multipleChocies)["questions"])
-    survey_questions.extend(json.loads(checkbox)["questions"])
-    survey_questions.extend(json.loads(likert_scale)["questions"])
-    survey_questions.extend(json.loads(open_ended)["questions"])
+    survey_results["analysed_data"].extend(json.loads(analyse)["analysed_data"])
+    survey_results["questions"].extend(json.loads(multipleChocies)["questions"])
+    survey_results["questions"].extend(json.loads(checkbox)["questions"])
+    survey_results["questions"].extend(json.loads(likert_scale)["questions"])
+    survey_results["questions"].extend(json.loads(open_ended)["questions"])
     
-    return survey_questions
+    return survey_results
     

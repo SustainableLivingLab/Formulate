@@ -163,3 +163,17 @@ open_ended = """
 """
 
 
+analysed_data = """
+            ```
+            "analysed_data" :[
+                {
+                    "Course Overview": "The course, titled 'Digital Literacy for Educators', is specifically designed for K-12 teachers, with a focus on middle school educators. Its primary aim is to equip teachers with essential digital literacy skills that can significantly enhance classroom engagement and teaching effectiveness. By integrating digital tools into their pedagogical practices, the course seeks to prepare educators to meet the demands of modern educational environments.",
+                    "Target Skill Level and Competencies": "This programme targets individuals at a beginner to intermediate skill level, ensuring accessibility for those who may have limited prior exposure to digital technologies. The main competency areas include understanding basic digital literacy concepts, effectively utilising digital tools within educational settings, and promoting digital safety and responsible use. These competencies are crucial for teachers to navigate and leverage technology in ways that benefit both teaching and learning processes.",
+                    "Learning Outcome Goals": "The course sets forth specific goals, including ensuring that teachers grasp fundamental digital literacy concepts and appreciate the significance of digital safety. Moreover, participants are expected to identify and adeptly employ digital tools to foster classroom engagement. The intended application level encompasses both understanding and practical application, enabling educators to integrate these skills into their daily teaching routines effectively.",
+                    "Challenges and Considerations": "Anticipated challenges include the potential for teachers to feel overwhelmed by the rapid pace of technological advancements and concerns regarding online safety for students. To address these issues, it is advisable to provide ongoing support and resources that help educators stay updated with technological trends. Additionally, incorporating comprehensive modules on digital safety can alleviate concerns by equipping teachers with the knowledge to protect their students in an online environment.",
+                    "Course Structure": "The course is structured over three sessions within a week, each lasting two hours. This concise format aims to deliver intensive learning experiences while accommodating teachers' busy schedules. However, to enhance retention and mastery of the material, it may be beneficial to consider extending the duration or incorporating follow-up workshops. Such adjustments could provide participants with more opportunities to practice and internalise the skills learned, ultimately leading to more profound educational impacts."
+                    
+                }
+
+            ```
+"""

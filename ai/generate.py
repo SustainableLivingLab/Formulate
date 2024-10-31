@@ -8,7 +8,7 @@ from aiocache import cached, Cache
 from typing import Dict, Any
 
 from ai.config import GptModels, client
-from ai.system_content import SYSTEM_PROMPT, SYSTEM_PROMPT2, multiple_choice, checkbox, likert_scale, open_ended
+from ai.system_content import SYSTEM_PROMPT, SYSTEM_PROMPT2, multiple_choice, checkbox, likert_scale, open_ended,analysed_data
 
 model = GptModels.OPENAI_MODEL
 
@@ -40,12 +40,25 @@ async def analysisTQ(data: Dict[Any, Any]) -> Dict[str, str]:
 
 
                     Data To be analysed : {string_data}
+                    
+                 
+                
+                    The output should be in json format with the following structure:
+
+                    {analysed_data}
+
+                    Ensure the response in JSON format following the example structure above, with each question type clearly indicated.
+
+
+                    IMPORTAN CONSTRAINT
+                    1. do not provide any other output than in json formated structure question guidance
+
 
                 """,
                 },
                 
             ],
-            response_format={ "type": "text" },
+            response_format={ "type": "json_object" },
             max_tokens=10000,
             temperature=0.5,
             presence_penalty=0.6,
