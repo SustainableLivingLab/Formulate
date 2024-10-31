@@ -14,11 +14,10 @@ async def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, st
     # Menggabungkan semua hasil menjadi satu daftar `survey_questions`
     survey_questions = []
 
-    # Tambahkan setiap hasil dari fungsi ke dalam survey_questions
-    survey_questions.append(multipleChocies)  # multiple_choice questions
-    survey_questions.append(checkbox)          # checkbox questions
-    survey_questions.append(likert_scale)      # likert scale questions
-    survey_questions.append(open_ended)        # o
+    survey_questions.extend(json.loads(multipleChocies)["questions"])
+    survey_questions.extend(json.loads(checkbox)["questions"])
+    survey_questions.extend(json.loads(likert_scale)["questions"])
+    survey_questions.extend(json.loads(open_ended)["questions"])
     
-    return {"survey_questions": survey_questions}
+    return survey_questions
     

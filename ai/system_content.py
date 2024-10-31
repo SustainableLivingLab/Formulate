@@ -35,24 +35,29 @@ SYSTEM_PROMPT = """
 
         1. Multiple Choice:
             ```json
+            "questions": [
             {
               "type": "multiple_choice",
               "question_text": "Your question here",
               "options": ["Option 1", "Option 2", "Option 3"]
             }
+            ]
             ```
 
         2. Checkbox (Select All That Apply):
             ```json
+            "questions": [
             {
               "type": "checkbox",
               "question_text": "Your question here",
               "options": ["Option 1", "Option 2", "Option 3"]
             }
+            ]
             ```
 
         3. Likert Scale (1–5):
             ```json
+            "questions": [
             {
               "type": "likert_scale",
               "question_text": "Your question here",
@@ -62,14 +67,17 @@ SYSTEM_PROMPT = """
                 "range": [1, 2, 3, 4, 5]
               }
             }
+            ]
             ```
 
         4. Open-Ended (Short Answer):
             ```json
+            "questions": [
             {
               "type": "open_ended",
               "question_text": "Your question here"
             }
+            ]
             ```
 
         Structure the survey questions around:
@@ -100,29 +108,34 @@ SYSTEM_PROMPT2 = """
 
 
 multiple_choice = """
-            ```json
+            ```
+            "questions": [
             {
               "type": "multiple_choice",
               "question_text": "Your question here",
               "options": ["Option 1", "Option 2", "Option 3"]
             }
+            ]
             ```
 
 """
 
 checkbox = """
-            ```json
+            ```
+             "questions": [
             {
               "type": "checkbox",
               "question_text": "Your question here",
               "options": ["Option 1", "Option 2", "Option 3"]
             }
+            ]
             ```
 
 """
 
 likert_scale = """
-            ```json
+            ```
+            "questions": [
             {
               "type": "likert_scale",
               "question_text": "Your question here",
@@ -132,16 +145,21 @@ likert_scale = """
                 "range": [1, 2, 3, 4, 5]
               }
             }
+            ]
             ```
 
 """
 
 open_ended = """
-            ```json
+            ```
+           "questions": [
             {
               "type": "open_ended",
               "question_text": "Your question here"
             }
+            ]
             ```
 
 """
+
+

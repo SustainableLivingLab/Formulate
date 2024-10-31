@@ -1,11 +1,11 @@
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 
 
-api_key = "dummy_api_key_1"
+api_key = "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"
 
 # Inisialisasi client dengan API key
-client = OpenAI(
+client = AsyncOpenAI(
     api_key=api_key,
 )
 

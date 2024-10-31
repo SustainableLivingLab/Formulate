@@ -1,4 +1,4 @@
-from ai.ai_service import generate_survey_questions_mock as generate_survey_questions
+from ai.ai_service import generate_survey_questions
 import streamlit as st
 import uuid
 import json
