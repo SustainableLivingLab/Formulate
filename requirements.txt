@@ -2,6 +2,6 @@ pandas
 asyncio==3.4.3
 aiocache==0.12.2
 aiohttp==3.10.5
-openai==0.28
+openai==1.37.1
 streamlit==1.36.0
 python-dotenv
