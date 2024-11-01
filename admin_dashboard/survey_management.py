@@ -80,6 +80,12 @@ def show_survey_management():
                 Path("survey_jsons").mkdir(exist_ok=True)
                 with open(f"survey_jsons/{survey_id}.json", "w") as f:
                     json.dump(questions, f, indent=2)
+
+                # Initialize connection.
+                conn = st.connection('mysql', type='sql')
+
+                # Perform query.
+                df = conn.query('INSERT INTO surveys (id,survey_form_id) VALUES ("' + "99" + '", "' + "hello_world" + '");', ttl=600);
                 
                 # Display survey link
                 base_url = st.secrets.get("BASE_URL", "https://formulate.streamlit.app")
