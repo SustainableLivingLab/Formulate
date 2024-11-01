@@ -3,6 +3,7 @@ import streamlit as st
 import uuid
 import json
 from pathlib import Path
+import asyncio
 
 
 def show_survey_management():
@@ -67,9 +68,11 @@ def show_survey_management():
                     "courseDuration": course_duration,
                     "questionCount": question_count
                 }
+                print(survey_data)
                 questions = generate_survey_questions(survey_data)
                 st.success("Survey questions generated successfully!")
-                
+              
+              
                 # Generate unique survey ID
                 survey_id = f"s{uuid.uuid4().hex[:8]}"
                 
