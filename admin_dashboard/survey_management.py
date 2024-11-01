@@ -67,7 +67,6 @@ def show_survey_management():
                     "courseDuration": course_duration,
                     "questionCount": question_count
                 }
-                
                 questions = generate_survey_questions(survey_data)
                 st.success("Survey questions generated successfully!")
                 
