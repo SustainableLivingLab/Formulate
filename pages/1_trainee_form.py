@@ -32,6 +32,9 @@ def load_survey_json(file_path=None, survey_id=None):
             file_path = os.path.join(survey_jsons_dir, f"{survey_id}.json")
             
         with open(file_path, 'r') as file:
+            #print file path in streamlit
+            st.write(file_path)
+            
             return json.load(file)
     except FileNotFoundError:
         st.error("Survey configuration not found. Please contact the administrator.")
