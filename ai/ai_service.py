@@ -5,19 +5,14 @@ import asyncio
 import json
 
 
-async def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, str]:
+def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, str]:
     SYSTEM_PROMPT = system_content_prompt(survey_data)
     try:
         
-        surveyQuestion = await surveyQuestions(SYSTEM_PROMPT=SYSTEM_PROMPT,survey_data=survey_data)
-    
-        # store the ai result into json format
-        survey_results = {
-            "questions": []
-        }
-        survey_results.extend(json.loads(surveyQuestion)["questions"])
+        surveyQuestion = surveyQuestions(SYSTEM_PROMPT=SYSTEM_PROMPT,survey_data=survey_data)
         
-        return survey_results  
+        # store the ai result into json format
+        return surveyQuestion  
     
     except Exception as e:
         print(e)

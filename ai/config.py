@@ -1,11 +1,14 @@
-from openai import AsyncOpenAI
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
-
-api_key = "OPEN_AI_API_KEY"
+api_key = os.getenv("OPENAI_API_KEY")
 
 # Inisialisasi client dengan API key
-client = AsyncOpenAI(
+client = OpenAI(
     api_key=api_key,
 )
 

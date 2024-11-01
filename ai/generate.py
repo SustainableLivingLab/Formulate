@@ -12,14 +12,13 @@ from ai.system_content import multiple_choice, checkbox, likert_scale, open_ende
 
 model = GptModels.OPENAI_MODEL
 
-@cached(ttl=3600)
-@retry(wait=wait_random_exponential(min=1, max=50), stop=stop_after_attempt(5))
-async def surveyQuestions(SYSTEM_PROMPT: str,survey_data: Dict[Any, Any]) -> Dict[str, str]:
+
+def surveyQuestions(SYSTEM_PROMPT: str,survey_data: Dict[Any, Any]) -> Dict[str, str]:
       
     section = "surveyQuestions" 
     
     try:
-        surveyQuestions = await client.chat.completions.create(
+        surveyQuestions = client.chat.completions.create(
             model = model,
             messages=[
                 {
@@ -64,54 +63,54 @@ async def surveyQuestions(SYSTEM_PROMPT: str,survey_data: Dict[Any, Any]) -> Dic
         # Cek apakah output dari completion kosong atau null
         surveyQuestionsResult = surveyQuestions.choices[0].message.content.strip()
         if not surveyQuestionsResult:  # if there is no output, do retry
-            await asyncio.sleep(3)
+             
             raise print("Chat Completion output in {section} is empty, retrying...")
                 
         surveyQuestionsResult = surveyQuestions.choices[0].message.content
         print("{section} : OK")
-        await asyncio.sleep(3)
+         
         return surveyQuestionsResult
     except openai.AuthenticationError as e:
         print(f"Your API key or token was invalid, expired, or revoked : {e}")
-        await asyncio.sleep(3)
+         
         raise
     except openai.BadRequestError as e:
         print(f"Your request was malformed or missing some required parameters, such as a token or an input in {section} : {e}")
-        await asyncio.sleep(3)
+         
         raise
     except openai.ConflictError as e:
         print(f"The resource was updated by another request in {section} : {e}")
-        await asyncio.sleep(3)
+         
         raise
     except openai.InternalServerError as e:
         print(f"Issue on our side while completing in {section} : {e}")
-        await asyncio.sleep(3)
+         
         raise
     except openai.NotFoundError as e:
         print(f"Requested resource does not exist while completing in {section} : {e}")
-        await asyncio.sleep(3)
+         
         raise
     except openai.APITimeoutError as e:
         print(f"Request timed out in {section} : {e}")
-        await asyncio.sleep(3)
+         
         raise
     except openai.UnprocessableEntityError as e:
         print(f"Unable to process the request despite the format being correct in {section}: {e}")
-        await asyncio.sleep(3)
+         
         raise
     except openai.PermissionDeniedError as e:
         print(f"You don't have access to the requested resource while completing the {section}: {e}")
-        await asyncio.sleep(3)
+         
         raise
     except openai.APIError as e:
         print(f"OpenAI API returned an API Error in {section}: {e}")
-        await asyncio.sleep(3)
+         
         raise #Lempar ulang error
     except openai.APIConnectionError as e:
         print(f"Failed to connect to OpenAI API in {section}: {e}")
-        await asyncio.sleep(3)
+         
         raise #Lempar ulang error
     except openai.RateLimitError as e:
         print(f"OpenAI API request exceeded rate limit in {section}: {e}")
-        await asyncio.sleep(3)
+         
         raise #Lempar ulang error
