@@ -1,0 +1,393 @@
+{
+  "analysed_data": [
+    {
+      "Course Overview": "The course, titled 'Digital Literacy for Educators', is specifically designed for middle school teachers. Its primary aim is to equip educators with essential digital literacy skills that can significantly enhance classroom engagement and teaching effectiveness. By integrating digital tools into their pedagogical practices, the course seeks to prepare educators to meet the demands of modern educational environments.",
+      "Target Skill Level and Competencies": "This programme targets individuals at a beginner skill level, ensuring accessibility for those who may have limited prior exposure to digital technologies. The main competency areas include understanding basic digital literacy concepts, effectively utilising digital tools within educational settings, promoting digital safety and responsible use, strategies for integrating technology into lesson plans, and understanding data privacy in educational contexts. These competencies are crucial for teachers to navigate and leverage technology in ways that benefit both teaching and learning processes.",
+      "Learning Outcome Goals": "The course sets forth specific goals, including ensuring that teachers grasp fundamental digital literacy concepts and appreciate the significance of digital safety. Moreover, participants are expected to identify and adeptly employ digital tools to foster classroom engagement. The intended application level encompasses both understanding and practical application, enabling educators to integrate these skills into their daily teaching routines effectively.",
+      "Challenges and Considerations": "Anticipated challenges include the potential for teachers to feel overwhelmed by the rapid pace of technological advancements and concerns regarding online safety for students. Additionally, some educators may have limited access to digital tools or lack technical support, and there may be resistance to adopting digital tools due to fear of replacing traditional teaching methods. To address these issues, it is advisable to provide ongoing support and resources that help educators stay updated with technological trends. Additionally, incorporating comprehensive modules on digital safety can alleviate concerns by equipping teachers with the knowledge to protect their students in an online environment.",
+      "Course Structure": "The course is structured over three sessions within a week, each lasting two hours. This concise format aims to deliver intensive learning experiences while accommodating teachers' busy schedules. However, to enhance retention and mastery of the material, it may be beneficial to consider extending the duration or incorporating follow-up workshops. Such adjustments could provide participants with more opportunities to practice and internalise the skills learned, ultimately leading to more profound educational impacts."
+    }
+  ],
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "question_text": "What is the primary aim of the 'Digital Literacy for Educators' course?",
+      "options": [
+        "To teach advanced programming skills",
+        "To enhance classroom engagement through digital literacy",
+        "To replace traditional teaching methods with technology"
+      ]
+    },
+    {
+      "type": "multiple_choice",
+      "question_text": "Which skill level is the course designed for?",
+      "options": [
+        "Advanced",
+        "Intermediate",
+        "Beginner"
+      ]
+    },
+    {
+      "type": "multiple_choice",
+      "question_text": "Which of the following is a key competency covered in the course?",
+      "options": [
+        "Understanding advanced data analytics",
+        "Promoting digital safety and responsible use",
+        "Developing mobile applications"
+      ]
+    },
+    {
+      "type": "multiple_choice",
+      "question_text": "How long is each session of the course?",
+      "options": [
+        "One hour",
+        "Two hours",
+        "Three hours"
+      ]
+    },
+    {
+      "type": "multiple_choice",
+      "question_text": "What is a potential challenge identified for teachers in this course?",
+      "options": [
+        "Lack of interest in learning",
+        "Feeling overwhelmed by technological advancements",
+        "Too much free time"
+      ]
+    },
+    {
+      "type": "multiple_choice",
+      "question_text": "What is one of the learning outcome goals of the course?",
+      "options": [
+        "Developing new digital tools",
+        "Grasping fundamental digital literacy concepts",
+        "Learning multiple foreign languages"
+      ]
+    },
+    {
+      "type": "multiple_choice",
+      "question_text": "Which strategy is NOT part of the course competencies?",
+      "options": [
+        "Integrating technology into lesson plans",
+        "Understanding data privacy",
+        "Building physical education programmes"
+      ]
+    },
+    {
+      "type": "multiple_choice",
+      "question_text": "How many sessions does the course have within a week?",
+      "options": [
+        "One session",
+        "Three sessions",
+        "Five sessions"
+      ]
+    },
+    {
+      "type": "multiple_choice",
+      "question_text": "What is one suggested solution to address challenges faced by educators?",
+      "options": [
+        "Providing ongoing support and resources",
+        "Eliminating all digital tools",
+        "Focusing solely on traditional methods"
+      ]
+    },
+    {
+      "type": "multiple_choice",
+      "question_text": "What might help enhance retention and mastery of the material?",
+      "options": [
+        "Shortening the course duration",
+        "Incorporating follow-up workshops",
+        "Reducing practice opportunities"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "question_text": "Which of the following digital tools have you previously used in your teaching practice?",
+      "options": [
+        "Interactive whiteboards",
+        "Educational apps",
+        "Online collaboration platforms",
+        "None of the above"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "question_text": "What challenges do you anticipate when integrating digital tools into your lesson plans?",
+      "options": [
+        "Lack of technical support",
+        "Limited access to devices",
+        "Fear of replacing traditional methods",
+        "None of the above"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "question_text": "Which aspects of digital safety are you most concerned about for your students?",
+      "options": [
+        "Data privacy",
+        "Cyberbullying",
+        "Inappropriate content",
+        "None of the above"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "question_text": "Which digital literacy concepts are you already familiar with?",
+      "options": [
+        "Basic computer skills",
+        "Internet navigation",
+        "Digital communication",
+        "None of the above"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "question_text": "What support do you believe would be most beneficial for adopting digital tools in your teaching?",
+      "options": [
+        "Technical support",
+        "Professional development workshops",
+        "Peer collaboration opportunities",
+        "None of the above"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "question_text": "Which strategies do you currently use to promote digital safety in your classroom?",
+      "options": [
+        "Educating students about online privacy",
+        "Monitoring online activities",
+        "Using parental controls",
+        "None of the above"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "question_text": "Which digital tools do you think could enhance student engagement in your classroom?",
+      "options": [
+        "Multimedia presentations",
+        "Interactive quizzes",
+        "Virtual reality experiences",
+        "None of the above"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "question_text": "What are your primary concerns about using digital tools in education?",
+      "options": [
+        "Student distraction",
+        "Technical difficulties",
+        "Lack of training",
+        "None of the above"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "question_text": "Which areas of digital literacy do you feel need the most improvement?",
+      "options": [
+        "Integrating technology into lessons",
+        "Understanding digital ethics",
+        "Managing digital resources",
+        "None of the above"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "question_text": "What benefits do you see in incorporating digital tools into your teaching practice?",
+      "options": [
+        "Increased student engagement",
+        "Enhanced learning experiences",
+        "Improved communication",
+        "None of the above"
+      ]
+    },
+    {
+      "type": "likert_scale",
+      "question_text": "How comfortable are you with understanding the basic concepts of digital literacy?",
+      "scale": {
+        "min_label": "Not comfortable",
+        "max_label": "Very comfortable",
+        "range": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "type": "likert_scale",
+      "question_text": "How confident do you feel in using digital tools to enhance classroom engagement?",
+      "scale": {
+        "min_label": "Not comfortable",
+        "max_label": "Very comfortable",
+        "range": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "type": "likert_scale",
+      "question_text": "To what extent do you understand the importance of digital safety in an educational context?",
+      "scale": {
+        "min_label": "Not comfortable",
+        "max_label": "Very comfortable",
+        "range": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "type": "likert_scale",
+      "question_text": "How prepared do you feel to integrate technology into your lesson plans?",
+      "scale": {
+        "min_label": "Not comfortable",
+        "max_label": "Very comfortable",
+        "range": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "type": "likert_scale",
+      "question_text": "How familiar are you with strategies for promoting responsible use of digital tools among students?",
+      "scale": {
+        "min_label": "Not comfortable",
+        "max_label": "Very comfortable",
+        "range": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "type": "likert_scale",
+      "question_text": "How confident are you in addressing concerns about online safety for students?",
+      "scale": {
+        "min_label": "Not comfortable",
+        "max_label": "Very comfortable",
+        "range": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "type": "likert_scale",
+      "question_text": "How well do you understand data privacy issues within the context of education?",
+      "scale": {
+        "min_label": "Not comfortable",
+        "max_label": "Very comfortable",
+        "range": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "type": "likert_scale",
+      "question_text": "How comfortable are you with the idea of replacing traditional teaching methods with digital tools?",
+      "scale": {
+        "min_label": "Not comfortable",
+        "max_label": "Very comfortable",
+        "range": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "type": "likert_scale",
+      "question_text": "To what extent do you feel supported in keeping up with technological trends in education?",
+      "scale": {
+        "min_label": "Not comfortable",
+        "max_label": "Very comfortable",
+        "range": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "type": "likert_scale",
+      "question_text": "How effective do you think follow-up workshops would be in helping you apply digital literacy skills?",
+      "scale": {
+        "min_label": "Not comfortable",
+        "max_label": "Very comfortable",
+        "range": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "type": "open_ended",
+      "question_text": "What are your current experiences with using digital tools in your classroom?"
+    },
+    {
+      "type": "open_ended",
+      "question_text": "Can you describe any challenges you have faced when integrating technology into your lesson plans?"
+    },
+    {
+      "type": "open_ended",
+      "question_text": "How do you currently ensure digital safety for your students during online activities?"
+    },
+    {
+      "type": "open_ended",
+      "question_text": "What digital literacy skills do you feel most confident about, and which ones do you find challenging?"
+    },
+    {
+      "type": "open_ended",
+      "question_text": "In what ways do you think digital tools can enhance student engagement in your classroom?"
+    },
+    {
+      "type": "open_ended",
+      "question_text": "What concerns do you have about the impact of digital tools on traditional teaching methods?"
+    },
+    {
+      "type": "open_ended",
+      "question_text": "How do you currently address data privacy issues in your educational practices?"
+    },
+    {
+      "type": "open_ended",
+      "question_text": "What support or resources would help you feel more comfortable with using digital technologies in teaching?"
+    },
+    {
+      "type": "open_ended",
+      "question_text": "How do you stay updated with the latest technological trends relevant to education?"
+    },
+    {
+      "type": "open_ended",
+      "question_text": "What are your expectations from this course in terms of improving your digital literacy skills?"
+    }
+  ]
+}

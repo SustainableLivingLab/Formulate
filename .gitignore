@@ -2,3 +2,5 @@
 *.pyc
 *.pyc
 /admin_dashboard/__pycache__
+.env
+ai/config.py

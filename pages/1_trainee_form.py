@@ -16,9 +16,24 @@ def load_survey_json(file_path=None, survey_id=None):
         # If survey_id is provided, use it to load specific JSON
         if survey_id:
             file_path = os.path.join(ROOT_DIR, "survey_jsons", f"{survey_id}.json")
-        # Fallback to default sample file
+        # Load first JSON file from survey_jsons directory
         else:
-            file_path = os.path.join(ROOT_DIR, "pages", "sample_output.json")
+            survey_jsons_dir = os.path.join(ROOT_DIR, "survey_jsons")
+            json_files = list(Path(survey_jsons_dir).glob("*.json"))
+            if not json_files:
+                st.error("No surveys available. Please contact the administrator.")
+                return None
+            
+            # Get first JSON file and extract its ID
+            first_json = json_files[0]
+            survey_id = first_json.stem  # Gets filename without extension
+            
+            # Update URL with survey ID
+            current_params = st.query_params.to_dict()
+            current_params["id"] = survey_id
+            st.query_params.update(current_params)
+            
+            file_path = str(first_json)
             
         with open(file_path, 'r') as file:
             return json.load(file)
@@ -39,19 +54,36 @@ def render_multiple_choice(question):
 
 def render_checkbox(question):
     """Render a checkbox question."""
-    return st.multiselect(
-        question["question_text"],
-        options=question["options"],
-        key=f"cb_{question['question_text']}"
-    )
+    # Container to store selected options
+    selected_options = []
+    
+    st.write(question["question_text"])
+    # Create a checkbox for each option
+    for option in question["options"]:
+        if st.checkbox(option, key=f"cb_{question['question_text']}_{option}"):
+            selected_options.append(option)
+            
+    return selected_options
+
+# def render_likert_scale(question):
+#     """Render a Likert scale question."""
+#     scale = question["scale"]
+#     return st.select_slider(
+#         question["question_text"],
+#         options=scale["range"],
+#         format_func=lambda x: f"{x} - {scale['max_label'] if x == max(scale['range']) else scale['min_label'] if x == min(scale['range']) else ''}",
+#         key=f"ls_{question['question_text']}"
+#     )
 
 def render_likert_scale(question):
-    """Render a Likert scale question."""
+    """Render a Likert scale question with numerical labels and specific text at the ends."""
     scale = question["scale"]
+    st.write(question["question_text"])  # Display question text above slider
+    
     return st.select_slider(
-        question["question_text"],
+        label="",
         options=scale["range"],
-        format_func=lambda x: f"{x} - {scale['max_label'] if x == max(scale['range']) else scale['min_label'] if x == min(scale['range']) else ''}",
+        format_func=lambda x: f"{scale['min_label'] if x == min(scale['range']) else scale['max_label'] if x == max(scale['range']) else x}",
         key=f"ls_{question['question_text']}"
     )
 
@@ -59,6 +91,7 @@ def render_open_ended(question):
     """Render an open-ended question."""
     return st.text_area(
         question["question_text"],
+        placeholder="Please share your thoughts here...",
         key=f"oe_{question['question_text']}"
     )
 
@@ -86,8 +119,29 @@ def main():
     with st.form("survey_form"):
         # Display analysis data if available
         if "analysed_data" in survey_data:
-            st.info("Course Analysis")
-            st.write(survey_data["analysed_data"])
+            st.header("Course Analysis")
+            
+            for analysis_item in survey_data["analysed_data"]:
+                # Course Overview
+                st.subheader("Course Overview")
+                st.write(analysis_item.get("Course Overview", ""))
+                
+                # Target Skill Level and Competencies
+                st.subheader("Target Skill Level and Competencies")
+                st.write(analysis_item.get("Target Skill Level and Competencies", ""))
+                
+                # Learning Outcome Goals
+                st.subheader("Learning Outcome Goals")
+                st.write(analysis_item.get("Learning Outcome Goals", ""))
+                
+                # Challenges and Considerations
+                st.subheader("Challenges and Considerations")
+                st.write(analysis_item.get("Challenges and Considerations", ""))
+                
+                # Course Structure
+                st.subheader("Course Structure")
+                st.write(analysis_item.get("Course Structure", ""))
+            
             st.markdown("---")
 
         # Changed from survey_data["survey_questions"] to survey_data["questions"]
