@@ -79,7 +79,7 @@ def show_survey_management():
                     json.dump(questions, f, indent=2)
                 
                 # Display survey link
-                base_url = st.secrets.get("BASE_URL", "http://localhost:8501")
+                base_url = st.secrets.get("BASE_URL", "https://formulate.streamlit.app")
                 survey_link = f"{base_url}/trainee_form?id={survey_id}"
                 st.success("Survey created successfully!")
                 st.code(survey_link)
