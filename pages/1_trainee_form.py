@@ -13,27 +13,23 @@ Path(os.path.join(ROOT_DIR, "responses")).mkdir(exist_ok=True)
 def load_survey_json(file_path=None, survey_id=None):
     """Load survey questions from JSON file."""
     try:
-        # If survey_id is provided, use it to load specific JSON
-        if survey_id:
-            file_path = os.path.join(ROOT_DIR, "survey_jsons", f"{survey_id}.json")
-        # Load first JSON file from survey_jsons directory
-        else:
-            survey_jsons_dir = os.path.join(ROOT_DIR, "survey_jsons")
-            json_files = list(Path(survey_jsons_dir).glob("*.json"))
-            if not json_files:
-                st.error("No surveys available. Please contact the administrator.")
-                return None
-            
-            # Get first JSON file and extract its ID
+        survey_jsons_dir = os.path.join(ROOT_DIR, "survey_jsons")
+        json_files = list(Path(survey_jsons_dir).glob("*.json"))
+        
+        if not json_files:
+            st.error("No surveys available. Please contact the administrator.")
+            return None
+        
+        # If no survey_id provided or invalid survey_id, use the first JSON file
+        if not survey_id or not any(survey_id == f.stem for f in json_files):
             first_json = json_files[0]
-            survey_id = first_json.stem  # Gets filename without extension
+            survey_id = first_json.stem
             
-            # Update URL with survey ID
-            current_params = st.query_params.to_dict()
-            current_params["id"] = survey_id
-            st.query_params.update(current_params)
-            
+            # Update URL with correct survey ID
+            st.query_params["id"] = survey_id
             file_path = str(first_json)
+        else:
+            file_path = os.path.join(survey_jsons_dir, f"{survey_id}.json")
             
         with open(file_path, 'r') as file:
             return json.load(file)
