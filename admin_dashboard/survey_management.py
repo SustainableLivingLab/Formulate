@@ -1,5 +1,8 @@
 from ai.ai_service import generate_survey_questions
+from ai.storeDB import insert_data
+
 import streamlit as st
+
 import uuid
 import json
 from pathlib import Path
@@ -81,11 +84,8 @@ def show_survey_management():
                 with open(f"survey_jsons/{survey_id}.json", "w") as f:
                     json.dump(questions, f, indent=2)
 
-                # Initialize connection.
-                conn = st.connection('mysql', type='sql')
-
-                # Perform query.
-                df = conn.query('INSERT INTO surveys (id,survey_form_id) VALUES ("' + "99" + '", "' + "hello_world" + '");', ttl=600);
+                insert_data(survey_id=survey_id,survey_data=questions)
+                
                 
                 # Display survey link
                 base_url = st.secrets.get("BASE_URL", "https://formulate.streamlit.app")
