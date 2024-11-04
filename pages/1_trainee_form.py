@@ -10,6 +10,26 @@ ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 Path(os.path.join(ROOT_DIR, "survey_jsons")).mkdir(exist_ok=True)
 Path(os.path.join(ROOT_DIR, "responses")).mkdir(exist_ok=True)
 
+# Add this near the top of the file, after the imports
+st.set_page_config(
+    page_title="Training Survey",
+    page_icon="🎯",
+    initial_sidebar_state="collapsed"  # This hides the sidebar
+)
+
+# Hide streamlit default menu and footer
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+section[data-testid="stSidebar"] {display: none;}
+button[kind="header"] {display: none;}
+.stDeployButton {display: none;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 def load_survey_json(file_path=None, survey_id=None):
     """Load survey questions from JSON file."""
     try:
@@ -24,23 +44,22 @@ def load_survey_json(file_path=None, survey_id=None):
         if not survey_id or not any(survey_id == f.stem for f in json_files):
             first_json = json_files[0]
             survey_id = first_json.stem
-            
-            # Update URL with correct survey ID
             st.query_params["id"] = survey_id
             file_path = str(first_json)
         else:
             file_path = os.path.join(survey_jsons_dir, f"{survey_id}.json")
             
         with open(file_path, 'r') as file:
-            #print file path in streamlit
-            st.write(file_path)
+            # First, load the string content
+            json_string = json.load(file)
+            # Then parse the string content as JSON
+            return json.loads(json_string)
             
-            return json.load(file)
     except FileNotFoundError:
         st.error("Survey configuration not found. Please contact the administrator.")
         return None
-    except json.JSONDecodeError:
-        st.error("Invalid survey configuration. Please contact the administrator.")
+    except json.JSONDecodeError as e:
+        st.error(f"Invalid survey configuration. Error: {str(e)}")
         return None
 
 def render_multiple_choice(question):
@@ -95,7 +114,7 @@ def render_open_ended(question):
     )
 
 def main():
-    # Get survey ID from URL parameters - updated from experimental to stable API
+    # Get survey ID from URL parameters
     survey_id = st.query_params.get("id", None)
 
     # Load survey configuration with survey_id
@@ -104,11 +123,8 @@ def main():
     if not survey_data:
         return
 
-    # Get course title from survey data, fallback to default if not found
-    course_title = survey_data.get("course_title", "AI in the Classroom")
-    
-    # Dynamic title and subtitle
-    st.title(f"{course_title} - Pre-Course Survey")
+    # Set static title since course_title is no longer in JSON
+    st.title("Training Survey")
     st.write("Please complete this survey to help us customize the training to your needs.")
 
     # Dictionary to store responses
@@ -116,33 +132,6 @@ def main():
 
     # Create form
     with st.form("survey_form"):
-        # Display analysis data if available
-        if "analysed_data" in survey_data:
-            st.header("Course Analysis")
-            
-            for analysis_item in survey_data["analysed_data"]:
-                # Course Overview
-                st.subheader("Course Overview")
-                st.write(analysis_item.get("Course Overview", ""))
-                
-                # Target Skill Level and Competencies
-                st.subheader("Target Skill Level and Competencies")
-                st.write(analysis_item.get("Target Skill Level and Competencies", ""))
-                
-                # Learning Outcome Goals
-                st.subheader("Learning Outcome Goals")
-                st.write(analysis_item.get("Learning Outcome Goals", ""))
-                
-                # Challenges and Considerations
-                st.subheader("Challenges and Considerations")
-                st.write(analysis_item.get("Challenges and Considerations", ""))
-                
-                # Course Structure
-                st.subheader("Course Structure")
-                st.write(analysis_item.get("Course Structure", ""))
-            
-            st.markdown("---")
-
         # Changed from survey_data["survey_questions"] to survey_data["questions"]
         for i, question in enumerate(survey_data["questions"], 1):
             st.subheader(f"Question {i}")
