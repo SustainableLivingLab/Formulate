@@ -67,7 +67,7 @@ def surveyQuestions(SYSTEM_PROMPT: str,survey_data: Dict[Any, Any]) -> Dict[str,
             raise print("Chat Completion output in {section} is empty, retrying...")
                 
         surveyQuestionsResult = surveyQuestions.choices[0].message.content
-        print("{section} : OK")
+        print(f"{section} : OK")
          
         return surveyQuestionsResult
     except openai.AuthenticationError as e:
