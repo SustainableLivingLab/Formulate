@@ -5,6 +5,4 @@ aiohttp==3.10.5
 openai==1.37.1
 streamlit==1.36.0
 python-dotenv
-
-mysqlclient
-SQLAlchemy
+mysql-connector-python

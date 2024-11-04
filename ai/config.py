@@ -14,13 +14,13 @@ client = OpenAI(
 )
 
 
-# Establish the database connection
-conn = mysql.connector.connect(
-    host=os.getenv('MYSQL_HOST'),
-    user=os.getenv('MYSQL_USER'),
-    password=os.getenv('MYSQL_SECRET_KEY'),
-    database=os.getenv('MYSQL_DATABASE')
-)
+# # Establish the database connection
+# conn = mysql.connector.connect(
+#     host=os.getenv('MYSQL_HOST'),
+#     user=os.getenv('MYSQL_USER'),
+#     password=os.getenv('MYSQL_SECRET_KEY'),
+#     database=os.getenv('MYSQL_DATABASE')
+# )
 
 
 
