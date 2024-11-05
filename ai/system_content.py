@@ -56,6 +56,29 @@ open_ended = """
 
 """
 
+analysed_data = """
+            ```
+            "analysed_data" :[
+                {
+                    "Survey outcome": ["explaining about course overview_1", ""explaining about course overview_N"],
+                    "Recommended Modification to learning Objectives" : ["recommended modification to learning objectives_1", "recommended modification to learning objectives_N"]
+                }
+
+            ```
+
+
+  """
+
+SYSTEM_PROMPT2 = """
+
+You are assisting in the analysis of responses provided by professional education trainers to survey questions regarding educational practices and objectives. Your task is to carefully review and synthesise the collected responses to generate a comprehensive summary. 
+
+This summary should be divided into two distinct sections:
+
+1. Survey Outcome 
+
+2. Recommended Modifications to Learning Objectives
+"""
 
 
 def system_content_prompt(survey_data:Dict[Any, Any]) -> Dict[str, str]:
