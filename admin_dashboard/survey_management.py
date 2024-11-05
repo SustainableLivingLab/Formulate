@@ -1,5 +1,4 @@
 from ai.ai_service import generate_survey_questions
-from ai.storeDB import insert_data
 
 import streamlit as st
 
@@ -83,8 +82,6 @@ def show_survey_management():
                 Path("survey_jsons").mkdir(exist_ok=True)
                 with open(f"survey_jsons/{survey_id}.json", "w") as f:
                     json.dump(questions, f, indent=2)
-
-                insert_data(survey_id=survey_id,survey_data=questions)
                 
                 
                 # Display survey link
