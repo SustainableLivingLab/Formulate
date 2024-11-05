@@ -169,3 +169,27 @@ def insert_response_data(survey_id: str, trainee_email: str, response_content: D
     finally:
         if conn and conn.is_connected():
             conn.close()
+            
+def parsed_response_content(survey_id: str, trainee_email: str) -> Dict[str, Any]:
+    db_config = load_db_config()
+    
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        query = "SELECT response_content FROM Responses WHERE survey_id = %s AND trainee_email = %s"
+        cursor.execute(query, (survey_id, trainee_email))
+
+        response_content = cursor.fetchone()[0]
+        cursor.close()
+        conn.close()
+        return response_content
+
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")
+        if conn:
+            conn.rollback()
+        return None
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
