@@ -1,13 +1,9 @@
 from ai.ai_service import generate_survey_questions
-from ai.storeDB import insert_data
-
+from utils.create_database_tables import insert_survey_data
 import streamlit as st
-
 import uuid
 import json
-from pathlib import Path
-import asyncio
-
+from datetime import datetime, timedelta
 
 def show_survey_management():
     st.header("📝 Survey Management")
@@ -55,62 +51,80 @@ def show_survey_management():
         st.write("**10. How many pre-survey questions would you like the AI to generate? (Specify a number)**")
         question_count = st.number_input("Number of Survey Questions", min_value=1, max_value=50, value=10, label_visibility="collapsed")
 
+        # Add expiration datetime fields
+        st.write("**11. When should this survey expire?**")
+        # Default expiration date is 7 days from now
+        default_date = datetime.now().date() + timedelta(days=7)
+        expiration_date = st.date_input("Expiration Date", value=default_date, min_value=datetime.now().date())
+        expiration_time = st.time_input("Expiration Time", value=datetime.now().time())
+        
+        # Combine date and time into datetime
+        expiration_datetime = datetime.combine(expiration_date, expiration_time)
+
         # Generate Survey Questions Button
         if st.button("Generate Survey Questions"):
-            if course_title and target_audience and course_overview and competencies and learning_outcomes and course_duration:
-                # Prepare data for API call
-                survey_data = {
-                    "courseTitle": course_title,
-                    "targetAudience": target_audience,
-                    "courseOverview": course_overview,
-                    "targetSkillLevel": skill_level,
-                    "keyCompetencies": competencies.split("\n"),
-                    "learningOutcomes": learning_outcomes.split("\n"),
-                    "expectedApplicationLevel": application_level,
-                    "knownPainPoints": pain_points.split("\n") if pain_points else None,
-                    "courseDuration": course_duration,
-                    "questionCount": question_count
-                }
-                print(survey_data)
-                questions = generate_survey_questions(survey_data)
-                st.success("Survey questions generated successfully!")
-              
-              
-                # Generate unique survey ID
-                survey_id = f"s{uuid.uuid4().hex[:8]}"
+            if all([course_title, target_audience, course_overview, competencies, 
+                   learning_outcomes, course_duration, expiration_datetime]):
                 
-                # Save survey JSON
-                Path("survey_jsons").mkdir(exist_ok=True)
-                with open(f"survey_jsons/{survey_id}.json", "w") as f:
-                    json.dump(questions, f, indent=2)
+                with st.spinner("Generating survey questions..."):
+                    # Prepare data for API call
+                    survey_data = {
+                        "courseTitle": course_title,
+                        "targetAudience": target_audience,
+                        "courseOverview": course_overview,
+                        "targetSkillLevel": skill_level,
+                        "keyCompetencies": competencies.split("\n"),
+                        "learningOutcomes": learning_outcomes.split("\n"),
+                        "expectedApplicationLevel": application_level,
+                        "knownPainPoints": pain_points.split("\n") if pain_points else None,
+                        "courseDuration": course_duration,
+                        "questionCount": question_count
+                    }
 
-                insert_data(survey_id=survey_id,survey_data=questions)
-                
-                
-                # Display survey link
-                base_url = st.secrets.get("BASE_URL", "https://formulate.streamlit.app")
-                survey_link = f"{base_url}/trainee_form?id={survey_id}"
-                st.success("Survey created successfully!")
-                st.code(survey_link)
+                    try:
+                        # Generate questions using AI
+                        questions = generate_survey_questions(survey_data)
+                        
+                        # Generate unique survey ID
+                        survey_id = f"s{uuid.uuid4().hex[:8]}"
+                        
+                        # Insert into database
+                        success = insert_survey_data(
+                            survey_id=survey_id,
+                            survey_questions=json.dumps(questions),
+                            expiration_datetime=expiration_datetime
+                        )
+                        
+                        if success:
+                            # Display survey link
+                            base_url = st.secrets.get("BASE_URL", "https://formulate.streamlit.app")
+                            survey_link = f"{base_url}/trainee_form?id={survey_id}"
+                            
+                            st.success("Survey created successfully!")
+                            st.write("Share this link with trainees:")
+                            st.code(survey_link)
+                            
+                            # Add copy button for survey link
+                            st.button("Copy Link", 
+                                    on_click=lambda: st.write(
+                                        f'<script>navigator.clipboard.writeText("{survey_link}")</script>', 
+                                        unsafe_allow_html=True
+                                    ))
+                            
+                            # Display expiration info
+                            st.info(f"This survey will expire on: {expiration_datetime.strftime('%Y-%m-%d %H:%M')}")
+                        else:
+                            st.error("Failed to create survey. Please try again.")
+                            
+                    except Exception as e:
+                        st.error(f"Error creating survey: {str(e)}")
+                        
             else:
                 st.error("Please fill in all required fields to create a survey.")
 
     # Section for listing active surveys
     st.subheader("Active Surveys")
-    active_surveys = list_active_surveys()  # Get active surveys from the API
-    if not active_surveys:
-        st.info("No active surveys at the moment.")
-    else:
-        for survey in active_surveys:
-            with st.expander(survey['title']):
-                st.write(f"**Context**: {survey['training_context']}")
-                st.write(f"**Objectives**: {', '.join(survey['objectives'])}")
-                st.write(f"**Target Audience**: {survey['target_audience']}")
-                st.write(f"**Number of Questions**: {survey['question_count']}")
-                st.write(f"**Status**: {survey['status']}")
-
-                # Option to close survey
-                if st.button(f"Close Survey - {survey['title']}"):
-                    close_survey(survey['survey_id'])
-                    st.success(f"Survey '{survey['title']}' has been closed.")
-                    st.experimental_rerun()  # Refresh to update the list of surveys
+    
+    # TODO: Implement active surveys listing from database
+    # This will require a new database function to fetch active surveys
+    st.info("Survey listing feature coming soon!")

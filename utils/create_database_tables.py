@@ -1,6 +1,10 @@
 import mysql.connector
 import toml
 from mysql.connector import errorcode
+import uuid
+from datetime import datetime
+from typing import Dict, Any
+import json
 
 # Load database credentials from secrets.toml
 def load_db_config():
@@ -76,3 +80,92 @@ def create_tables():
 
 # Run the function to create tables
 create_tables()
+
+def insert_survey_data(survey_id: str, survey_questions: str, expiration_datetime: datetime) -> bool:
+    """
+    Insert a new survey into the database.
+    Returns True if successful, False otherwise.
+    """
+    db_config = load_db_config()
+    
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        # First, insert into Trainer table (using a default trainer_id for now)
+        trainer_id = str(uuid.uuid4())
+        trainer_query = "INSERT INTO Trainer (trainer_id, custom_questions_data) VALUES (%s, %s)"
+        cursor.execute(trainer_query, (trainer_id, None))
+
+        # Then, insert into Surveys table
+        survey_query = """
+        INSERT INTO Surveys (survey_id, trainer_id, survey_questions, expiration_datetime)
+        VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(survey_query, (
+            survey_id,
+            trainer_id,
+            survey_questions,
+            expiration_datetime
+        ))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True
+
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")
+        if conn:
+            conn.rollback()
+        return False
+    except Exception as e:
+        print(f"Unexpected Error: {e}")
+        if conn:
+            conn.rollback()
+        return False
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+def insert_response_data(survey_id: str, trainee_email: str, response_content: Dict[str, Any]) -> bool:
+    """
+    Insert a survey response into the database.
+    Returns True if successful, False otherwise.
+    """
+    db_config = load_db_config()
+    
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        response_id = str(uuid.uuid4())
+        query = """
+        INSERT INTO Responses (response_id, survey_id, trainee_email, response_content)
+        VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(query, (
+            response_id,
+            survey_id,
+            trainee_email,
+            json.dumps(response_content)
+        ))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True
+
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")
+        if conn:
+            conn.rollback()
+        return False
+    except Exception as e:
+        print(f"Unexpected Error: {e}")
+        if conn:
+            conn.rollback()
+        return False
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
