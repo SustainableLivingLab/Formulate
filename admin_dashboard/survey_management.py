@@ -5,6 +5,15 @@ import uuid
 import json
 from datetime import datetime, timedelta
 
+# Add this function to handle URL generation
+def get_base_url():
+    """Get the base URL for the application."""
+    # Check if running on Streamlit Cloud
+    if st.secrets.get("hosted") == "true":
+        return "https://formulate.streamlit.app"
+    # Default to localhost for local development
+    return "http://localhost:8501"
+
 def show_survey_management():
     st.header("📝 Survey Management")
 
@@ -95,7 +104,7 @@ def show_survey_management():
                         
                         if success:
                             # Display survey link
-                            base_url = st.secrets.get("BASE_URL", "http://localhost:8501")
+                            base_url = get_base_url()
                             survey_link = f"{base_url}/trainee_form?id={survey_id}"
                             
                             st.success("Survey created successfully!")
