@@ -100,7 +100,7 @@ def create_tables():
 
 def insert_survey_data(trainer_questions_responses: str, expiration_datetime: datetime) -> tuple[bool, str]:
     """
-    Insert data into Trainer table only.
+    Insert data into both Trainer and Survey tables.
     Returns (success: bool, survey_id: str)
     """
     db_config = load_db_config()
@@ -111,11 +111,10 @@ def insert_survey_data(trainer_questions_responses: str, expiration_datetime: da
 
         # Generate UUIDs
         trainer_id = str(uuid.uuid4())
-        print(f"Trainer ID: {trainer_id}")
         survey_id = str(uuid.uuid4())
-        print(f"Survey ID: {survey_id}")
+        print(f"DEBUG: Generated IDs - Trainer: {trainer_id}, Survey: {survey_id}")
 
-        # Insert into Trainer table only
+        # Insert into Trainer table
         trainer_query = """
         INSERT INTO Trainer (trainer_id, trainer_questions_responses, survey_id, expiration_datetime)
         VALUES (%s, %s, %s, %s)
@@ -126,6 +125,20 @@ def insert_survey_data(trainer_questions_responses: str, expiration_datetime: da
             survey_id,
             expiration_datetime
         ))
+        print(f"DEBUG: Inserted into Trainer table")
+
+        # Insert into Survey table
+        survey_query = """
+        INSERT INTO Survey (survey_id, trainer_id, generated_questions, expiration_datetime)
+        VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(survey_query, (
+            survey_id,
+            trainer_id,
+            trainer_questions_responses,  # Initially store the same data
+            expiration_datetime
+        ))
+        print(f"DEBUG: Inserted into Survey table")
 
         conn.commit()
         return True, survey_id

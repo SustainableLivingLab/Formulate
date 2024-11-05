@@ -104,7 +104,7 @@ def show_survey_management():
                         
                         if success:
                             # Display survey link
-                            base_url = get_base_url()
+                            base_url = "https://formulate.streamlit.app"
                             survey_link = f"{base_url}/trainee_form?id={survey_id}"
                             
                             st.success("Survey created successfully!")

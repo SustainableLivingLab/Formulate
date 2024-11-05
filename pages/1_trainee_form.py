@@ -189,9 +189,8 @@ def main():
         return
 
     try:
-        # Parse the trainer's responses and add question count
+        # Parse the trainer's responses (questionCount is already included from trainer's input)
         trainer_responses = survey_data.get('trainer_questions_responses', {})
-        trainer_responses["questionCount"] = 5  # Or get this from somewhere else
         print(f"Trainer responses: {trainer_responses}")  # Debug log
         
         # Generate questions using AI

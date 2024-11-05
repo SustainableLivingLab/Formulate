@@ -14,6 +14,8 @@ model = GptModels.OPENAI_MODEL
 
 
 def surveyQuestions(SYSTEM_PROMPT: str,survey_data: Dict[Any, Any]) -> Dict[str, str]:
+    print(f"DEBUG: Received survey_data: {survey_data}")
+    print(f"DEBUG: Question count from trainer: {survey_data.get('questionCount')}")
       
     section = "surveyQuestions" 
     
