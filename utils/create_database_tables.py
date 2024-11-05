@@ -25,66 +25,83 @@ TABLES = {}
 TABLES['Trainer'] = (
     "CREATE TABLE IF NOT EXISTS Trainer ("
     "  trainer_id CHAR(36) PRIMARY KEY,"
-    "  custom_questions_data JSON"
-    ") ENGINE=InnoDB;"
+    "  trainer_questions_responses JSON,"
+    "  survey_id CHAR(36),"
+    "  expiration_datetime DATETIME,"
+    "  INDEX idx_survey_id (survey_id)"
+    ") ENGINE=InnoDB"
 )
 
-TABLES['Surveys'] = (
-    "CREATE TABLE IF NOT EXISTS Surveys ("
+TABLES['Survey'] = (
+    "CREATE TABLE IF NOT EXISTS Survey ("
     "  survey_id CHAR(36) PRIMARY KEY,"
     "  trainer_id CHAR(36),"
-    "  survey_questions JSON,"
+    "  generated_questions JSON,"
     "  expiration_datetime DATETIME,"
     "  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+    "  INDEX idx_trainer_id (trainer_id),"
     "  FOREIGN KEY (trainer_id) REFERENCES Trainer(trainer_id)"
-    ") ENGINE=InnoDB;"
+    ") ENGINE=InnoDB"
 )
 
-TABLES['Responses'] = (
-    "CREATE TABLE IF NOT EXISTS Responses ("
-    "  response_id CHAR(36) PRIMARY KEY,"
+TABLES['Response'] = (
+    "CREATE TABLE IF NOT EXISTS Response ("
     "  survey_id CHAR(36),"
     "  trainee_email VARCHAR(255),"
-    "  response_content JSON,"
-    "  FOREIGN KEY (survey_id) REFERENCES Surveys(survey_id)"
-    ") ENGINE=InnoDB;"
+    "  profile_questions_responses JSON,"
+    "  survey_questions_responses JSON,"
+    "  submission_datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+    "  PRIMARY KEY (survey_id, trainee_email),"
+    "  FOREIGN KEY (survey_id) REFERENCES Survey(survey_id)"
+    ") ENGINE=InnoDB"
 )
 
-# Function to connect to the MySQL database and create tables
 def create_tables():
+    """Create or update the tables"""
     db_config = load_db_config()
     
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
 
-        # Loop through the TABLES dictionary and create each table
-        for table_name, ddl in TABLES.items():
-            try:
-                print(f"Creating table `{table_name}`...")
-                cursor.execute(ddl)
-                print(f"Table `{table_name}` created successfully.")
-            except mysql.connector.Error as err:
-                if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
-                    print(f"Table `{table_name}` already exists.")
-                else:
-                    print(f"Error creating table `{table_name}`: {err}")
+        # Temporarily disable foreign key checks
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
 
-        cursor.close()
-        conn.close()
-        print("All tables created successfully (or verified if they already exist).")
+        # Drop existing tables if they exist
+        for table in ['Response', 'Survey', 'Trainer']:
+            cursor.execute(f"DROP TABLE IF EXISTS {table}")
+            print(f"Dropped table {table} if it existed")
+
+        # Create tables in correct order
+        table_order = ['Trainer', 'Survey', 'Response']
+        
+        for table_name in table_order:
+            print(f"Creating table {table_name}")
+            cursor.execute(TABLES[table_name])
+            print(f"Table {table_name} created successfully")
+
+        # Re-enable foreign key checks
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+
+        conn.commit()
+        print("All tables created successfully!")
 
     except mysql.connector.Error as err:
         print(f"Error: {err}")
-        exit(1)
+        if conn:
+            conn.rollback()
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
 
-# Run the function to create tables
-create_tables()
+# Add after the create_tables() function
 
-def insert_survey_data(survey_id: str, survey_questions: str, expiration_datetime: datetime) -> bool:
+def insert_survey_data(trainer_questions_responses: str, expiration_datetime: datetime) -> tuple[bool, str]:
     """
-    Insert a new survey into the database.
-    Returns True if successful, False otherwise.
+    Insert data into Trainer table only.
+    Returns (success: bool, survey_id: str)
     """
     db_config = load_db_config()
     
@@ -92,68 +109,59 @@ def insert_survey_data(survey_id: str, survey_questions: str, expiration_datetim
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
 
-        # First, insert into Trainer table (using a default trainer_id for now)
+        # Generate UUIDs
         trainer_id = str(uuid.uuid4())
-        trainer_query = "INSERT INTO Trainer (trainer_id, custom_questions_data) VALUES (%s, %s)"
-        cursor.execute(trainer_query, (trainer_id, None))
+        print(f"Trainer ID: {trainer_id}")
+        survey_id = str(uuid.uuid4())
+        print(f"Survey ID: {survey_id}")
 
-        # Then, insert into Surveys table
-        survey_query = """
-        INSERT INTO Surveys (survey_id, trainer_id, survey_questions, expiration_datetime)
+        # Insert into Trainer table only
+        trainer_query = """
+        INSERT INTO Trainer (trainer_id, trainer_questions_responses, survey_id, expiration_datetime)
         VALUES (%s, %s, %s, %s)
         """
-        cursor.execute(survey_query, (
-            survey_id,
+        cursor.execute(trainer_query, (
             trainer_id,
-            survey_questions,
+            trainer_questions_responses,
+            survey_id,
             expiration_datetime
         ))
 
         conn.commit()
-        cursor.close()
-        conn.close()
-        return True
+        return True, survey_id
 
     except mysql.connector.Error as err:
         print(f"Database Error: {err}")
         if conn:
             conn.rollback()
-        return False
-    except Exception as e:
-        print(f"Unexpected Error: {e}")
-        if conn:
-            conn.rollback()
-        return False
+        return False, ""
     finally:
+        if cursor:
+            cursor.close()
         if conn and conn.is_connected():
             conn.close()
 
-def insert_response_data(survey_id: str, trainee_email: str, response_content: Dict[str, Any]) -> bool:
-    """
-    Insert a survey response into the database.
-    Returns True if successful, False otherwise.
-    """
+def insert_response_data(survey_id: str, trainee_email: str, profile_responses: Dict, survey_responses: Dict) -> bool:
+    """Insert a survey response into the database."""
     db_config = load_db_config()
     
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
 
-        response_id = str(uuid.uuid4())
         query = """
-        INSERT INTO Responses (response_id, survey_id, trainee_email, response_content)
+        INSERT INTO Response (survey_id, trainee_email, profile_questions_responses, survey_questions_responses)
         VALUES (%s, %s, %s, %s)
         """
+        
         cursor.execute(query, (
-            response_id,
             survey_id,
             trainee_email,
-            json.dumps(response_content)
+            json.dumps(profile_responses),
+            json.dumps(survey_responses)
         ))
 
         conn.commit()
-        cursor.close()
-        conn.close()
         return True
 
     except mysql.connector.Error as err:
@@ -161,11 +169,55 @@ def insert_response_data(survey_id: str, trainee_email: str, response_content: D
         if conn:
             conn.rollback()
         return False
-    except Exception as e:
-        print(f"Unexpected Error: {e}")
-        if conn:
-            conn.rollback()
-        return False
     finally:
+        if cursor:
+            cursor.close()
         if conn and conn.is_connected():
             conn.close()
+
+def get_survey_data(survey_id: str) -> Dict:
+    """Retrieve survey data and check expiration."""
+    db_config = load_db_config()
+    print(f"Attempting to fetch survey data for ID: {survey_id}")  # Debug log
+    
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        # Modified query to get data from Trainer table instead of Survey
+        query = """
+        SELECT trainer_id, trainer_questions_responses, expiration_datetime
+        FROM Trainer
+        WHERE survey_id = %s AND expiration_datetime > NOW()
+        """
+        
+        cursor.execute(query, (survey_id,))
+        result = cursor.fetchone()
+        
+        print(f"Query result: {result}")  # Debug log
+        
+        if result is None:
+            print("No survey found or survey has expired")  # Debug log
+            return None
+            
+        # Parse the JSON string back to dictionary
+        if result and 'trainer_questions_responses' in result:
+            result['trainer_questions_responses'] = json.loads(result['trainer_questions_responses'])
+            
+        return result
+
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")  # Debug log
+        if conn:
+            conn.rollback()
+        return None
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
+
+# Run this to create/update tables
+if __name__ == "__main__":
+    print("Creating/Updating tables...")
+    create_tables()

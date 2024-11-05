@@ -56,7 +56,9 @@ def show_survey_management():
         # Default expiration date is 7 days from now
         default_date = datetime.now().date() + timedelta(days=7)
         expiration_date = st.date_input("Expiration Date", value=default_date, min_value=datetime.now().date())
-        expiration_time = st.time_input("Expiration Time", value=datetime.now().time())
+        # Set default time to 23:59
+        default_time = datetime.strptime("23:59", "%H:%M").time()
+        expiration_time = st.time_input("Expiration Time", value=default_time)
         
         # Combine date and time into datetime
         expiration_datetime = datetime.combine(expiration_date, expiration_time)
@@ -85,31 +87,47 @@ def show_survey_management():
                         # Generate questions using AI
                         questions = generate_survey_questions(survey_data)
                         
-                        # Generate unique survey ID
-                        survey_id = f"s{uuid.uuid4().hex[:8]}"
-                        
-                        # Insert into database
-                        success = insert_survey_data(
-                            survey_id=survey_id,
-                            survey_questions=json.dumps(questions),
+                        # Insert into Trainer table
+                        success, survey_id = insert_survey_data(
+                            trainer_questions_responses=json.dumps(survey_data),  # Store all survey creation data
                             expiration_datetime=expiration_datetime
                         )
                         
                         if success:
                             # Display survey link
-                            base_url = st.secrets.get("BASE_URL", "https://formulate.streamlit.app")
+                            base_url = st.secrets.get("BASE_URL", "http://localhost:8501")
                             survey_link = f"{base_url}/trainee_form?id={survey_id}"
                             
                             st.success("Survey created successfully!")
                             st.write("Share this link with trainees:")
-                            st.code(survey_link)
                             
-                            # Add copy button for survey link
-                            st.button("Copy Link", 
-                                    on_click=lambda: st.write(
-                                        f'<script>navigator.clipboard.writeText("{survey_link}")</script>', 
-                                        unsafe_allow_html=True
-                                    ))
+                            # Create a container for the link and copy icon
+                            st.markdown(f"""
+                                <div style="display: flex; align-items: center; background-color: #2E7D32; padding: 0.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                                    <input type="text" value="{survey_link}" 
+                                        style="flex-grow: 1; border: none; background: transparent; padding: 0.5rem; color: white;" 
+                                        readonly>
+                                    <button onclick="copyToClipboard()" 
+                                        style="background: none; border: none; cursor: pointer; padding: 0.5rem; color: white;">
+                                        📋
+                                    </button>
+                                </div>
+                                
+                                <script>
+                                function copyToClipboard() {{
+                                    const linkInput = document.querySelector('input[type="text"]');
+                                    navigator.clipboard.writeText(linkInput.value)
+                                        .then(() => {{
+                                            const copyButton = document.querySelector('button');
+                                            copyButton.innerHTML = '✓';
+                                            setTimeout(() => {{
+                                                copyButton.innerHTML = '📋';
+                                            }}, 2000);
+                                        }})
+                                        .catch(err => console.error('Failed to copy:', err));
+                                }}
+                                </script>
+                            """, unsafe_allow_html=True)
                             
                             # Display expiration info
                             st.info(f"This survey will expire on: {expiration_datetime.strftime('%Y-%m-%d %H:%M')}")
