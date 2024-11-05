@@ -128,16 +128,19 @@ def analysisTQ(SYSTEM_PROMPT: str,survey_responses: str):
                 "role": "user",
                 "content": f"""
 
-                1. analyse and summarise the responses provided by professional education trainers to the recent survey question. Your analysis should cover two sections:
+                1. Analyze and summarize the responses provided by professional education trainers to the recent questionnaire. The analysis should be presented in two main sections:
 
-                    - Survey Outcome – Identify and evaluate the main insights shared by trainers. Examine any recurring themes, patterns, or significant points that illustrate common perspectives or diverging views. Interpret how these themes might influence the effectiveness of the learning objectives.
-                    - Recommended Modifications to Learning Objectives – Recommend and justify specific adjustments to the learning objectives based on the feedback. Construct actionable modifications that could improve learners' ability to understand, apply, and master the objectives. Ensure these modifications aim to increase clarity, engagement, and measurable impact on learning outcomes/
-                
-                2. each section should be  provided  short explanations in highlight points.
-                
-                Data to be analysed : {survey_responses}
-                
-                respond in the following JSON format, filling in each section with a thorough yet concise analysis:
+                  - **Survey Outcome** – Identify and evaluate the key insights shared by trainers. Focus on any recurring themes, patterns, or notable points that reflect common perspectives or diverging views. Additionally, interpret how these insights might impact the effectiveness of current learning objectives.
+
+                  - **Recommended Modifications to Learning Objectives** – Based on the survey feedback, propose and justify specific, actionable changes to improve clarity, engagement, and measurable impact of the learning objectives. These modifications should aim to help learners better understand, apply, and master the content.
+
+                2. Structure each section in short, highlighted bullet points to enhance clarity and readability.
+
+                **Data for analysis**: {survey_responses}
+
+                **Response Format (JSON)**:
+                Provide a response strictly in JSON format, with each section following this structure:
+
 
                 {analysed_data}
 
@@ -145,8 +148,9 @@ def analysisTQ(SYSTEM_PROMPT: str,survey_responses: str):
 
 
                 IMPORTANT CONSTRAINT
-                
+
                 1. do not provide any other output than in json formated structure question guidance
+
 
 
                 """

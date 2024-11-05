@@ -56,12 +56,20 @@ open_ended = """
 
 """
 
+
 analysed_data = """
             ```
             "analysed_data" :[
                 {
-                    "Survey outcome": ["explaining about course overview_1", ""explaining about course overview_N"],
-                    "Recommended Modification to learning Objectives" : ["recommended modification to learning objectives_1", "recommended modification to learning objectives_N"]
+                    "Survey outcome": [
+                          "key_insight_1",
+                          "key_insight_2",
+                          "key_insight_N"
+                          ],
+                    "Recommended Modification to learning Objectives" : [
+                          "modification_1",
+                          "modification_N",
+                          ]
                 }
 
             ```
@@ -71,11 +79,11 @@ analysed_data = """
 
 SYSTEM_PROMPT2 = """
 
-You are assisting in the analysis of responses provided by professional education trainers to survey questions regarding educational practices and objectives. Your task is to carefully review and synthesise the collected responses to generate a comprehensive summary. 
+You are assisting in the analysis of responses provided by professional education trainers to survey questions regarding educational practices and objectives. Your task is to carefully review and synthesise the collected responses to generate a comprehensive summary.
 
 This summary should be divided into two distinct sections:
 
-1. Survey Outcome 
+1. Survey Outcome
 
 2. Recommended Modifications to Learning Objectives
 """
