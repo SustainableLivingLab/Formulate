@@ -1,38 +1,18 @@
 from ai.ai_service import generate_survey_questions
-from utils.create_database_tables import insert_survey_data, load_db_config
+from utils.create_database_tables import insert_survey_data
 import streamlit as st
 import uuid
 import json
 from datetime import datetime, timedelta
-import logging
-import mysql.connector
 
 # Add this function to handle URL generation
 def get_base_url():
     """Get the base URL for the application."""
     return "https://formulate.streamlit.app"
 
-# Add this function to test database connection
-def test_db_connection():
-    try:
-        db_config = load_db_config()
-        conn = mysql.connector.connect(**db_config)
-        logging.debug("Database connection successful")
-        return True
-    except Exception as e:
-        logging.error(f"Database connection failed: {e}")
-        return False
-    finally:
-        if 'conn' in locals() and conn.is_connected():
-            conn.close()
-
 def show_survey_management():
-    if not test_db_connection():
-        st.error("Database connection failed. Please check your configuration.")
-        return
     # Get trainer_id from session
     trainer_id = 1 if st.session_state.get("username") == "admin" else 2
-    logging.debug(f"Current trainer_id: {trainer_id}")
     
     st.header("📝 Survey Management")
 
@@ -110,27 +90,22 @@ def show_survey_management():
                         "courseDuration": course_duration,
                         "questionCount": question_count
                     }
-                    logging.debug(f"Prepared survey_data: {survey_data}")
 
                     try:
                         # Generate questions using AI
-                        logging.debug("Starting AI question generation...")
                         questions = generate_survey_questions(survey_data)
-                        logging.debug(f"Generated questions: {questions[:100]}...")  # First 100 chars
                         
-                        # Insert into database
-                        logging.debug("Attempting database insertion...")
+                        # Insert into Trainer table
                         success, survey_id = insert_survey_data(
                             trainer_id=trainer_id,
                             trainer_questions_responses=json.dumps(survey_data),
                             expiration_datetime=expiration_datetime
                         )
-                        logging.debug(f"Database insertion result - Success: {success}, Survey ID: {survey_id}")
                         
                         if success:
-                            base_url = get_base_url()  # Use the function to get base URL
+                            # Display survey link
+                            base_url = "https://formulate.streamlit.app"
                             survey_link = f"{base_url}/trainee_form?id={survey_id}"
-                            logging.debug(f"Generated survey link: {survey_link}")
                             
                             st.success("Survey created successfully!")
                             st.write("Share this link with trainees:")
@@ -166,15 +141,12 @@ def show_survey_management():
                             # Display expiration info
                             st.info(f"This survey will expire on: {expiration_datetime.strftime('%Y-%m-%d %H:%M')}")
                         else:
-                            logging.error("Database insertion failed")
                             st.error("Failed to create survey. Please try again.")
                             
                     except Exception as e:
-                        logging.exception("Error in survey creation process")
                         st.error(f"Error creating survey: {str(e)}")
                         
             else:
-                logging.warning("Missing required fields")
                 st.error("Please fill in all required fields to create a survey.")
 
     # Section for listing active surveys
