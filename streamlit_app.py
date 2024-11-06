@@ -3,7 +3,7 @@ from utils.auth import authenticate, login, logout
 
 from admin_dashboard import survey_management, survey_responses, survey_reports, survey_recommendations
 
-st.set_page_config(page_title="Formulate", page_icon="./Images/trainer.png")
+st.set_page_config(page_title="Formulate", page_icon="./Images/trainer.png", initial_sidebar_state="collapsed")
 
 # Initialize session state for login status if it doesn't exist
 if "logged_in" not in st.session_state:

@@ -1,4 +1,6 @@
 import streamlit as st
+from utils.create_database_tables import get_survey_data, insert_response_data, update_survey_questions
+from ai.ai_service import generate_survey_questions  # Updated import
 import json
 from pathlib import Path
 import os
@@ -13,7 +15,7 @@ Path(os.path.join(ROOT_DIR, "responses")).mkdir(exist_ok=True)
 # Add this near the top of the file, after the imports
 st.set_page_config(
     page_title="Training Survey",
-    page_icon="🎯",
+    page_icon="./Images/trainer.png",
     initial_sidebar_state="collapsed"  # This hides the sidebar
 )
 
@@ -113,29 +115,123 @@ def render_open_ended(question):
         key=f"oe_{question['question_text']}"
     )
 
+def get_profile_questions():
+    """Return the static profile questions"""
+    return {
+        "questions": [
+            {
+                "type": "open_ended",
+                "question_text": "What is your email address?",  # First question is now email
+                "required": True  # Add required flag
+            },
+            {
+                "type": "open_ended",
+                "question_text": "What is your full name?"
+            },
+            {
+                "type": "open_ended",
+                "question_text": "What department do you belong to?"
+            },
+            {
+                "type": "multiple_choice",
+                "question_text": "How many years of teaching experience do you have?",
+                "options": ["Less than 1 year", "1-3 years", "3-5 years", "More than 5 years"]
+            },
+            {
+                "type": "multiple_choice",
+                "question_text": "What is the highest degree you have attained?",
+                "options": ["Bachelor's", "Master's", "PhD", "Other"]
+            },
+            {
+                "type": "multiple_choice",
+                "question_text": "How comfortable are you with using technology in your teaching?",
+                "options": ["Not comfortable", "Somewhat comfortable", "Very comfortable"]
+            },
+            {
+                "type": "checkbox",
+                "question_text": "Which digital tools or platforms do you commonly use in your classes? (Select all that apply)",
+                "options": ["Learning Management Systems", "Online Quiz Tools", "Virtual Whiteboards", "None of the above"]
+            },
+            {
+                "type": "likert_scale",
+                "question_text": "How important is improving your digital literacy skills for your teaching?",
+                "scale": {
+                    "min_label": "Not important",
+                    "max_label": "Very important",
+                    "range": [1, 2, 3, 4, 5]
+                }
+            },
+            {
+                "type": "open_ended",
+                "question_text": "What are your primary goals for participating in this training?"
+            }
+        ]
+    }
+
+def show_success_page():
+    st.title("Survey Submitted Successfully! 🎉")
+    
+    success_html = """
+    <div style="text-align: center; padding: 40px; background-color: #f0f2f6; border-radius: 10px;">
+        <h2>Thank you for your participation!</h2>
+        <p style="font-size: 18px; color: #444;">Your responses have been recorded successfully.</p>
+        <p style="font-size: 16px; color: #666;">Your feedback is valuable and will help us improve our training programs.</p>
+    </div>
+    """
+    st.markdown(success_html, unsafe_allow_html=True)
+    
+    # Optional: Add a button to close the window
+    if st.button("Close Window"):
+        st.markdown("""
+            <script>window.close();</script>
+            """, unsafe_allow_html=True)
+
 def main():
     # Get survey ID from URL parameters
     survey_id = st.query_params.get("id", None)
-
-    # Load survey configuration with survey_id
-    survey_data = load_survey_json(survey_id=survey_id)
+    print(f"Received survey ID: {survey_id}")  # Debug log
+    
+    if not survey_id:
+        st.error("No survey ID provided.")
+        return
+        
+    st.title("Training Survey")
+    
+    # Get survey data and check expiration
+    survey_data = get_survey_data(survey_id)
+    print(f"Retrieved survey data: {survey_data}")  # Debug log
     
     if not survey_data:
+        st.error("Survey not found or has expired.")
         return
 
-    # Set static title since course_title is no longer in JSON
-    st.title("Training Survey")
-    st.write("Please complete this survey to help us customize the training to your needs.")
-
-    # Dictionary to store responses
-    responses = {}
+    try:
+        # Get the generated questions directly from survey_data
+        generated_questions = survey_data.get('generated_questions', {})
+        print(f"Generated questions from DB: {generated_questions}")  # Debug log
+        
+        # Get the questions array from the response
+        questions = generated_questions.get('questions', [])
+        if not questions:
+            st.error("No questions found in the survey.")
+            return
+            
+        print(f"Questions to display: {questions}")  # Debug log
+        
+    except Exception as e:
+        print(f"Error processing questions: {e}")  # Debug log
+        st.error("Error loading survey questions. Please try again later.")
+        return
 
     # Create form
     with st.form("survey_form"):
-        # Changed from survey_data["survey_questions"] to survey_data["questions"]
-        for i, question in enumerate(survey_data["questions"], 1):
+        # Profile Questions Section
+        st.header("Profile Information")
+        profile_responses = {}
+        profile_questions = get_profile_questions()
+        
+        for i, question in enumerate(profile_questions["questions"], 1):
             st.subheader(f"Question {i}")
-            
             question_type = question["type"]
             
             if question_type == "multiple_choice":
@@ -146,27 +242,78 @@ def main():
                 response = render_likert_scale(question)
             elif question_type == "open_ended":
                 response = render_open_ended(question)
-            else:
-                st.warning(f"Unsupported question type encountered. Please contact the administrator.")
-                continue
+                
+            profile_responses[f"Q{i}"] = response
+            st.markdown("---")
+
+        # Survey Questions Section
+        st.header("Survey Questions")
+        survey_responses = {}
+        
+        for i, question in enumerate(questions, 1):  # Changed to use questions from AI response
+            st.subheader(f"Question {i}")
+            question_type = question["type"].lower()  # Ensure lowercase for matching
             
-            responses[f"Q{i}"] = response
+            if question_type == "multiple_choice":
+                response = render_multiple_choice(question)
+            elif question_type == "checkbox":
+                response = render_checkbox(question)
+            elif question_type == "likert_scale":
+                response = render_likert_scale(question)
+            elif question_type == "open_ended":
+                response = render_open_ended(question)
+                
+            survey_responses[f"Q{i}"] = response
             st.markdown("---")
 
         # Submit button
-        submitted = st.form_submit_button("Submit Survey")
-        
-        if submitted:
-            st.success("Thank you for completing the survey! Your responses have been recorded.")
+        if st.form_submit_button("Submit Survey"):
+            # Get email from first profile question
+            trainee_email = profile_responses.get("Q1", "")
             
-            # Save responses with timestamp
-            from datetime import datetime
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            response_file = os.path.join(ROOT_DIR, "responses", f"survey_response_{timestamp}.json")
+            if not trainee_email:
+                st.error("Please provide your email address.")
+                return
+                
+            # Prepare responses with full questions
+            profile_responses_with_questions = {
+                f"Q{i+1}": {
+                    "question": profile_questions["questions"][i]["question_text"],
+                    "answer": response
+                } for i, (_, response) in enumerate(profile_responses.items())
+            }
             
-            # Save responses
-            with open(response_file, "w") as f:
-                json.dump(responses, f, indent=2)
+            survey_responses_with_questions = {
+                f"Q{i+1}": {
+                    "question": questions[i]["question_text"],
+                    "type": questions[i]["type"],
+                    "answer": response
+                } for i, (_, response) in enumerate(survey_responses.items())
+            }
+            
+            # Remove email from profile responses
+            profile_responses_without_email = {
+                k: v for k, v in profile_responses_with_questions.items() 
+                if k != "Q1"
+            }
+            
+            # Combined responses with questions
+            combined_responses = {
+                "profile": profile_responses_without_email,
+                "survey": survey_responses_with_questions
+            }
+            
+            success = insert_response_data(
+                survey_id=survey_id,
+                trainee_email=trainee_email,
+                trainee_responses=combined_responses
+            )
+            
+            if success:
+                st.session_state.form_submitted = True
+                st.experimental_rerun()
+            else:
+                st.error("There was an error submitting your responses. Please try again.")
 
 if __name__ == "__main__":
     main()
