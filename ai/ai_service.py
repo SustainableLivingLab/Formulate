@@ -1,9 +1,9 @@
 from typing import Dict, Any
-from ai.system_content import system_content_prompt
-from ai.generate import surveyQuestions
+from .system_content import system_content_prompt
+from .generate import surveyQuestions
+import json
 
 import asyncio
-import json
 import streamlit as st
 
 def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, str]:
