@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.auth import authenticate, login, logout
-
-from admin_dashboard import survey_management, survey_responses, survey_reports, survey_recommendations
+from admin_dashboard.survey_management import show_survey_management
+from admin_dashboard import survey_reports, survey_recommendations
 
 st.set_page_config(page_title="Formulate", page_icon="./Images/trainer.png", initial_sidebar_state="collapsed")
 
@@ -58,10 +58,10 @@ def show_dashboard():
 
     # Navigation logic for different sections
     if section == "📝 Survey Management":
-        survey_management.show_survey_management()
+        show_survey_management()
 
     elif section == "📋 Survey Responses":
-        survey_responses.show_survey_responses()
+        show_survey_responses()
 
     elif section == "📊 Survey Reports":
         survey_reports.show_survey_reports()

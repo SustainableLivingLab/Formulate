@@ -8,11 +8,7 @@ from datetime import datetime, timedelta
 # Add this function to handle URL generation
 def get_base_url():
     """Get the base URL for the application."""
-    # Check if running on Streamlit Cloud
-    if st.secrets.get("hosted") == "true":
-        return "https://formulate.streamlit.app"
-    # Default to localhost for local development
-    return "http://localhost:8501"
+    return "https://formulate.streamlit.app"
 
 def show_survey_management():
     # Get trainer_id from session

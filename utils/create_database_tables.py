@@ -98,10 +98,7 @@ def create_tables():
 # Add after the create_tables() function
 
 def insert_survey_data(trainer_id: int, trainer_questions_responses: str, expiration_datetime: datetime) -> tuple[bool, str]:
-    """
-    Insert data into both Trainer and Survey tables.
-    Returns (success: bool, survey_id: str)
-    """
+    """Insert data into both Trainer and Survey tables."""
     db_config = load_db_config()
     print(f"DEBUG: Starting survey data insertion for trainer_id: {trainer_id}")
     
@@ -113,31 +110,38 @@ def insert_survey_data(trainer_id: int, trainer_questions_responses: str, expira
         survey_id = str(uuid.uuid4())
         print(f"DEBUG: Generated survey_id: {survey_id}")
 
-        # First, insert into Trainer table
-        trainer_query = """
-        INSERT INTO Trainer (trainer_id, trainer_questions_responses, survey_id)
-        VALUES (%s, %s, %s)
-        """
-        print(f"DEBUG: Trainer data - ID: {trainer_id}, Survey ID: {survey_id}")
-        print(f"DEBUG: Trainer responses: {trainer_questions_responses[:100]}...")  # Print first 100 chars
-        
-        cursor.execute(trainer_query, (
-            trainer_id,
-            trainer_questions_responses,
-            survey_id
-        ))
-        print("DEBUG: Successfully inserted into Trainer table")
+        # Check if trainer exists
+        check_query = "SELECT trainer_id FROM Trainer WHERE trainer_id = %s"
+        cursor.execute(check_query, (trainer_id,))
+        trainer_exists = cursor.fetchone()
 
-        # Generate AI questions
-        try:
-            survey_data = json.loads(trainer_questions_responses)
-            generated_questions = generate_survey_questions(survey_data)
-            print(f"DEBUG: Generated questions: {generated_questions[:100]}...")  # Print first 100 chars
-        except Exception as e:
-            print(f"DEBUG: Error generating questions: {str(e)}")
-            generated_questions = None
+        if not trainer_exists:
+            # Insert into Trainer table only if trainer doesn't exist
+            trainer_query = """
+            INSERT INTO Trainer (trainer_id, trainer_questions_responses, survey_id)
+            VALUES (%s, %s, %s)
+            """
+            cursor.execute(trainer_query, (
+                trainer_id,
+                trainer_questions_responses,
+                survey_id
+            ))
+            print("DEBUG: Inserted new trainer")
+        else:
+            # Update existing trainer's data
+            update_query = """
+            UPDATE Trainer 
+            SET trainer_questions_responses = %s, survey_id = %s
+            WHERE trainer_id = %s
+            """
+            cursor.execute(update_query, (
+                trainer_questions_responses,
+                survey_id,
+                trainer_id
+            ))
+            print("DEBUG: Updated existing trainer")
 
-        # Then insert into Survey table
+        # Insert into Survey table
         survey_query = """
         INSERT INTO Survey (survey_id, trainer_id, generated_questions, expiration_datetime)
         VALUES (%s, %s, %s, %s)
@@ -145,10 +149,10 @@ def insert_survey_data(trainer_id: int, trainer_questions_responses: str, expira
         cursor.execute(survey_query, (
             survey_id,
             trainer_id,
-            generated_questions if generated_questions else trainer_questions_responses,
+            trainer_questions_responses,  # Initially store the same data
             expiration_datetime
         ))
-        print("DEBUG: Successfully inserted into Survey table")
+        print("DEBUG: Inserted into Survey table")
 
         conn.commit()
         return True, survey_id

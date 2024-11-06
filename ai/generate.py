@@ -1,7 +1,6 @@
 import asyncio
-import openai
 import json
-
+from openai import OpenAI
 from ai.config import GptModels
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from aiocache import cached, Cache
