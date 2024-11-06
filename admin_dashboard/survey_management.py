@@ -137,13 +137,14 @@ def show_survey_management():
 
                     try:
                         # Generate questions using AI
-                        questions = generate_survey_questions(survey_data)
+                        ai_generated_questions = generate_survey_questions(survey_data)
                         
                         # Insert into Trainer table
                         success, survey_id = insert_survey_data(
                             trainer_id=trainer_id,
                             trainer_questions_responses=json.dumps(survey_data),
-                            expiration_datetime=expiration_datetime
+                            expiration_datetime=expiration_datetime,
+                            ai_generated_questions=ai_generated_questions
                         )
                         
                         if success:

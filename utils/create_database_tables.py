@@ -4,7 +4,6 @@ from mysql.connector import errorcode
 import uuid
 from datetime import datetime
 from typing import Dict, Any
-from ai.ai_service import generate_survey_questions  # Updated import
 import json
 
 # Load database credentials from secrets.toml
@@ -97,7 +96,7 @@ def create_tables():
 
 # Add after the create_tables() function
 
-def insert_survey_data(trainer_id: int, trainer_questions_responses: str, expiration_datetime: datetime) -> tuple[bool, str]:
+def insert_survey_data(trainer_id: int, trainer_questions_responses: str, expiration_datetime: datetime, ai_generated_questions: str) -> tuple[bool, str]:
     """Insert data into both Trainer and Survey tables."""
     db_config = load_db_config()
     print(f"DEBUG: Starting survey data insertion for trainer_id: {trainer_id}")
@@ -116,32 +115,22 @@ def insert_survey_data(trainer_id: int, trainer_questions_responses: str, expira
         trainer_exists = cursor.fetchone()
 
         if not trainer_exists:
-            # Insert into Trainer table only if trainer doesn't exist
             trainer_query = """
             INSERT INTO Trainer (trainer_id, trainer_questions_responses, survey_id)
             VALUES (%s, %s, %s)
             """
-            cursor.execute(trainer_query, (
-                trainer_id,
-                trainer_questions_responses,
-                survey_id
-            ))
+            cursor.execute(trainer_query, (trainer_id, trainer_questions_responses, survey_id))
             print("DEBUG: Inserted new trainer")
         else:
-            # Update existing trainer's data
             update_query = """
             UPDATE Trainer 
             SET trainer_questions_responses = %s, survey_id = %s
             WHERE trainer_id = %s
             """
-            cursor.execute(update_query, (
-                trainer_questions_responses,
-                survey_id,
-                trainer_id
-            ))
+            cursor.execute(update_query, (trainer_questions_responses, survey_id, trainer_id))
             print("DEBUG: Updated existing trainer")
 
-        # Insert into Survey table
+        # Insert into Survey table with AI generated questions
         survey_query = """
         INSERT INTO Survey (survey_id, trainer_id, generated_questions, expiration_datetime)
         VALUES (%s, %s, %s, %s)
@@ -149,7 +138,7 @@ def insert_survey_data(trainer_id: int, trainer_questions_responses: str, expira
         cursor.execute(survey_query, (
             survey_id,
             trainer_id,
-            trainer_questions_responses,  # Initially store the same data
+            ai_generated_questions,  # Use the AI generated questions
             expiration_datetime
         ))
         print("DEBUG: Inserted into Survey table")
