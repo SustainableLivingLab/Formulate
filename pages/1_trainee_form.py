@@ -17,7 +17,7 @@ Path(os.path.join(ROOT_DIR, "responses")).mkdir(exist_ok=True)
 st.set_page_config(
     page_title="Training Survey",
     page_icon="./Images/trainer.png",
-    initial_sidebar_state="collapsed"  # This hides the sidebar
+    initial_sidebar_state="collapsed",  # This hides the sidebar
 )
 
 # Hide streamlit default menu and footer
@@ -33,16 +33,17 @@ button[kind="header"] {display: none;}
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+
 def load_survey_json(file_path=None, survey_id=None):
     """Load survey questions from JSON file."""
     try:
         survey_jsons_dir = os.path.join(ROOT_DIR, "survey_jsons")
         json_files = list(Path(survey_jsons_dir).glob("*.json"))
-        
+
         if not json_files:
             st.error("No surveys available. Please contact the administrator.")
             return None
-        
+
         # If no survey_id provided or invalid survey_id, use the first JSON file
         if not survey_id or not any(survey_id == f.stem for f in json_files):
             first_json = json_files[0]
@@ -51,13 +52,13 @@ def load_survey_json(file_path=None, survey_id=None):
             file_path = str(first_json)
         else:
             file_path = os.path.join(survey_jsons_dir, f"{survey_id}.json")
-            
-        with open(file_path, 'r') as file:
+
+        with open(file_path, "r") as file:
             # First, load the string content
             json_string = json.load(file)
             # Then parse the string content as JSON
             return json.loads(json_string)
-            
+
     except FileNotFoundError:
         st.error("Survey configuration not found. Please contact the administrator.")
         return None
@@ -65,26 +66,29 @@ def load_survey_json(file_path=None, survey_id=None):
         st.error(f"Invalid survey configuration. Error: {str(e)}")
         return None
 
+
 def render_multiple_choice(question):
     """Render a multiple choice question."""
     return st.radio(
         question["question_text"],
         options=question["options"],
-        key=f"mc_{question['question_text']}"
+        key=f"mc_{question['question_text']}",
     )
+
 
 def render_checkbox(question):
     """Render a checkbox question."""
     # Container to store selected options
     selected_options = []
-    
+
     st.write(question["question_text"])
     # Create a checkbox for each option
     for option in question["options"]:
         if st.checkbox(option, key=f"cb_{question['question_text']}_{option}"):
             selected_options.append(option)
-            
+
     return selected_options
+
 
 # def render_likert_scale(question):
 #     """Render a Likert scale question."""
@@ -95,6 +99,7 @@ def render_checkbox(question):
 #         format_func=lambda x: f"{x} - {scale['max_label'] if x == max(scale['range']) else scale['min_label'] if x == min(scale['range']) else ''}",
 #         key=f"ls_{question['question_text']}"
 #     )
+
 
 def render_likert_scale(question):
     """Render a Likert scale question with numerical labels and specific text at the ends."""
@@ -110,13 +115,15 @@ def render_likert_scale(question):
         key=f"ls_{question['question_text']}"
     )
 
+
 def render_open_ended(question):
     """Render an open-ended question."""
     return st.text_area(
         question["question_text"],
         placeholder="Please share your thoughts here...",
-        key=f"oe_{question['question_text']}"
+        key=f"oe_{question['question_text']}",
     )
+
 
 def get_profile_questions():
     """Return the static profile questions"""
@@ -125,35 +132,46 @@ def get_profile_questions():
             {
                 "type": "open_ended",
                 "question_text": "What is your email address?",  # First question is now email
-                "required": True  # Add required flag
+                "required": True,  # Add required flag
             },
+            {"type": "open_ended", "question_text": "What is your full name?"},
             {
                 "type": "open_ended",
-                "question_text": "What is your full name?"
-            },
-            {
-                "type": "open_ended",
-                "question_text": "What department do you belong to?"
+                "question_text": "What department do you belong to?",
             },
             {
                 "type": "multiple_choice",
                 "question_text": "How many years of teaching experience do you have?",
-                "options": ["Less than 1 year", "1-3 years", "3-5 years", "More than 5 years"]
+                "options": [
+                    "Less than 1 year",
+                    "1-3 years",
+                    "3-5 years",
+                    "More than 5 years",
+                ],
             },
             {
                 "type": "multiple_choice",
                 "question_text": "What is the highest degree you have attained?",
-                "options": ["Bachelor's", "Master's", "PhD", "Other"]
+                "options": ["Bachelor's", "Master's", "PhD", "Other"],
             },
             {
                 "type": "multiple_choice",
                 "question_text": "How comfortable are you with using technology in your teaching?",
-                "options": ["Not comfortable", "Somewhat comfortable", "Very comfortable"]
+                "options": [
+                    "Not comfortable",
+                    "Somewhat comfortable",
+                    "Very comfortable",
+                ],
             },
             {
                 "type": "checkbox",
                 "question_text": "Which digital tools or platforms do you commonly use in your classes? (Select all that apply)",
-                "options": ["Learning Management Systems", "Online Quiz Tools", "Virtual Whiteboards", "None of the above"]
+                "options": [
+                    "Learning Management Systems",
+                    "Online Quiz Tools",
+                    "Virtual Whiteboards",
+                    "None of the above",
+                ],
             },
             {
                 "type": "likert_scale",
@@ -161,13 +179,13 @@ def get_profile_questions():
                 "scale": {
                     "min_label": "Not important",
                     "max_label": "Very important",
-                    "range": [1, 2, 3, 4, 5]
-                }
+                    "range": [1, 2, 3, 4, 5],
+                },
             },
             {
                 "type": "open_ended",
-                "question_text": "What are your primary goals for participating in this training?"
-            }
+                "question_text": "What are your primary goals for participating in this training?",
+            },
         ]
     }
 
