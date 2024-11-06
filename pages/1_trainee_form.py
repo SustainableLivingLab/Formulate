@@ -177,7 +177,6 @@ def main():
         st.error("No survey ID provided.")
         return
         
-    # Remove email input section since it's now part of profile questions
     st.title("Training Survey")
     
     # Get survey data and check expiration
@@ -189,25 +188,21 @@ def main():
         return
 
     try:
-        # Parse the trainer's responses
-        trainer_responses = survey_data.get('trainer_questions_responses', {})
-        print(f"Trainer responses: {trainer_responses}")  # Debug log
-        
-        # Generate questions using AI
-        generated_questions_json = generate_survey_questions(trainer_responses)
-        # Parse the JSON string into a Python dictionary
-        generated_questions = json.loads(generated_questions_json)
-        
-        # Add this new code to update Survey table with generated questions
-        update_survey_questions(survey_id, generated_questions_json)  # New function needed
+        # Get the generated questions directly from survey_data
+        generated_questions = survey_data.get('generated_questions', {})
+        print(f"Generated questions from DB: {generated_questions}")  # Debug log
         
         # Get the questions array from the response
         questions = generated_questions.get('questions', [])
-        print(f"Generated questions: {questions}")  # Debug log
+        if not questions:
+            st.error("No questions found in the survey.")
+            return
+            
+        print(f"Questions to display: {questions}")  # Debug log
         
     except Exception as e:
-        print(f"Error generating questions: {e}")  # Debug log
-        st.error("Error generating survey questions. Please try again later.")
+        print(f"Error processing questions: {e}")  # Debug log
+        st.error("Error loading survey questions. Please try again later.")
         return
 
     # Create form
