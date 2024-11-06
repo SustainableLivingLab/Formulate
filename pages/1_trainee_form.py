@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.create_database_tables import get_survey_data, insert_response_data
+from utils.create_database_tables import get_survey_data, insert_response_data, update_survey_questions
 from ai.ai_service import generate_survey_questions  # Updated import
 import json
 from pathlib import Path
@@ -121,6 +121,11 @@ def get_profile_questions():
         "questions": [
             {
                 "type": "open_ended",
+                "question_text": "What is your email address?",  # First question is now email
+                "required": True  # Add required flag
+            },
+            {
+                "type": "open_ended",
                 "question_text": "What is your full name?"
             },
             {
@@ -172,14 +177,9 @@ def main():
         st.error("No survey ID provided.")
         return
         
-    # Get trainee email first
+    # Remove email input section since it's now part of profile questions
     st.title("Training Survey")
-    email = st.text_input("Please enter your email address:", key="email_input")
     
-    if not email:
-        st.warning("Please enter your email address to proceed.")
-        return
-        
     # Get survey data and check expiration
     survey_data = get_survey_data(survey_id)
     print(f"Retrieved survey data: {survey_data}")  # Debug log
@@ -189,7 +189,7 @@ def main():
         return
 
     try:
-        # Parse the trainer's responses (questionCount is already included from trainer's input)
+        # Parse the trainer's responses
         trainer_responses = survey_data.get('trainer_questions_responses', {})
         print(f"Trainer responses: {trainer_responses}")  # Debug log
         
@@ -197,6 +197,10 @@ def main():
         generated_questions_json = generate_survey_questions(trainer_responses)
         # Parse the JSON string into a Python dictionary
         generated_questions = json.loads(generated_questions_json)
+        
+        # Add this new code to update Survey table with generated questions
+        update_survey_questions(survey_id, generated_questions_json)  # New function needed
+        
         # Get the questions array from the response
         questions = generated_questions.get('questions', [])
         print(f"Generated questions: {questions}")  # Debug log
@@ -251,11 +255,26 @@ def main():
 
         # Submit button
         if st.form_submit_button("Submit Survey"):
+            # Get email from first profile question
+            trainee_email = profile_responses.get("Q1", "")
+            
+            if not trainee_email:
+                st.error("Please provide your email address.")
+                return
+                
+            # Remove email from profile responses to store separately
+            profile_responses_without_email = {k: v for k, v in profile_responses.items() if k != "Q1"}
+            
+            # Combine remaining profile responses and survey responses
+            combined_responses = {
+                "profile": profile_responses_without_email,
+                "survey": survey_responses
+            }
+            
             success = insert_response_data(
                 survey_id=survey_id,
-                trainee_email=email,
-                profile_responses=profile_responses,
-                survey_responses=survey_responses
+                trainee_email=trainee_email,
+                trainee_responses=combined_responses  # Send combined responses
             )
             
             if success:

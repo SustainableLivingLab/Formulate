@@ -15,6 +15,9 @@ def get_base_url():
     return "http://localhost:8501"
 
 def show_survey_management():
+    # Get trainer_id from session
+    trainer_id = 1 if st.session_state.get("username") == "admin" else 2
+    
     st.header("📝 Survey Management")
 
     # Section for creating a new survey
@@ -98,7 +101,8 @@ def show_survey_management():
                         
                         # Insert into Trainer table
                         success, survey_id = insert_survey_data(
-                            trainer_questions_responses=json.dumps(survey_data),  # Store all survey creation data
+                            trainer_id=trainer_id,
+                            trainer_questions_responses=json.dumps(survey_data),
                             expiration_datetime=expiration_datetime
                         )
                         
