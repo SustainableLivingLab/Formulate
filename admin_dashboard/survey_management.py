@@ -73,7 +73,7 @@ def show_survey_management():
         application_level = st.text_input("Expected Application Level", placeholder="e.g., Understanding and Application", label_visibility="collapsed")
 
         # 11. Known Pain Points or Challenges
-        st.write("*11. List any known challenges or pain points that trainees may face in relation to this course content (optional).**")
+        st.write("**11. List any known challenges or pain points that trainees may face in relation to this course content (optional).**")
         pain_points = st.text_area("Known Pain Points or Challenges", placeholder="e.g., Teachers may feel overwhelmed by the fast pace of technology...", label_visibility="collapsed")
 
         # 12. Course Duration and Structure
@@ -136,7 +136,7 @@ def show_survey_management():
                     }
 
                     try:
-                        # Generate questions using AI
+                        # Generate survey questions using GPT-4O
                         questions = generate_survey_questions(survey_data)
                         
                         # Insert into Trainer table
