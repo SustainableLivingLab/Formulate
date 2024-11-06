@@ -207,7 +207,7 @@ def main():
         
     except Exception as e:
         print(f"Error generating questions: {e}")  # Debug log
-        st.error("Error generating survey questions. Please try again later.")
+        st.error("Error generating survey questions:{e}. Please try again later.")
         return
 
     # Create form
