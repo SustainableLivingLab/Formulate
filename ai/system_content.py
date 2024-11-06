@@ -57,11 +57,10 @@ open_ended = """
 """
 
 
+def system_content_prompt(survey_data: Dict[Any, Any]) -> Dict[str, str]:
 
-def system_content_prompt(survey_data:Dict[Any, Any]) -> Dict[str, str]:
-
-      # PROMPT FOR GENERATE SURVEY
-      SYSTEM_PROMPT = f"""
+    # PROMPT FOR GENERATE SURVEY
+    SYSTEM_PROMPT = f"""
           You are a Lead Corporate Trainer tasked with designing pre-survey questions to assess trainees’ skill levels, familiarity with key topics, and specific learning needs before starting a training course. This assessment will allow you to customize the training experience based on the group’s baseline knowledge and expectations.
 
           The training course is titled {survey_data["courseTitle"]} and is intended for {survey_data["targetAudience"]}. Below are the key course details, competencies, and learning outcomes, which should guide the survey question generation:
@@ -106,4 +105,4 @@ def system_content_prompt(survey_data:Dict[Any, Any]) -> Dict[str, str]:
           Return the response in JSON format following the example structure above, with each question type clearly indicated.
       """
 
-      return SYSTEM_PROMPT
+    return SYSTEM_PROMPT
