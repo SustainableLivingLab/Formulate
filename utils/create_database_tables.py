@@ -233,35 +233,6 @@ def get_survey_data(survey_id: str) -> Dict:
         if conn and conn.is_connected():
             conn.close()
 
-def update_survey_questions(survey_id: str, generated_questions: str) -> bool:
-    """Update Survey table with AI-generated questions."""
-    db_config = load_db_config()
-    
-    try:
-        conn = mysql.connector.connect(**db_config)
-        cursor = conn.cursor()
-
-        query = """
-        UPDATE Survey 
-        SET generated_questions = %s
-        WHERE survey_id = %s
-        """
-        
-        cursor.execute(query, (generated_questions, survey_id))
-        conn.commit()
-        print(f"DEBUG: Updated Survey table with generated questions for survey_id: {survey_id}")
-        return True
-
-    except mysql.connector.Error as err:
-        print(f"Database Error: {err}")
-        if conn:
-            conn.rollback()
-        return False
-    finally:
-        if cursor:
-            cursor.close()
-        if conn and conn.is_connected():
-            conn.close()
 
 # Run this to create/update tables
 if __name__ == "__main__":

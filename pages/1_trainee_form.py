@@ -1,6 +1,5 @@
 import streamlit as st
-from utils.create_database_tables import get_survey_data, insert_response_data, update_survey_questions
-from ai.ai_service import generate_survey_questions  # Updated import
+from utils.create_database_tables import get_survey_data, insert_response_data
 import json
 from pathlib import Path
 import os
@@ -98,12 +97,14 @@ def render_checkbox(question):
 def render_likert_scale(question):
     """Render a Likert scale question with numerical labels and specific text at the ends."""
     scale = question["scale"]
-    st.write(question["question_text"])  # Display question text above slider
+    
+    # Create a label that combines question text with min/max labels
+    label = f"{question['question_text']}\n({scale['min_label']} → {scale['max_label']})"
     
     return st.select_slider(
-        label="",
+        label=label,
         options=scale["range"],
-        format_func=lambda x: f"{scale['min_label'] if x == min(scale['range']) else scale['max_label'] if x == max(scale['range']) else x}",
+        format_func=lambda x: str(x),  # Simply show the number
         key=f"ls_{question['question_text']}"
     )
 

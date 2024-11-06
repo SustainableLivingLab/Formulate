@@ -5,11 +5,6 @@ import uuid
 import json
 from datetime import datetime, timedelta
 
-# Add this function to handle URL generation
-def get_base_url():
-    """Get the base URL for the application."""
-    return "https://formulate.streamlit.app"
-
 def show_survey_management():
     # Get trainer_id from session
     trainer_id = 1 if st.session_state.get("username") == "admin" else 2
