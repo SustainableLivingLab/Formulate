@@ -168,6 +168,24 @@ def get_profile_questions():
         ]
     }
 
+def show_success_page():
+    st.title("Survey Submitted Successfully! 🎉")
+    
+    success_html = """
+    <div style="text-align: center; padding: 40px; background-color: #f0f2f6; border-radius: 10px;">
+        <h2>Thank you for your participation!</h2>
+        <p style="font-size: 18px; color: #444;">Your responses have been recorded successfully.</p>
+        <p style="font-size: 16px; color: #666;">Your feedback is valuable and will help us improve our training programs.</p>
+    </div>
+    """
+    st.markdown(success_html, unsafe_allow_html=True)
+    
+    # Optional: Add a button to close the window
+    if st.button("Close Window"):
+        st.markdown("""
+            <script>window.close();</script>
+            """, unsafe_allow_html=True)
+
 def main():
     # Get survey ID from URL parameters
     survey_id = st.query_params.get("id", None)
@@ -257,23 +275,43 @@ def main():
                 st.error("Please provide your email address.")
                 return
                 
-            # Remove email from profile responses to store separately
-            profile_responses_without_email = {k: v for k, v in profile_responses.items() if k != "Q1"}
+            # Prepare responses with full questions
+            profile_responses_with_questions = {
+                f"Q{i+1}": {
+                    "question": profile_questions["questions"][i]["question_text"],
+                    "answer": response
+                } for i, (_, response) in enumerate(profile_responses.items())
+            }
             
-            # Combine remaining profile responses and survey responses
+            survey_responses_with_questions = {
+                f"Q{i+1}": {
+                    "question": questions[i]["question_text"],
+                    "type": questions[i]["type"],
+                    "answer": response
+                } for i, (_, response) in enumerate(survey_responses.items())
+            }
+            
+            # Remove email from profile responses
+            profile_responses_without_email = {
+                k: v for k, v in profile_responses_with_questions.items() 
+                if k != "Q1"
+            }
+            
+            # Combined responses with questions
             combined_responses = {
                 "profile": profile_responses_without_email,
-                "survey": survey_responses
+                "survey": survey_responses_with_questions
             }
             
             success = insert_response_data(
                 survey_id=survey_id,
                 trainee_email=trainee_email,
-                trainee_responses=combined_responses  # Send combined responses
+                trainee_responses=combined_responses
             )
             
             if success:
-                st.success("Thank you for completing the survey!")
+                st.session_state.form_submitted = True
+                st.experimental_rerun()
             else:
                 st.error("There was an error submitting your responses. Please try again.")
 
