@@ -15,7 +15,7 @@ Path(os.path.join(ROOT_DIR, "responses")).mkdir(exist_ok=True)
 # Add this near the top of the file, after the imports
 st.set_page_config(
     page_title="Training Survey",
-    page_icon="🎯",
+    page_icon="./Images/trainer.png",
     initial_sidebar_state="collapsed"  # This hides the sidebar
 )
 
