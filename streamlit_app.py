@@ -1,17 +1,7 @@
 import streamlit as st
 from utils.auth import authenticate, login, logout
 from admin_dashboard.survey_management import show_survey_management
-from admin_dashboard.survey_responses import show_survey_responses
-
 from admin_dashboard import survey_reports, survey_recommendations
-
-# Initialize session state for OpenAI API key
-if 'OPENAI_API_KEY' not in st.session_state:
-    try:
-        st.session_state['OPENAI_API_KEY'] = st.secrets["OPENAI_API_KEY"]
-        print("DEBUG: OpenAI API key loaded into session state")
-    except Exception as e:
-        print(f"DEBUG: Error loading OpenAI API key into session state: {e}")
 
 st.set_page_config(page_title="Formulate", page_icon="./Images/trainer.png", initial_sidebar_state="collapsed")
 

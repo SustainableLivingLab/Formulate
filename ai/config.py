@@ -1,27 +1,31 @@
-import streamlit as st
+import os
 from openai import OpenAI
+from dotenv import load_dotenv
+import mysql.connector
 
-# Get API key directly from Streamlit secrets
-try:
-    api_key = st.secrets["OPENAI_API_KEY"]
-    print("DEBUG: OpenAI API key loaded from Streamlit secrets")
-except Exception as e:
-    print(f"DEBUG: Error loading OpenAI API key from Streamlit secrets: {e}")
-    raise Exception("OpenAI API key not found in Streamlit secrets")
+load_dotenv()
 
-# Initialize OpenAI client
-client = OpenAI(api_key=api_key)
+
+api_key = os.getenv("OPENAI_API_KEY")
+
+# Inisialisasi client dengan API key
+client = OpenAI(
+    api_key=api_key,
+)
+
+
+# # Establish the database connection
+# conn = mysql.connector.connect(
+#     host=os.getenv('MYSQL_HOST'),
+#     user=os.getenv('MYSQL_USER'),
+#     password=os.getenv('MYSQL_SECRET_KEY'),
+#     database=os.getenv('MYSQL_DATABASE')
+# )
+
+
 
 class GptModels:
-    GPT4 = "gpt-4"
-    GPT35_TURBO = "gpt-3.5-turbo"
-    OPENAI_MODEL = "gpt-3.5-turbo"
-
-
-
-
-
-
+    OPENAI_MODEL = "gpt-4o-2024-08-06"
 
 
 
