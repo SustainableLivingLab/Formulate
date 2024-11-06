@@ -311,7 +311,7 @@ def main():
             
             if success:
                 st.session_state.form_submitted = True
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("There was an error submitting your responses. Please try again.")
 

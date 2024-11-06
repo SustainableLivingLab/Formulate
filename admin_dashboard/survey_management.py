@@ -22,57 +22,98 @@ def show_survey_management():
 
     # Section for creating a new survey
     with st.expander("✨ Create New Survey"):
+
+        # 1. Survey Title
+        st.write("**1. What is the title of the survey?**")
+        survey_title = st.text_input(
+            "Survey Title", 
+            placeholder="e.g., Pre-Training Assessment for Digital Literacy Program", 
+            label_visibility="collapsed"
+        )
         
-        # 1. Course Title
-        st.write("**1. What is the title of the training course?**")
+        # 2. Survey Description
+        st.write("**2. Provide a brief description of the survey.**")
+        survey_description = st.text_area(
+            "Survey Description", 
+            placeholder="This survey aims to assess trainees' current digital literacy skills before the training session...", 
+            label_visibility="collapsed"
+        )
+
+        # 3. Instructions for Participants
+        st.write("**3. Any specific instructions for trainees?**")
+        survey_instructions = st.text_area(
+            "Instructions", 
+            placeholder="Please answer all questions to the best of your knowledge to help tailor the training to your needs...", 
+            label_visibility="collapsed"
+        )
+
+
+        # 4. Course Title
+        st.write("**4. What is the title of the training course?**")
         course_title = st.text_input("Course Title", placeholder="e.g., Digital Literacy for Educators", label_visibility="collapsed")
 
-        # 2. Target Audience
-        st.write("**2. Who is the primary audience for this course? (e.g., middle school teachers, corporate managers, healthcare professionals)**")
+        # 5. Target Audience
+        st.write("**5. Who is the primary audience for this course? (e.g., middle school teachers, corporate managers, healthcare professionals)**")
         target_audience = st.text_input("Target Audience", placeholder="e.g., Middle school teachers", label_visibility="collapsed")
 
-        # 3. Course Overview
-        st.write("**3. Provide a brief overview of the course, describing its primary focus and goals.**")
+        # 6. Course Overview
+        st.write("**6. Provide a brief overview of the course, describing its primary focus and goals.**")
         course_overview = st.text_area("Course Overview", placeholder="This course introduces essential digital literacy skills...", label_visibility="collapsed")
 
-        # 4. Target Skill Level
-        st.write("**4. What is the expected baseline skill level of the trainees? (Choose one)**")
+        # 7. Target Skill Level
+        st.write("**7. What is the expected baseline skill level of the trainees? (Choose one)**")
         skill_level = st.selectbox("Target Skill Level", ["Beginner", "Intermediate", "Advanced", "Mixed Level"], label_visibility="collapsed")
 
-        # 5. Key Competency Areas
-        st.write("**5. List 3-5 key competencies that the course will cover, focusing on the primary skills or knowledge areas relevant to the course.**")
+        # 8. Key Competency Areas
+        st.write("**8. List 3-5 key competencies that the course will cover, focusing on the primary skills or knowledge areas relevant to the course.**")
         competencies = st.text_area("Key Competency Areas", placeholder="e.g., Basic digital literacy concepts\nUse of digital tools in education\nDigital safety and responsible use", label_visibility="collapsed")
 
-        # 6. Learning Outcome Goals
-        st.write("**6. What are the primary learning outcomes for this course? List 2-3 specific goals that trainees should achieve by the end.**")
+        # 9. Learning Outcome Goals
+        st.write("**9. What are the primary learning outcomes for this course? List 2-3 specific goals that trainees should achieve by the end.**")
         learning_outcomes = st.text_area("Learning Outcome Goals", placeholder="e.g., Teachers should understand fundamental digital literacy concepts...", label_visibility="collapsed")
 
-        # 7. Expected Application Level
-        st.write("**7. Describe the level of understanding or practical application trainees are expected to achieve by the end of the course. (e.g., Familiarity, Understanding, Application, Mastery)**")
+        # 10. Expected Application Level
+        st.write("**10. Describe the level of understanding or practical application trainees are expected to achieve by the end of the course. (e.g., Familiarity, Understanding, Application, Mastery)**")
         application_level = st.text_input("Expected Application Level", placeholder="e.g., Understanding and Application", label_visibility="collapsed")
 
-        # 8. Known Pain Points or Challenges
-        st.write("**8. List any known challenges or pain points that trainees may face in relation to this course content (optional).**")
+        # 11. Known Pain Points or Challenges
+        st.write("*11. List any known challenges or pain points that trainees may face in relation to this course content (optional).**")
         pain_points = st.text_area("Known Pain Points or Challenges", placeholder="e.g., Teachers may feel overwhelmed by the fast pace of technology...", label_visibility="collapsed")
 
-        # 9. Course Duration and Structure
-        st.write("**9. Provide details about the course structure (e.g., number of sessions, duration per session).**")
+        # 12. Course Duration and Structure
+        st.write("**12. Provide details about the course structure (e.g., number of sessions, duration per session).**")
         course_duration = st.text_input("Course Duration and Structure", placeholder="e.g., 3 sessions over 1 week, each session lasting 2 hours", label_visibility="collapsed")
 
-        # 10. Number of Survey Questions
-        st.write("**10. How many pre-survey questions would you like the AI to generate? (Specify a number)**")
+        # 13. Number of Survey Questions
+        st.write("**13. How many pre-survey questions would you like the AI to generate? (Specify a number)**")
         question_count = st.number_input("Number of Survey Questions", min_value=1, max_value=50, value=10, label_visibility="collapsed")
 
-        # Add expiration datetime fields
-        st.write("**11. When should this survey expire?**")
-        # Default expiration date is 7 days from now
+        # Position Expiration Date and Time at the end of the form
+        st.write("**Set Survey Expiration**")
+
+        # Set default expiration to 7 days from now at 23:59
         default_date = datetime.now().date() + timedelta(days=7)
-        expiration_date = st.date_input("Expiration Date", value=default_date, min_value=datetime.now().date())
-        # Set default time to 23:59
         default_time = datetime.strptime("23:59", "%H:%M").time()
-        expiration_time = st.time_input("Expiration Time", value=default_time)
-        
-        # Combine date and time into datetime
+
+        # Display Date and Time input side-by-side using columns
+        col1, col2 = st.columns([1, 1])
+
+        with col1:
+            expiration_date = st.date_input(
+                "Expiration Date",
+                value=default_date,
+                min_value=datetime.now().date(),
+                help="Choose the date when the survey should expire."
+            )
+
+        with col2:
+            expiration_time = st.time_input(
+                "Expiration Time",
+                value=default_time,
+                help="Choose the time on the expiration date when the survey should expire."
+            )
+
+        # Combine date and time into a single datetime object
         expiration_datetime = datetime.combine(expiration_date, expiration_time)
 
         # Generate Survey Questions Button
@@ -83,6 +124,9 @@ def show_survey_management():
                 with st.spinner("Generating survey questions..."):
                     # Prepare data for API call
                     survey_data = {
+                        "surveyTitle": survey_title,
+                        "surveyDescription": survey_description,
+                        "surveyInstructions": survey_instructions,
                         "courseTitle": course_title,
                         "targetAudience": target_audience,
                         "courseOverview": course_overview,

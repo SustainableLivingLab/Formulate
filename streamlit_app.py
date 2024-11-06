@@ -32,7 +32,7 @@ def show_login_page():
             if authenticate(username, password):
                 login()
                 st.success("You’re now logged in! Redirecting to your dashboard...")
-                st.experimental_rerun()  # Refresh the page to show the dashboard
+                st.rerun()  # Refresh the page to show the dashboard
             else:
                 st.error("Invalid username or password. Please try again.")
 
@@ -54,7 +54,7 @@ def show_dashboard():
     # Logout button
     if st.sidebar.button("Log Out"):
         logout()
-        st.experimental_rerun()  # Refresh the page to show the login form
+        st.rerun()  # Refresh the page to show the login form
 
     # Navigation logic for different sections
     if section == "📝 Survey Management":
