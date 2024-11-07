@@ -208,7 +208,7 @@ def insert_response_data(
 
 
 def get_survey_data(survey_id: str) -> Dict:
-    """Retrieve survey data from Survey table."""
+    """Retrieve survey data from both Survey and Trainer tables."""
     db_config = load_db_config()
     print(f"DEBUG: Fetching survey data for ID: {survey_id}")
 
@@ -217,11 +217,12 @@ def get_survey_data(survey_id: str) -> Dict:
         cursor = conn.cursor(dictionary=True)
 
         query = """
-        SELECT survey_id, generated_questions, created_at, expiration_datetime
-        FROM Survey
-        WHERE survey_id = %s 
-        AND expiration_datetime > NOW()
-        AND created_at <= NOW()
+        SELECT s.survey_id, s.generated_questions, s.created_at,
+               t.trainer_questions_responses
+        FROM Survey s
+        JOIN Trainer t ON s.survey_id = t.survey_id
+        WHERE s.survey_id = %s 
+        AND s.created_at <= NOW()
         """
 
         cursor.execute(query, (survey_id,))
@@ -230,14 +231,18 @@ def get_survey_data(survey_id: str) -> Dict:
         print(f"DEBUG: Query result: {result}")
 
         if result is None:
-            print("DEBUG: No survey found or survey has expired")
+            print("DEBUG: No survey found")
             return None
 
-        # Parse the JSON string of generated questions
-        if result and "generated_questions" in result:
-            result["generated_questions"] = json.loads(result["generated_questions"])
+        # Parse both JSON strings
+        if result:
+            if result['generated_questions']:
+                result['generated_questions'] = json.loads(result['generated_questions'])
+            if result['trainer_questions_responses']:
+                result['trainer_questions_responses'] = json.loads(result['trainer_questions_responses'])
+                
             print(f"DEBUG: Survey created at: {result['created_at']}")
-            print(f"DEBUG: Survey expires at: {result['expiration_datetime']}")
+            print(f"DEBUG: Trainer input: {result['trainer_questions_responses']}")
 
         return result
 

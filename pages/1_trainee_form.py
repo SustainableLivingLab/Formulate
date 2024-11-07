@@ -231,21 +231,20 @@ def main():
         st.error("No survey ID provided.")
         return
         
-    # Get survey data and check expiration
+    # Get survey data
     survey_data = get_survey_data(survey_id)
-    print(f"DEBUG: Survey data from database: {survey_data}")
+    print(f"DEBUG: Full survey data: {survey_data}")
     
     if not survey_data:
         st.error("Survey not found or has expired.")
         return
 
     try:
-        # Parse trainer's input
-        trainer_input = json.loads(survey_data.get('trainer_questions_responses', '{}'))
+        trainer_input = survey_data.get('trainer_questions_responses', {})
         print(f"DEBUG: Parsed trainer input: {trainer_input}")
         
-        # Display survey header with proper styling
-        st.markdown(f"# {trainer_input.get('courseTitle', 'Training Survey')}")
+        # Display survey header
+        st.title(trainer_input.get('courseTitle', 'Training Survey'))
         
         if trainer_input.get('surveyDescription'):
             st.markdown("### About this Survey")
@@ -257,18 +256,9 @@ def main():
             
         st.markdown("---")
 
-        # Get the generated questions directly from survey_data
-        generated_questions = survey_data.get('generated_questions', {})
-        print(f"Generated questions from DB: {generated_questions}")  # Debug log
-        
-        # Get the questions array from the response
-        questions = generated_questions.get('questions', [])
-        if not questions:
-            st.error("No questions found in the survey.")
-            return
-                
-        print(f"Questions to display: {questions}")  # Debug log
-        
+        # Get questions for the form
+        questions = survey_data.get('generated_questions', {}).get('questions', [])
+
     except Exception as e:
         print(f"Error processing questions: {e}")  # Debug log
         st.error("Error loading survey questions. Please try again later.")
