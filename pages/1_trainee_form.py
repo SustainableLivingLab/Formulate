@@ -68,11 +68,12 @@ def load_survey_json(file_path=None, survey_id=None):
 
 
 def render_multiple_choice(question):
-    """Render a multiple choice question."""
+    """Render a multiple choice question without default selection."""
     return st.radio(
         question["question_text"],
         options=question["options"],
-        key=f"mc_{question['question_text']}",
+        index=None,  # This removes default selection
+        key=f"mc_{question['question_text']}"
     )
 
 
@@ -117,12 +118,26 @@ def render_likert_scale(question):
 
 
 def render_open_ended(question):
-    """Render an open-ended question."""
-    return st.text_area(
-        question["question_text"],
-        placeholder="Please share your thoughts here...",
-        key=f"oe_{question['question_text']}",
-    )
+    """Render an open-ended question with appropriate input field size."""
+    # List of questions that should use single-line input
+    single_line_questions = [
+        "What is your email address?",
+        "What is your full name?",
+        "What department do you belong to?"
+    ]
+    
+    if question["question_text"] in single_line_questions:
+        return st.text_input(
+            question["question_text"],
+            placeholder="Please share your thoughts here...",
+            key=f"oe_{question['question_text']}"
+        )
+    else:
+        return st.text_area(
+            question["question_text"],
+            placeholder="Please share your thoughts here...",
+            key=f"oe_{question['question_text']}"
+        )
 
 
 def get_profile_questions():
