@@ -7,18 +7,24 @@ from typing import Dict, Any, List
 import json
 
 
-# Load database credentials from secrets.toml
 def load_db_config():
-    with open(".streamlit/secrets.toml", "r") as file:
-        secrets = toml.load(file)
+    # Check if the secrets file exists
+    if os.path.exists(".streamlit/secrets.toml"):
+        # Load from secrets file
+        secrets = toml.load(".streamlit/secrets.toml")
         db_config = secrets["connections"]["mysql"]
-        return {
-            "host": db_config["host"],
-            "port": db_config["port"],
-            "database": db_config["database"],
-            "user": db_config["username"],
-            "password": db_config["password"],
-        }
+    else:
+        # Load from st.secrets
+        db_config = st.secrets["connections"]["mysql"]
+
+    # Return configuration regardless of the source
+    return {
+        "host": db_config["host"],
+        "port": db_config["port"],
+        "database": db_config["database"],
+        "user": db_config["username"],
+        "password": db_config["password"],
+    }
 
 
 # Define the SQL statements to create the tables
