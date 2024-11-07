@@ -67,59 +67,40 @@ def load_survey_json(file_path=None, survey_id=None):
         return None
 
 
-def render_multiple_choice(question):
+def render_multiple_choice(question, index):
     """Render a multiple choice question without default selection."""
     return st.radio(
         question["question_text"],
         options=question["options"],
         index=None,  # This removes default selection
-        key=f"mc_{question['question_text']}"
+        key=f"mc_{index}_{question['question_text']}"
     )
 
-
-def render_checkbox(question):
+def render_checkbox(question, index):
     """Render a checkbox question."""
-    # Container to store selected options
     selected_options = []
 
     st.write(question["question_text"])
-    # Create a checkbox for each option
     for option in question["options"]:
-        if st.checkbox(option, key=f"cb_{question['question_text']}_{option}"):
+        if st.checkbox(option, key=f"cb_{index}_{question['question_text']}_{option}"):
             selected_options.append(option)
 
     return selected_options
 
-
-# def render_likert_scale(question):
-#     """Render a Likert scale question."""
-#     scale = question["scale"]
-#     return st.select_slider(
-#         question["question_text"],
-#         options=scale["range"],
-#         format_func=lambda x: f"{x} - {scale['max_label'] if x == max(scale['range']) else scale['min_label'] if x == min(scale['range']) else ''}",
-#         key=f"ls_{question['question_text']}"
-#     )
-
-
-def render_likert_scale(question):
+def render_likert_scale(question, index):
     """Render a Likert scale question with numerical labels and specific text at the ends."""
     scale = question["scale"]
-    
-    # Create a label that combines question text with min/max labels
     label = f"{question['question_text']}\n({scale['min_label']} → {scale['max_label']})"
     
     return st.select_slider(
         label=label,
         options=scale["range"],
-        format_func=lambda x: str(x),  # Simply show the number
-        key=f"ls_{question['question_text']}"
+        format_func=lambda x: str(x),
+        key=f"ls_{index}_{question['question_text']}"
     )
 
-
-def render_open_ended(question):
+def render_open_ended(question, index):
     """Render an open-ended question with appropriate input field size."""
-    # List of questions that should use single-line input
     single_line_questions = [
         "What is your email address?",
         "What is your full name?",
@@ -130,13 +111,13 @@ def render_open_ended(question):
         return st.text_input(
             question["question_text"],
             placeholder="Please share your thoughts here...",
-            key=f"oe_{question['question_text']}"
+            key=f"oe_{index}_{question['question_text']}"
         )
     else:
         return st.text_area(
             question["question_text"],
             placeholder="Please share your thoughts here...",
-            key=f"oe_{question['question_text']}"
+            key=f"oe_{index}_{question['question_text']}"
         )
 
 
