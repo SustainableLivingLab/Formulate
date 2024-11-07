@@ -1,6 +1,6 @@
 from typing import Dict, Any
-from ai.system_content import system_content_prompt, SYSTEM_PROMPT2
-from ai.generate import surveyQuestions, analysisTQ
+from ai.system_content import system_content_prompt, SYSTEM_PROMPT2, SYSTEM_PROMPT3
+from ai.generate import surveyQuestions, analysisTQ, SlideDeckGenerator
 
 import json
 import streamlit as st
@@ -34,4 +34,9 @@ def generate_analysed_questionare(survey_data: str):
     #TO DO, in where this code will be executed?
     except Exception as e:
         print(e)
-        
+ 
+ 
+# For Slide Deck Generator        
+def generate_slide_deck(ai_summary: str):
+    Slide_deck = SlideDeckGenerator(SYSTEM_PROMPT=SYSTEM_PROMPT3, AI_Summary=ai_summary)
+    return Slide_deck 

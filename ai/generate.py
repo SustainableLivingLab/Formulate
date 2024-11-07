@@ -1,11 +1,19 @@
-import asyncio
+
 import json
 from openai import OpenAI
 from ai.config import GptModels
 from typing import Dict, Any
 
 from ai.config import GptModels, client
-from ai.system_content import multiple_choice, checkbox, likert_scale, open_ended,analysed_data
+
+from ai.system_content import (
+    multiple_choice, 
+    checkbox, 
+    likert_scale, 
+    open_ended,
+    analysed_data, 
+    Slide_Deck_Output
+    )
 
 model = GptModels.OPENAI_MODEL
 
@@ -224,5 +232,108 @@ def analysisTQ(SYSTEM_PROMPT: str,survey_responses: str):
         raise #Lempar ulang error
     except openai.RateLimitError as e:
         print(f"OpenAI API request exceeded rate limit in {section}: {e}")
+        raise #Lempar ulang error
+    
+    
+    
+
+def SlideDeckGenerator(SYSTEM_PROMPT: str,AI_Summary: str):
+    print(f"DEBUG: Received AI Summary in Slide Deck Generator: {AI_Summary}")
+    
+    
+    section = "Slide Deck Generator" 
+    
+    try:
+        slide_deck_generator = client.chat.completions.create(
+        model = model,
+        messages=[
+            {
+                "role": "system",
+                "content": SYSTEM_PROMPT,
+            },
+            {
+                "role": "user",
+                "content": f"""
+
+                INSERTING PROMPT
+                
+                **Data for analysis**: {AI_Summary}
+
+                **Response Format (JSON)**:
+                Provide a response strictly in JSON format, with each section following this structure:
+
+                {Slide_Deck_Output}
+                                
+              
+                IMPORTANT CONSTRAINT
+
+                1. do not provide any other output than in json formated structure question guidance
+
+
+
+                """
+                ,
+                            },
+
+                ],
+                response_format = { "type": "json_object" } ,
+                max_tokens=16384,
+                temperature=0.5,
+                presence_penalty=0.6,
+                top_p=0.8,
+                n=1  # Number of responses to generate at a time
+                )
+
+        # Cek apakah output dari completion kosong atau null
+        slide_deck_results = slide_deck_generator.choices[0].message.content.strip()
+        if not slide_deck_results:  # if there is no output, do retry
+             
+            raise print("Chat Completion output in {section} is empty, retrying...")
+                
+        slide_deck_results = slide_deck_generator.choices[0].message.content
+        print(f"{section} : OK")
          
+        return slide_deck_results
+    except openai.AuthenticationError as e:
+        print(f"Your API key or token was invalid, expired, or revoked : {e}")
+         
+        raise
+    except openai.BadRequestError as e:
+        print(f"Your request was malformed or missing some required parameters, such as a token or an input in {section} : {e}")
+         
+        raise
+    except openai.ConflictError as e:
+        print(f"The resource was updated by another request in {section} : {e}")
+         
+        raise
+    except openai.InternalServerError as e:
+        print(f"Issue on our side while completing in {section} : {e}")
+         
+        raise
+    except openai.NotFoundError as e:
+        print(f"Requested resource does not exist while completing in {section} : {e}")
+         
+        raise
+    except openai.APITimeoutError as e:
+        print(f"Request timed out in {section} : {e}")
+         
+        raise
+    except openai.UnprocessableEntityError as e:
+        print(f"Unable to process the request despite the format being correct in {section}: {e}")
+         
+        raise
+    except openai.PermissionDeniedError as e:
+        print(f"You don't have access to the requested resource while completing the {section}: {e}")
+         
+        raise
+    except openai.APIError as e:
+        print(f"OpenAI API returned an API Error in {section}: {e}")
+         
+        raise #Lempar ulang error
+    except openai.APIConnectionError as e:
+        print(f"Failed to connect to OpenAI API in {section}: {e}")
+         
+        raise #Lempar ulang error
+    except openai.RateLimitError as e:
+        print(f"OpenAI API request exceeded rate limit in {section}: {e}")
         raise #Lempar ulang error

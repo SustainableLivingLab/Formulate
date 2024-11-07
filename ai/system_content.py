@@ -76,6 +76,27 @@ analysed_data = """
 
 
   """
+  
+ #need to be improve again 
+Slide_Deck_Output = """
+            ```
+            "Slide_Deck_Content" : [
+              {
+                    "Introduction": "Explain the lesson objectives, focusing on why they are important and what students will learn by the end of the lesson.",
+                    "opening_activity": "Describe what students did in the previous lesson, highlighting any key concepts that will connect to today's lesson.",
+                    "main_activity": "Provide a step-by-step overview of the main activities, ensuring they are interactive and encourage student participation.",
+                    "closing_activity": "Suggest a brief closing activity that reinforces the main takeaways and allows students to reflect on what they've learned.",
+                    "assessment": [
+                      "Create a question that asks students to summarize the main ideas discussed today.",
+                      "Develop a question that prompts students to apply today's lesson concepts to a real-life scenario.",
+                      "Generate a critical thinking question related to the topic to assess deeper understanding."
+                    ]
+                  }
+            ]
+            
+            ```
+
+"""
 
 SYSTEM_PROMPT2 = """
 
@@ -142,3 +163,9 @@ def system_content_prompt(survey_data: Dict[Any, Any]) -> Dict[str, str]:
       """
 
     return SYSTEM_PROMPT
+  
+  
+SYSTEM_PROMPT3 = """
+        bakal di isi secepatnya
+  
+  """
