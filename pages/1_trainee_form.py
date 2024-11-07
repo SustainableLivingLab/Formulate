@@ -224,23 +224,35 @@ def main():
     else:
         # Get survey ID from URL parameters
         survey_id = st.query_params.get("id", None)
-        print(f"Received survey ID: {survey_id}")  # Debug log
         
         if not survey_id:
             st.error("No survey ID provided.")
             return
             
-        st.title("Training Survey")
-        
         # Get survey data and check expiration
         survey_data = get_survey_data(survey_id)
-        print(f"Retrieved survey data: {survey_data}")  # Debug log
         
         if not survey_data:
             st.error("Survey not found or has expired.")
             return
 
         try:
+            # Parse trainer's input from trainer_questions_responses
+            trainer_input = json.loads(survey_data.get('trainer_questions_responses', '{}'))
+            
+            # Display survey header information
+            st.title(trainer_input.get('courseTitle', 'Training Survey'))
+            
+            if trainer_input.get('surveyDescription'):
+                st.markdown("### Survey Description")
+                st.write(trainer_input['surveyDescription'])
+                st.markdown("---")
+            
+            if trainer_input.get('surveyInstructions'):
+                st.markdown("### Instructions")
+                st.write(trainer_input['surveyInstructions'])
+                st.markdown("---")
+
             # Get the generated questions directly from survey_data
             generated_questions = survey_data.get('generated_questions', {})
             print(f"Generated questions from DB: {generated_questions}")  # Debug log
