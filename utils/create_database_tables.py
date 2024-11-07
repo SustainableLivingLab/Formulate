@@ -215,7 +215,7 @@ def get_survey_data(survey_id: str) -> Dict:
         SELECT s.survey_id, s.generated_questions, s.created_at, s.expiration_datetime,
                t.trainer_questions_responses
         FROM Survey s
-        JOIN Trainer t ON s.survey_id = t.survey_id
+        JOIN Trainer t ON s.trainer_username = t.trainer_username
         WHERE s.survey_id = %s
         AND s.created_at <= NOW()
         """
