@@ -263,7 +263,7 @@ def main():
 
     # Load and parse generated questions
     try:
-        generated_questions = json.loads(survey_data['generated_questions'])
+        generated_questions = survey_data['generated_questions']
         print(f"DEBUG: Loaded generated questions: {generated_questions}")
     except json.JSONDecodeError as e:
         st.error(f"Error loading survey questions: {e}")
