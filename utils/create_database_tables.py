@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Dict, Any, List, Tuple
 import json
 import os
+import pandas as pd
 
 
 def load_db_config():
@@ -312,8 +313,29 @@ def fetch_active_surveys(trainer_username: str) -> List[Dict]:
     return surveys
 
 
-# Run this to create/update tables
+def populate_responses_from_excel(file_path: str):
+    """Reads data from Excel and populates the Response table."""
+    # Load data from Excel file
+    df = pd.read_excel(file_path)
+
+    # Loop through each row in the DataFrame and insert into the Response table
+    for _, row in df.iterrows():
+        survey_id = row['survey_id']
+        trainee_email = row['trainee_email']
+        trainee_responses = json.loads(row['trainee_responses'])  # Assuming JSON string in Excel
+
+        success = insert_response_data(survey_id, trainee_email, trainee_responses)
+        if success:
+            print(f"Inserted response for {trainee_email}")
+        else:
+            print(f"Failed to insert response for {trainee_email}")
+
+
+# Run this to create/update tables and populate response data
 if __name__ == "__main__":
-    # print("Creating/Updating tables...")
+    # Uncomment below line to create tables
     # create_tables()
-    get_survey_data("f4c9693b-721c-47b3-a31c-f931af1ae255")
+
+    # Path to the Excel file containing dummy responses
+    excel_file_path = 'utils\dummy_responses.xlsx'  # Update with actual file path
+    populate_responses_from_excel(excel_file_path)
