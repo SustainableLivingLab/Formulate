@@ -265,6 +265,7 @@ def get_trainee_responses(survey_id: str) -> list[Dict[str, Any]]:
         WHERE survey_id = %s
         """
 
+        # SUMMARISE FOR ALL OF THE RESPONSE, NOT ONLY ONE
         cursor.execute(query, (survey_id,))
         results = cursor.fetchall()
 
