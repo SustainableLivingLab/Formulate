@@ -94,6 +94,11 @@ def system_content_prompt(survey_data: Dict[Any, Any]) -> Dict[str, str]:
     SYSTEM_PROMPT = f"""
           You are a Lead Corporate Trainer tasked with designing pre-survey questions to assess trainees’ skill levels, familiarity with key topics, and specific learning needs before starting a training course. This assessment will allow you to customize the training experience based on the group’s baseline knowledge and expectations.
 
+          the survey title is {survey_data["surveyTitle"]} and you have to understand the survey context and what is the instructions
+          
+          - Survey Description : {survey_data["surveyDescription"]}
+          - Survey Instruction : {survey_data["surveyInstructions"]}
+          
           The training course is titled {survey_data["courseTitle"]} and is intended for {survey_data["targetAudience"]}. Below are the key course details, competencies, and learning outcomes, which should guide the survey question generation:
 
           Course Overview: {survey_data["courseOverview"]}

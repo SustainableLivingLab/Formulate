@@ -24,9 +24,11 @@ def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, str]:
         print(e)
         
 # Separated  function
-def generate_analysed_questionare(survey_data: Dict[Any, Any]) -> Dict[str, str]:
+def generate_analysed_questionare(survey_data: str):
     try:
-        analysisTrainerQuestionare = analysisTQ(SYSTEM_PROMPT=SYSTEM_PROMPT2,survey_data=survey_data)
+        analysisTrainerQuestionare = analysisTQ(SYSTEM_PROMPT=SYSTEM_PROMPT2,survey_responses=survey_data)
+        
+        print(f"DEBUG : AI summarisation result {analysisTrainerQuestionare}")
         return analysisTrainerQuestionare
     
     #TO DO, in where this code will be executed?
