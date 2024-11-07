@@ -254,6 +254,13 @@ def main():
         st.error("Survey not found or has expired.")
         return
 
+    # Check expiration status
+    if survey_data['is_expired']:
+        st.error("This survey has expired.")
+        expiry_date = survey_data['expiration_datetime']
+        st.info(f"Survey expired on: {expiry_date.strftime('%Y-%m-%d %H:%M')}")
+        return
+
     try:
         trainer_input = survey_data.get('trainer_questions_responses', {})
         print(f"DEBUG: Parsed trainer input: {trainer_input}")
