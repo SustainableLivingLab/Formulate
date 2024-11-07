@@ -3,7 +3,7 @@ import toml
 from mysql.connector import errorcode
 import uuid
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, List
 import json
 
 
