@@ -274,6 +274,9 @@ def main():
         st.error("Loaded questions do not have the expected structure.")
         return
 
+    # Initialize survey responses here
+    survey_responses = {}
+
     # Continue with rendering the survey questions
     for question in generated_questions['questions']:
         question_type = question.get('type')
