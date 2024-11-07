@@ -239,7 +239,7 @@ def main():
         return
 
     # Get survey ID from URL parameters
-    survey_id = st.query_params.get("id", None)
+    survey_id = st.experimental_get_query_params().get("id", [None])[0]
     print(f"DEBUG: Received survey ID: {survey_id}")
     
     if not survey_id:

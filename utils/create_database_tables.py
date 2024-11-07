@@ -232,8 +232,7 @@ def get_survey_data(survey_id: str) -> Dict:
                t.trainer_questions_responses
         FROM Survey s
         JOIN Trainer t ON s.survey_id = t.survey_id
-        WHERE s.survey_id = %s 
-        AND s.created_at <= NOW()
+        WHERE s.survey_id = %s
         """
 
         cursor.execute(query, (survey_id,))
@@ -243,25 +242,21 @@ def get_survey_data(survey_id: str) -> Dict:
             print("DEBUG: No survey found")
             return None
 
-        # Parse JSON strings and add expiration status
+        # Parse JSON strings
         if result:
-            if result["generated_questions"]:
-                result["generated_questions"] = json.loads(
-                    result["generated_questions"]
-                )
-            if result["trainer_questions_responses"]:
-                result["trainer_questions_responses"] = json.loads(
-                    result["trainer_questions_responses"]
-                )
-
+            if result['generated_questions']:
+                result['generated_questions'] = json.loads(result['generated_questions'])
+            if result['trainer_questions_responses']:
+                result['trainer_questions_responses'] = json.loads(result['trainer_questions_responses'])
+            
             # Add expiration status
             current_time = datetime.now()
-            result["is_expired"] = current_time > result["expiration_datetime"]
-            result["expiration_status"] = {
-                "expired": result["is_expired"],
-                "expiry_date": result["expiration_datetime"],
+            result['is_expired'] = current_time > result['expiration_datetime']
+            result['expiration_status'] = {
+                'expired': result['is_expired'],
+                'expiry_date': result['expiration_datetime']
             }
-
+            
             print(f"DEBUG: Survey created at: {result['created_at']}")
             print(f"DEBUG: Survey expires at: {result['expiration_datetime']}")
             print(f"DEBUG: Expiration status: {result['expiration_status']}")
