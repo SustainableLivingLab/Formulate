@@ -59,7 +59,7 @@ open_ended = """
 
 analysed_data = """
             ```
-            "analysed_data" :[
+            "Summarisation" :[
                 {
                     "Survey outcome": [
                           "key_insight_1",
@@ -80,20 +80,49 @@ analysed_data = """
  #need to be improve again 
 Slide_Deck_Output = """
             ```
-            "Slide_Deck_Content" : [
-              {
-                    "Introduction": "Explain the lesson objectives, focusing on why they are important and what students will learn by the end of the lesson.",
-                    "opening_activity": "Describe what students did in the previous lesson, highlighting any key concepts that will connect to today's lesson.",
-                    "main_activity": "Provide a step-by-step overview of the main activities, ensuring they are interactive and encourage student participation.",
-                    "closing_activity": "Suggest a brief closing activity that reinforces the main takeaways and allows students to reflect on what they've learned.",
-                    "assessment": [
-                      "Create a question that asks students to summarize the main ideas discussed today.",
-                      "Develop a question that prompts students to apply today's lesson concepts to a real-life scenario.",
-                      "Generate a critical thinking question related to the topic to assess deeper understanding."
-                    ]
+            {
+                  "slide_1": {
+                    "title": "Introduction to [Lesson Topic]",
+                    "content": "This lesson covers the fundamental concepts of [Topic]. By the end of this session, you will understand [key points or objectives]. Let's explore the core ideas that will guide us through this lesson."
+                  },
+                  "slide_2": {
+                    "title": "Lesson Objectives",
+                    "content": "1. Understand [main concept].\n2. Identify key components of [related topic].\n3. Demonstrate the ability to [skill or application].\n4. Analyze [specific case or problem]."
+                  },
+                  "slide_3": {
+                    "title": "Background on [Topic]",
+                    "content": "[Explain any historical context, prior knowledge required, or reasons why this topic is essential]. This sets the stage for a deeper exploration of [main concept]."
+                  },
+                  "slide_4": {
+                    "title": "Understanding [Key Concept 1]",
+                    "content": "[Brief explanation of the concept]. Learn how [Key Concept 1] affects or relates to [overall topic]."
+                  },
+                  "slide_5": {
+                    "title": "In-depth Look at [Key Concept 1]",
+                    "content": "Explore how [concept] is applied in [real-world example or specific field]. Analyze the steps involved in [process or method]."
+                  },
+                  "slide_6": {
+                    "title": "Exploring [Key Concept 2]",
+                    "content": "Discover the role of [Key Concept 2] and how it contributes to [larger topic]."
+                  },
+                  "slide_7": {
+                    "title": "Practical Application of [Topic]",
+                    "content": "See [how the concept is used in an industry/application]. Learn from a case study of [real-world example]."
+                  },
+                  "slide_8": {
+                    "title": "Recap of Key Concepts",
+                    "content": "- [Concept 1]\n- [Concept 2]\n- [Application/Case Study insight]\nThese key points will be essential for our concluding discussions and assessments."
+                  },
+                  "slide_9": {
+                    "title": "Interactive Activity",
+                    "content": "Try solving [problem statement or question]. Discuss your approach or answer with a peer/group."
+                  },
+                  "slide_10": {
+                    "title": "Conclusion and What's Next",
+                    "content": "In this lesson, you learned about [summary of the lesson]. Prepare for our next session by [assignment or preparation task]."
                   }
-            ]
-            
+            }
+
             ```
 
 """
@@ -164,8 +193,9 @@ def system_content_prompt(survey_data: Dict[Any, Any]) -> Dict[str, str]:
 
     return SYSTEM_PROMPT
   
-  
+# SYSTEM PROMPT FOR THE SLIDE DECK GENERATOR  
 SYSTEM_PROMPT3 = """
-        bakal di isi secepatnya
+        You are an assistant who made the slide deck generator based on the summary provided by professional education trainers. 
+        Your task is to carefully review and synthesise the collected responses to generate a comprehensive lessons content.
   
   """

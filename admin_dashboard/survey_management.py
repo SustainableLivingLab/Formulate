@@ -1,4 +1,4 @@
-from ai.ai_service import generate_survey_questions, generate_analysed_questionare
+from ai.ai_service import generate_survey_questions, generate_AI_summarisation, generate_slide_deck
 from utils.create_database_tables import insert_survey_data, get_trainee_responses
 import streamlit as st
 import uuid
@@ -219,7 +219,8 @@ def show_survey_management():
                         
                         
                         
-                        ai_summarisation = generate_analysed_questionare(pulling_response_data)
+                        ai_summarisation = generate_AI_summarisation(pulling_response_data)
+                        Lesson_Contents = generate_slide_deck(ai_summarisation)
                         
                         if success:
                             # Display survey link

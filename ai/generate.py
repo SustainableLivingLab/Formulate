@@ -124,7 +124,7 @@ def surveyQuestions(SYSTEM_PROMPT: str, survey_data: Dict[Any, Any]) -> Dict[str
         raise #Lempar ulang error
 
 
-def analysisTQ(SYSTEM_PROMPT: str,survey_responses: str):
+def analysis_Trainer_Response(SYSTEM_PROMPT: str,survey_responses: str):
     print(f"DEBUG: Received survey_response in AI summarization: {survey_responses}")
     
     
@@ -142,13 +142,17 @@ def analysisTQ(SYSTEM_PROMPT: str,survey_responses: str):
                 "role": "user",
                 "content": f"""
 
-                1. Analyze and summarize the responses provided by professional education trainers to the recent questionnaire. The analysis should be presented in two main sections:
+                1. Analyze and summarize the responses provided by professional education trainers to the recent questionnaire. 
+                2 The data would be anlysed is json.dumps file which contains severals response from the trainers.
+                
+                
+                The analysis should be presented in two main sections:
 
                   - **Survey Outcome** – Identify and evaluate the key insights shared by trainers. Focus on any recurring themes, patterns, or notable points that reflect common perspectives or diverging views. Additionally, interpret how these insights might impact the effectiveness of current learning objectives.
 
                   - **Recommended Modifications to Learning Objectives** – Based on the survey feedback, propose and justify specific, actionable changes to improve clarity, engagement, and measurable impact of the learning objectives. These modifications should aim to help learners better understand, apply, and master the content.
 
-                2. Structure each section in short, highlighted bullet points to enhance clarity and readability.
+                3. Structure each section in short, highlighted bullet points to enhance clarity and readability.
 
                 **Data for analysis**: {survey_responses}
 
@@ -255,9 +259,14 @@ def SlideDeckGenerator(SYSTEM_PROMPT: str,AI_Summary: str):
                 "role": "user",
                 "content": f"""
 
-                INSERTING PROMPT
+                Develop comprehensive lesson content for each slide based on the summarised learning outcomes and recommended modifications to the learning objectives. Follow these guidelines:
                 
-                **Data for analysis**: {AI_Summary}
+                1. Analyse and Synthesise Data: Evaluate the provided data to derive essential insights and convert these into coherent lesson content. Ensure that each slide integrates key aspects of the data in a way that supports learning objectives.
+                2. Use Advanced British English: Write with precision, using formal British English. Maintain a tone that reflects professionalism and a formal education.
+                3. Align with Learning Objectives: Ensure each slide is relevant and clearly linked to the recommended modifications to the learning objectives. Integrate measurable verbs from Bloom’s Taxonomy, such as ‘analyse,’ ‘evaluate,’ ‘synthesise,’ ‘compare,’ ‘apply,’ and ‘explain’ to establish specific, actionable goals.
+                4. The structure should consist of 10 slides, each comprising a minimum of two descriptive paragraphs.
+                
+                **Data to be analysed**: {AI_Summary}
 
                 **Response Format (JSON)**:
                 Provide a response strictly in JSON format, with each section following this structure:
@@ -268,8 +277,6 @@ def SlideDeckGenerator(SYSTEM_PROMPT: str,AI_Summary: str):
                 IMPORTANT CONSTRAINT
 
                 1. do not provide any other output than in json formated structure question guidance
-
-
 
                 """
                 ,
