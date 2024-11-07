@@ -261,30 +261,35 @@ def main():
         st.info(f"Survey expired on: {expiry_date.strftime('%Y-%m-%d %H:%M')}")
         return
 
+    # Load and parse generated questions
     try:
-        trainer_input = survey_data.get('trainer_questions_responses', {})
-        print(f"DEBUG: Parsed trainer input: {trainer_input}")
-        
-        # Display survey header
-        st.title(trainer_input.get('surveyTitle', 'Training Survey'))
-        
-        if trainer_input.get('surveyDescription'):
-            st.markdown("### About this Survey")
-            st.info(trainer_input['surveyDescription'])
-        
-        if trainer_input.get('surveyInstructions'):
-            st.markdown("### Instructions")
-            st.warning(trainer_input['surveyInstructions'])
-            
-        st.markdown("---")
-
-        # Get questions for the form
-        questions = survey_data.get('generated_questions', {}).get('questions', [])
-
-    except Exception as e:
-        print(f"Error processing questions: {e}")  # Debug log
-        st.error("Error loading survey questions. Please try again later.")
+        generated_questions = json.loads(survey_data['generated_questions'])
+        print(f"DEBUG: Loaded generated questions: {generated_questions}")
+    except json.JSONDecodeError as e:
+        st.error(f"Error loading survey questions: {e}")
         return
+
+    # Ensure the structure is as expected
+    if 'questions' not in generated_questions:
+        st.error("Loaded questions do not have the expected structure.")
+        return
+
+    # Continue with rendering the survey questions
+    for question in generated_questions['questions']:
+        question_type = question.get('type')
+        question_text = question.get('question_text')
+
+        if question_type == "multiple_choice":
+            response = render_multiple_choice(question)
+        elif question_type == "checkbox":
+            response = render_checkbox(question)
+        elif question_type == "likert_scale":
+            response = render_likert_scale(question)
+        elif question_type == "open_ended":
+            response = render_open_ended(question)
+
+        # Store the response for later submission
+        survey_responses[question_text] = response
 
     # Create form
     with st.form("survey_form"):
