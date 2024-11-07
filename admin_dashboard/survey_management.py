@@ -1,5 +1,5 @@
-from ai.ai_service import generate_survey_questions
-from utils.create_database_tables import insert_survey_data
+from ai.ai_service import generate_survey_questions, generate_analysed_questionare
+from utils.create_database_tables import insert_survey_data, get_trainee_responses
 import streamlit as st
 import uuid
 import json
@@ -212,7 +212,15 @@ def show_survey_management():
                             expiration_datetime=expiration_datetime,
                             ai_generated_questions=ai_generated_questions,
                         )
-
+                        
+                        pulling_response_data = get_trainee_responses(
+                            survey_id= survey_id
+                            )
+                        
+                        
+                        
+                        ai_summarisation = generate_analysed_questionare(pulling_response_data)
+                        
                         if success:
                             # Display survey link
                             base_url = "https://formulate.streamlit.app"
