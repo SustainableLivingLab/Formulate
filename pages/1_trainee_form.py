@@ -321,7 +321,7 @@ def main():
         st.header("Survey Questions")
         survey_responses = {}
         
-        for i, question in enumerate(questions, 1):  # Changed to use questions from AI response
+        for i, question in enumerate(generated_questions['questions'], 1):  # Changed to use questions from AI response
             st.subheader(f"Question {i}")
             question_type = question["type"].lower()  # Ensure lowercase for matching
             
