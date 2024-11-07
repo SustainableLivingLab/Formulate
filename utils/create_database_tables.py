@@ -3,7 +3,7 @@ import toml
 from mysql.connector import errorcode
 import uuid
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 import json
 import os
 
@@ -112,7 +112,7 @@ def insert_survey_data(
     trainer_questions_responses: str,
     expiration_datetime: datetime,
     ai_generated_questions: str,
-) -> tuple[bool, str]:
+) -> Tuple[bool, str]:
     """Insert data into both Trainer and Survey tables."""
     db_config = load_db_config()
     print(
@@ -127,28 +127,17 @@ def insert_survey_data(
         survey_id = str(uuid.uuid4())
         print(f"DEBUG: Generated survey_id: {survey_id}")
 
-        # Check if trainer exists and fetch trainer_id
-        check_query = "SELECT trainer_id FROM Trainer WHERE trainer_username = %s"
-        cursor.execute(check_query, (trainer_username,))
-        trainer_row = cursor.fetchone()
+        # Insert new trainer regardless of existing trainer_username
+        trainer_query = """
+        INSERT INTO Trainer (trainer_username, trainer_questions_responses)
+        VALUES (%s, %s)
+        """
+        cursor.execute(trainer_query, (trainer_username, trainer_questions_responses))
+        conn.commit()  # Commit to save the new trainer and get auto-incremented ID
 
-        if not trainer_row:
-            # Insert new trainer if not exists
-            trainer_query = """
-            INSERT INTO Trainer (trainer_username, trainer_questions_responses)
-            VALUES (%s, %s)
-            """
-            cursor.execute(
-                trainer_query, (trainer_username, trainer_questions_responses)
-            )
-            conn.commit()  # Commit to get the generated trainer_id for the next step
-
-            # Fetch the newly inserted trainer_id
-            cursor.execute(check_query, (trainer_username,))
-            trainer_row = cursor.fetchone()
-
-        trainer_id = trainer_row[0]  # Extract trainer_id
-        print(f"DEBUG: Trainer ID: {trainer_id}")
+        # Get the auto-incremented trainer_id using cursor.lastrowid
+        trainer_id = cursor.lastrowid
+        print(f"DEBUG: Inserted new trainer with ID: {trainer_id}")
 
         # Insert into Survey table with AI generated questions
         survey_query = """
@@ -244,19 +233,23 @@ def get_survey_data(survey_id: str) -> Dict:
 
         # Parse JSON strings
         if result:
-            if result['generated_questions']:
-                result['generated_questions'] = json.loads(result['generated_questions'])
-            if result['trainer_questions_responses']:
-                result['trainer_questions_responses'] = json.loads(result['trainer_questions_responses'])
-            
+            if result["generated_questions"]:
+                result["generated_questions"] = json.loads(
+                    result["generated_questions"]
+                )
+            if result["trainer_questions_responses"]:
+                result["trainer_questions_responses"] = json.loads(
+                    result["trainer_questions_responses"]
+                )
+
             # Add expiration status
             current_time = datetime.now()
-            result['is_expired'] = current_time > result['expiration_datetime']
-            result['expiration_status'] = {
-                'expired': result['is_expired'],
-                'expiry_date': result['expiration_datetime']
+            result["is_expired"] = current_time > result["expiration_datetime"]
+            result["expiration_status"] = {
+                "expired": result["is_expired"],
+                "expiry_date": result["expiration_datetime"],
             }
-            
+
             print(f"DEBUG: Survey created at: {result['created_at']}")
             print(f"DEBUG: Survey expires at: {result['expiration_datetime']}")
             print(f"DEBUG: Expiration status: {result['expiration_status']}")
@@ -271,7 +264,6 @@ def get_survey_data(survey_id: str) -> Dict:
             cursor.close()
         if conn and conn.is_connected():
             conn.close()
-
 
 
 def fetch_active_surveys(trainer_username: str) -> List[Dict]:
@@ -307,7 +299,11 @@ def fetch_active_surveys(trainer_username: str) -> List[Dict]:
                 "survey_id": row["survey_id"],
                 "surveyTitle": trainer_data.get("surveyTitle"),
                 "surveyDescription": trainer_data.get("surveyDescription"),
-                "generated_questions": json.loads(row["generated_questions"]) if row["generated_questions"] else None,
+                "generated_questions": (
+                    json.loads(row["generated_questions"])
+                    if row["generated_questions"]
+                    else None
+                ),
                 "created_at": row["created_at"],
                 "expiration_datetime": row["expiration_datetime"],
             }
