@@ -278,6 +278,7 @@ def get_survey_data(survey_id: str) -> Dict:
             conn.close()
 
 
+
 def fetch_active_surveys(trainer_username: str) -> List[Dict]:
     """Fetch active surveys for a given trainer_username from the Survey table."""
     db_config = load_db_config()
@@ -289,21 +290,33 @@ def fetch_active_surveys(trainer_username: str) -> List[Dict]:
 
         # Query to fetch surveys where the expiration date is in the future
         query = """
-        SELECT survey_id, surveyTitle, surveyDescription, generated_questions, created_at, expiration_datetime
-        FROM Survey
-        WHERE trainer_username = %s
-        AND expiration_datetime > NOW()
-        ORDER BY created_at DESC
+        SELECT s.survey_id, 
+               t.trainer_questions_responses, 
+               s.generated_questions, 
+               s.created_at, 
+               s.expiration_datetime
+        FROM Survey AS s
+        JOIN Trainer AS t ON s.trainer_id = t.trainer_id
+        WHERE t.trainer_username = %s
+        AND s.expiration_datetime > NOW()
+        ORDER BY s.created_at DESC
         """
 
         cursor.execute(query, (trainer_username,))
         results = cursor.fetchall()
 
         for row in results:
-            # Parse JSON fields if necessary
-            if row["generated_questions"]:
-                row["generated_questions"] = json.loads(row["generated_questions"])
-            surveys.append(row)
+            # Parse JSON fields
+            trainer_data = json.loads(row["trainer_questions_responses"])
+            survey_data = {
+                "survey_id": row["survey_id"],
+                "surveyTitle": trainer_data.get("surveyTitle"),
+                "surveyDescription": trainer_data.get("surveyDescription"),
+                "generated_questions": json.loads(row["generated_questions"]) if row["generated_questions"] else None,
+                "created_at": row["created_at"],
+                "expiration_datetime": row["expiration_datetime"],
+            }
+            surveys.append(survey_data)
 
     except mysql.connector.Error as err:
         print(f"Database Error: {err}")
