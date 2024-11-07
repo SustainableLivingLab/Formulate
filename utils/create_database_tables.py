@@ -215,8 +215,9 @@ def get_survey_data(survey_id: str) -> Dict:
         SELECT s.survey_id, s.generated_questions, s.created_at, s.expiration_datetime,
                t.trainer_questions_responses
         FROM Survey s
-        JOIN Trainer t ON s.trainer_id = t.trainer_id
+        JOIN Trainer t ON s.survey_id = t.survey_id
         WHERE s.survey_id = %s
+        AND s.created_at <= NOW()
         """
 
         cursor.execute(query, (survey_id,))
@@ -313,5 +314,6 @@ def fetch_active_surveys(trainer_username: str) -> List[Dict]:
 
 # Run this to create/update tables
 if __name__ == "__main__":
-    print("Creating/Updating tables...")
-    create_tables()
+    # print("Creating/Updating tables...")
+    # create_tables()
+    get_survey_data("f4c9693b-721c-47b3-a31c-f931af1ae255")
