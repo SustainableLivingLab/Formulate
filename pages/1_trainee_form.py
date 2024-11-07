@@ -221,154 +221,158 @@ def main():
 
     if st.session_state.form_submitted:
         show_thank_you_message()
-    else:
-        # Get survey ID from URL parameters
-        survey_id = st.query_params.get("id", None)
-        
-        if not survey_id:
-            st.error("No survey ID provided.")
-            return
-            
-        # Get survey data and check expiration
-        survey_data = get_survey_data(survey_id)
-        
-        if not survey_data:
-            st.error("Survey not found or has expired.")
-            return
+        return
 
-        try:
-            # Parse trainer's input from trainer_questions_responses
-            trainer_input = json.loads(survey_data.get('trainer_questions_responses', '{}'))
-            
-            # Display survey header information
-            st.title(trainer_input.get('courseTitle', 'Training Survey'))
-            
-            if trainer_input.get('surveyDescription'):
-                st.markdown("### Survey Description")
-                st.write(trainer_input['surveyDescription'])
-                st.markdown("---")
-            
-            if trainer_input.get('surveyInstructions'):
-                st.markdown("### Instructions")
-                st.write(trainer_input['surveyInstructions'])
-                st.markdown("---")
+    # Get survey ID from URL parameters
+    survey_id = st.query_params.get("id", None)
+    print(f"DEBUG: Received survey ID: {survey_id}")
+    
+    if not survey_id:
+        st.error("No survey ID provided.")
+        return
+        
+    # Get survey data and check expiration
+    survey_data = get_survey_data(survey_id)
+    print(f"DEBUG: Survey data from database: {survey_data}")
+    
+    if not survey_data:
+        st.error("Survey not found or has expired.")
+        return
 
-            # Get the generated questions directly from survey_data
-            generated_questions = survey_data.get('generated_questions', {})
-            print(f"Generated questions from DB: {generated_questions}")  # Debug log
+    try:
+        # Parse trainer's input
+        trainer_input = json.loads(survey_data.get('trainer_questions_responses', '{}'))
+        print(f"DEBUG: Parsed trainer input: {trainer_input}")
+        
+        # Display survey header with proper styling
+        st.markdown(f"# {trainer_input.get('courseTitle', 'Training Survey')}")
+        
+        if trainer_input.get('surveyDescription'):
+            st.markdown("### About this Survey")
+            st.info(trainer_input['surveyDescription'])
+        
+        if trainer_input.get('surveyInstructions'):
+            st.markdown("### Instructions")
+            st.warning(trainer_input['surveyInstructions'])
             
-            # Get the questions array from the response
-            questions = generated_questions.get('questions', [])
-            if not questions:
-                st.error("No questions found in the survey.")
+        st.markdown("---")
+
+        # Get the generated questions directly from survey_data
+        generated_questions = survey_data.get('generated_questions', {})
+        print(f"Generated questions from DB: {generated_questions}")  # Debug log
+        
+        # Get the questions array from the response
+        questions = generated_questions.get('questions', [])
+        if not questions:
+            st.error("No questions found in the survey.")
+            return
+                
+        print(f"Questions to display: {questions}")  # Debug log
+        
+    except Exception as e:
+        print(f"Error processing questions: {e}")  # Debug log
+        st.error("Error loading survey questions. Please try again later.")
+        return
+
+    # Create form
+    with st.form("survey_form"):
+        # Profile Questions Section
+        st.header("Profile Information")
+        profile_responses = {}
+        profile_questions = get_profile_questions()
+        
+        for i, question in enumerate(profile_questions["questions"], 1):
+            st.subheader(f"Question {i}")
+            question_type = question["type"]
+            
+            if question_type == "multiple_choice":
+                response = render_multiple_choice(question)
+            elif question_type == "checkbox":
+                response = render_checkbox(question)
+            elif question_type == "likert_scale":
+                response = render_likert_scale(question)
+            elif question_type == "open_ended":
+                response = render_open_ended(question)
+                    
+            profile_responses[f"Q{i}"] = response
+            st.markdown("---")
+
+        # Survey Questions Section
+        st.header("Survey Questions")
+        survey_responses = {}
+        
+        for i, question in enumerate(questions, 1):  # Changed to use questions from AI response
+            st.subheader(f"Question {i}")
+            question_type = question["type"].lower()  # Ensure lowercase for matching
+            
+            if question_type == "multiple_choice":
+                response = render_multiple_choice(question)
+            elif question_type == "checkbox":
+                response = render_checkbox(question)
+            elif question_type == "likert_scale":
+                response = render_likert_scale(question)
+            elif question_type == "open_ended":
+                response = render_open_ended(question)
+                    
+            survey_responses[f"Q{i}"] = response
+            st.markdown("---")
+
+        # Submit button
+        if st.form_submit_button("Submit Survey"):
+            trainee_email = profile_responses.get("Q1", "")
+            
+            if not trainee_email:
+                st.error("Please provide your email address.")
                 return
-                
-            print(f"Questions to display: {questions}")  # Debug log
-            
-        except Exception as e:
-            print(f"Error processing questions: {e}")  # Debug log
-            st.error("Error loading survey questions. Please try again later.")
-            return
-
-        # Create form
-        with st.form("survey_form"):
-            # Profile Questions Section
-            st.header("Profile Information")
-            profile_responses = {}
-            profile_questions = get_profile_questions()
-            
-            for i, question in enumerate(profile_questions["questions"], 1):
-                st.subheader(f"Question {i}")
-                question_type = question["type"]
-                
-                if question_type == "multiple_choice":
-                    response = render_multiple_choice(question)
-                elif question_type == "checkbox":
-                    response = render_checkbox(question)
-                elif question_type == "likert_scale":
-                    response = render_likert_scale(question)
-                elif question_type == "open_ended":
-                    response = render_open_ended(question)
                     
-                profile_responses[f"Q{i}"] = response
-                st.markdown("---")
-
-            # Survey Questions Section
-            st.header("Survey Questions")
-            survey_responses = {}
+            # Format profile responses with questions
+            profile_responses_with_questions = {
+                f"Q{i+1}": {
+                    "question": profile_questions["questions"][i]["question_text"],
+                    "type": profile_questions["questions"][i]["type"],
+                    "answer": response
+                } for i, (_, response) in enumerate(profile_responses.items())
+            }
             
-            for i, question in enumerate(questions, 1):  # Changed to use questions from AI response
-                st.subheader(f"Question {i}")
-                question_type = question["type"].lower()  # Ensure lowercase for matching
-                
-                if question_type == "multiple_choice":
-                    response = render_multiple_choice(question)
-                elif question_type == "checkbox":
-                    response = render_checkbox(question)
-                elif question_type == "likert_scale":
-                    response = render_likert_scale(question)
-                elif question_type == "open_ended":
-                    response = render_open_ended(question)
-                    
-                survey_responses[f"Q{i}"] = response
-                st.markdown("---")
-
-            # Submit button
-            if st.form_submit_button("Submit Survey"):
-                trainee_email = profile_responses.get("Q1", "")
-                
-                if not trainee_email:
-                    st.error("Please provide your email address.")
-                    return
-                    
-                # Format profile responses with questions
-                profile_responses_with_questions = {
-                    f"Q{i+1}": {
-                        "question": profile_questions["questions"][i]["question_text"],
-                        "type": profile_questions["questions"][i]["type"],
-                        "answer": response
-                    } for i, (_, response) in enumerate(profile_responses.items())
+            # Format survey responses with complete question data
+            survey_responses_with_questions = {
+                f"Q{i+1}": {
+                    "question": questions[i]["question_text"],
+                    "type": questions[i]["type"],
+                    "options": questions[i].get("options", []),  # For multiple choice/checkbox
+                    "scale": questions[i].get("scale", {}),      # For Likert scale
+                    "answer": response
+                } for i, (_, response) in enumerate(survey_responses.items())
+            }
+            
+            # Remove email from profile responses to avoid duplication
+            profile_responses_without_email = {
+                k: v for k, v in profile_responses_with_questions.items() 
+                if k != "Q1"
+            }
+            
+            # Final combined response structure
+            combined_responses = {
+                "profile": profile_responses_without_email,
+                "survey": survey_responses_with_questions,
+                "metadata": {
+                    "submission_datetime": str(datetime.now()),
+                    "survey_id": survey_id
                 }
-                
-                # Format survey responses with complete question data
-                survey_responses_with_questions = {
-                    f"Q{i+1}": {
-                        "question": questions[i]["question_text"],
-                        "type": questions[i]["type"],
-                        "options": questions[i].get("options", []),  # For multiple choice/checkbox
-                        "scale": questions[i].get("scale", {}),      # For Likert scale
-                        "answer": response
-                    } for i, (_, response) in enumerate(survey_responses.items())
-                }
-                
-                # Remove email from profile responses to avoid duplication
-                profile_responses_without_email = {
-                    k: v for k, v in profile_responses_with_questions.items() 
-                    if k != "Q1"
-                }
-                
-                # Final combined response structure
-                combined_responses = {
-                    "profile": profile_responses_without_email,
-                    "survey": survey_responses_with_questions,
-                    "metadata": {
-                        "submission_datetime": str(datetime.now()),
-                        "survey_id": survey_id
-                    }
-                }
-                
-                # Insert into database
-                success = insert_response_data(
-                    survey_id=survey_id,
-                    trainee_email=trainee_email,
-                    trainee_responses=combined_responses
-                )
-                
-                if success:
-                    st.session_state.form_submitted = True
-                    show_thank_you_message()
-                else:
-                    st.error("There was an error submitting your responses. Please try again.")
+            }
+            
+            # Insert into database
+            success = insert_response_data(
+                survey_id=survey_id,
+                trainee_email=trainee_email,
+                trainee_responses=combined_responses
+            )
+            
+            if success:
+                st.session_state.form_submitted = True
+                show_thank_you_message()
+            else:
+                st.error("There was an error submitting your responses. Please try again.")
 
 if __name__ == "__main__":
     main()
