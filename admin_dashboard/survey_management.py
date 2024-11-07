@@ -1,5 +1,5 @@
 from ai.ai_service import generate_survey_questions
-from utils.create_database_tables import insert_survey_data
+from utils.create_database_tables import insert_survey_data, fetch_active_surveys
 import streamlit as st
 import uuid
 import json
@@ -7,8 +7,13 @@ from datetime import datetime, timedelta
 
 
 def show_survey_management():
-    # Get trainer_id from session
-    trainer_id = 1 if st.session_state.get("username") == "admin" else 2
+    # Ensure trainer_username is available in session state
+    if "username" not in st.session_state:
+        st.error("Error: You must be logged in to access the survey management page.")
+        return
+
+    # Get trainer_username from session state
+    trainer_username = st.session_state["username"]
 
     st.header("📝 Survey Management")
 
@@ -171,6 +176,9 @@ def show_survey_management():
         if st.button("Generate Survey Questions"):
             if all(
                 [
+                    survey_title,
+                    survey_description,
+                    survey_instructions,
                     course_title,
                     target_audience,
                     course_overview,
@@ -202,15 +210,15 @@ def show_survey_management():
                     }
 
                     try:
-                        # Generate survey questions using GPT-4O
+                        # Generate survey questions using GPT-4
                         ai_generated_questions = generate_survey_questions(survey_data)
 
-                        # Insert into Trainer table
+                        # Insert into Trainer and Survey tables
                         success, survey_id = insert_survey_data(
-                            trainer_id=trainer_id,
+                            trainer_username=trainer_username,
                             trainer_questions_responses=json.dumps(survey_data),
                             expiration_datetime=expiration_datetime,
-                            ai_generated_questions=ai_generated_questions,
+                            ai_generated_questions=json.dumps(ai_generated_questions),
                         )
 
                         if success:
@@ -268,6 +276,16 @@ def show_survey_management():
     # Section for listing active surveys
     st.subheader("Active Surveys")
 
-    # TODO: Implement active surveys listing from database
-    # This will require a new database function to fetch active surveys
-    st.info("Survey listing feature coming soon!")
+    # Fetch and display active surveys
+    active_surveys = fetch_active_surveys(trainer_username=trainer_username)
+    if active_surveys:
+        for survey in active_surveys:
+            with st.expander(survey["surveyTitle"]):
+                st.write(f"**Description**: {survey['surveyDescription']}")
+                st.write(f"**Created At**: {survey['created_at']}")
+                st.write(f"**Expires At**: {survey['expiration_datetime']}")
+                st.write(
+                    f"**Generated Questions**: {json.dumps(survey['generated_questions'], indent=2)}"
+                )
+    else:
+        st.info("No active surveys available.")

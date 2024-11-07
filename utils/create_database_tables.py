@@ -261,6 +261,44 @@ def get_survey_data(survey_id: str) -> Dict:
             conn.close()
 
 
+def fetch_active_surveys(trainer_username: str) -> List[Dict]:
+    """Fetch active surveys for a given trainer_username from the Survey table."""
+    db_config = load_db_config()
+    surveys = []
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        # Query to fetch surveys where the expiration date is in the future
+        query = """
+        SELECT survey_id, surveyTitle, surveyDescription, generated_questions, created_at, expiration_datetime
+        FROM Survey
+        WHERE trainer_username = %s
+        AND expiration_datetime > NOW()
+        ORDER BY created_at DESC
+        """
+
+        cursor.execute(query, (trainer_username,))
+        results = cursor.fetchall()
+
+        for row in results:
+            # Parse JSON fields if necessary
+            if row["generated_questions"]:
+                row["generated_questions"] = json.loads(row["generated_questions"])
+            surveys.append(row)
+
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
+
+    return surveys
+
+
 # Run this to create/update tables
 if __name__ == "__main__":
     print("Creating/Updating tables...")
