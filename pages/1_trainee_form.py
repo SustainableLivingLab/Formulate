@@ -239,8 +239,8 @@ def main():
         return
 
     # Get survey ID from URL parameters
-    query_params = st.experimental_get_query_params()
-    survey_id = query_params.get("id", [None])[0]  # Access the first element if 'id' is present
+    query_params = st.query_params()
+    survey_id = query_params.get("id", [None])  # Access the first element if 'id' is present
 
     print(f"DEBUG: Received survey ID: {survey_id}")
     
