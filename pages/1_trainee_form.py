@@ -301,21 +301,23 @@ def main():
         # Survey Questions Section
         st.header("Survey Questions")
         survey_responses = {}
-        
-        for i, question in enumerate(generated_questions['questions'], 1):  # Changed to use questions from AI response
-            st.subheader(f"Question {i}")
-            question_type = question["type"].lower()  # Ensure lowercase for matching
             
+        # Continue with rendering the survey questions
+        for i, question in enumerate(generated_questions['questions']):
+            question_type = question.get('type')
+            question_text = question.get('question_text')
+
             if question_type == "multiple_choice":
-                response = render_multiple_choice(question)
+                response = render_multiple_choice(question, i)
             elif question_type == "checkbox":
-                response = render_checkbox(question)
+                response = render_checkbox(question, i)
             elif question_type == "likert_scale":
-                response = render_likert_scale(question)
+                response = render_likert_scale(question, i)
             elif question_type == "open_ended":
-                response = render_open_ended(question)
-                    
-            survey_responses[f"Q{i}"] = response
+                response = render_open_ended(question, i)
+
+            # Store the response for later submission
+            survey_responses[question_text] = response
             st.markdown("---")
 
         # Submit button
