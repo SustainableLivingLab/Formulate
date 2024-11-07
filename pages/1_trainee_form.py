@@ -266,7 +266,7 @@ def main():
         print(f"DEBUG: Parsed trainer input: {trainer_input}")
         
         # Display survey header
-        st.title(trainer_input.get('courseTitle', 'Training Survey'))
+        st.title(trainer_input.get('surveyTitle', 'Training Survey'))
         
         if trainer_input.get('surveyDescription'):
             st.markdown("### About this Survey")
