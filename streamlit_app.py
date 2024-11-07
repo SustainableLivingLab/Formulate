@@ -39,7 +39,7 @@ def show_login_page():
         # Authentication
         if login_button:
             if authenticate(username, password):
-                login()
+                login(username)
                 st.success("You’re now logged in! Redirecting to your dashboard...")
                 st.rerun()  # Refresh the page to show the dashboard
             else:

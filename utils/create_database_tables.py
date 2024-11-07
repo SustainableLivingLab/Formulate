@@ -27,7 +27,7 @@ TABLES = {}
 TABLES["Trainer"] = (
     "CREATE TABLE IF NOT EXISTS Trainer ("
     "  trainer_id INT PRIMARY KEY AUTO_INCREMENT,"
-    "  trainer_username VARCHAR(50) UNIQUE NOT NULL,"
+    "  trainer_username VARCHAR(50) NOT NULL,"
     "  trainer_questions_responses JSON"
     ") ENGINE=InnoDB"
 )
@@ -35,11 +35,12 @@ TABLES["Trainer"] = (
 TABLES["Survey"] = (
     "CREATE TABLE IF NOT EXISTS Survey ("
     "  survey_id CHAR(36) PRIMARY KEY,"
+    "  trainer_id INT,"
     "  trainer_username VARCHAR(50),"
     "  generated_questions JSON,"
     "  expiration_datetime DATETIME,"
     "  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-    "  FOREIGN KEY (trainer_username) REFERENCES Trainer(trainer_username)"
+    "  FOREIGN KEY (trainer_id) REFERENCES Trainer(trainer_id)"
     ") ENGINE=InnoDB"
 )
 
@@ -119,12 +120,13 @@ def insert_survey_data(
         survey_id = str(uuid.uuid4())
         print(f"DEBUG: Generated survey_id: {survey_id}")
 
-        # Check if trainer exists
-        check_query = "SELECT trainer_username FROM Trainer WHERE trainer_username = %s"
+        # Check if trainer exists and fetch trainer_id
+        check_query = "SELECT trainer_id FROM Trainer WHERE trainer_username = %s"
         cursor.execute(check_query, (trainer_username,))
-        trainer_exists = cursor.fetchone()
+        trainer_row = cursor.fetchone()
 
-        if not trainer_exists:
+        if not trainer_row:
+            # Insert new trainer if not exists
             trainer_query = """
             INSERT INTO Trainer (trainer_username, trainer_questions_responses)
             VALUES (%s, %s)
@@ -132,17 +134,25 @@ def insert_survey_data(
             cursor.execute(
                 trainer_query, (trainer_username, trainer_questions_responses)
             )
-            print("DEBUG: Inserted new trainer")
+            conn.commit()  # Commit to get the generated trainer_id for the next step
+
+            # Fetch the newly inserted trainer_id
+            cursor.execute(check_query, (trainer_username,))
+            trainer_row = cursor.fetchone()
+
+        trainer_id = trainer_row[0]  # Extract trainer_id
+        print(f"DEBUG: Trainer ID: {trainer_id}")
 
         # Insert into Survey table with AI generated questions
         survey_query = """
-        INSERT INTO Survey (survey_id, trainer_username, generated_questions, expiration_datetime)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO Survey (survey_id, trainer_id, trainer_username, generated_questions, expiration_datetime)
+        VALUES (%s, %s, %s, %s, %s)
         """
         cursor.execute(
             survey_query,
             (
                 survey_id,
+                trainer_id,
                 trainer_username,
                 ai_generated_questions,  # Use the AI generated questions
                 expiration_datetime,

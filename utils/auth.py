@@ -10,9 +10,11 @@ def authenticate(username, password):
     return False
 
 
-def login():
+def login(username):
     st.session_state["logged_in"] = True
+    st.session_state["username"] = username  # Store the username
 
 
 def logout():
     st.session_state["logged_in"] = False
+    st.session_state.pop("username", None)  # Remove the username

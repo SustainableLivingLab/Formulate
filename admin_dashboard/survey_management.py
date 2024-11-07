@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 def show_survey_management():
     # Ensure trainer_username is available in session state
     if "username" not in st.session_state:
+        st.write(st.session_state)
         st.error("Error: You must be logged in to access the survey management page.")
         return
 
