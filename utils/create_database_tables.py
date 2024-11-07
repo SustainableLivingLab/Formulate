@@ -115,9 +115,6 @@ def insert_survey_data(
 ) -> Tuple[bool, str]:
     """Insert data into both Trainer and Survey tables."""
     db_config = load_db_config()
-    print(
-        f"DEBUG: Starting survey data insertion for trainer_username: {trainer_username}"
-    )
 
     try:
         conn = mysql.connector.connect(**db_config)
@@ -125,7 +122,6 @@ def insert_survey_data(
 
         # Generate survey_id
         survey_id = str(uuid.uuid4())
-        print(f"DEBUG: Generated survey_id: {survey_id}")
 
         # Insert new trainer regardless of existing trainer_username
         trainer_query = """
@@ -137,7 +133,6 @@ def insert_survey_data(
 
         # Get the auto-incremented trainer_id using cursor.lastrowid
         trainer_id = cursor.lastrowid
-        print(f"DEBUG: Inserted new trainer with ID: {trainer_id}")
 
         # Insert into Survey table with AI generated questions
         survey_query = """
@@ -249,10 +244,6 @@ def get_survey_data(survey_id: str) -> Dict:
                 "expired": result["is_expired"],
                 "expiry_date": result["expiration_datetime"],
             }
-
-            print(f"DEBUG: Survey created at: {result['created_at']}")
-            print(f"DEBUG: Survey expires at: {result['expiration_datetime']}")
-            print(f"DEBUG: Expiration status: {result['expiration_status']}")
 
         return result
 

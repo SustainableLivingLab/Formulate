@@ -219,7 +219,7 @@ def show_survey_management():
                             trainer_username=trainer_username,
                             trainer_questions_responses=json.dumps(survey_data),
                             expiration_datetime=expiration_datetime,
-                            ai_generated_questions=json.dumps(ai_generated_questions),
+                            ai_generated_questions=ai_generated_questions,
                         )
 
                         if success:

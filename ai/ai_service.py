@@ -7,7 +7,7 @@ import asyncio
 import streamlit as st
 
 
-def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, str]:
+def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, Any]:
     SYSTEM_PROMPT = system_content_prompt(survey_data)
     try:
 
