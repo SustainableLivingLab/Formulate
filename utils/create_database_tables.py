@@ -293,6 +293,59 @@ def get_trainee_responses(survey_id: str) -> list[Dict[str, Any]]:
             conn.close()
 
 
+def get_trainee_responses(survey_id: str) -> list[dict[str, Any]]:
+    """Retrieve all trainee responses and their corresponding emails for a given survey ID from the Response table."""
+    db_config = load_db_config()
+    print(f"DEBUG: Fetching trainee responses for survey ID: {survey_id}")
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+        SELECT trainee_email, trainee_responses
+        FROM Response
+        WHERE survey_id = %s
+        """
+
+        # Execute query and fetch all results
+        cursor.execute(query, (survey_id,))
+        results = cursor.fetchall()
+
+        print(f"DEBUG: Number of responses found: {len(results)}")
+
+        # Parse JSON responses and include emails
+        parsed_results = []
+        for result in results:
+            if "trainee_responses" in result:
+                try:
+                    result["trainee_responses"] = json.loads(result["trainee_responses"])
+                    parsed_results.append({
+                        "trainee_email": result["trainee_email"],
+                        "trainee_responses": result["trainee_responses"]
+                    })
+                except json.JSONDecodeError as e:
+                    print(f"DEBUG: JSON decoding error: {e}")
+
+        print(f"DEBUG: Parsed trainee responses count: {len(parsed_results)}")
+                        
+        parsed_results_str = json.dumps(parsed_results, indent=4) 
+        print(f"DEBUG : Type of results: {type(parsed_results_str)}")
+        print(f"DEBUG : trainee responses \n\n {parsed_results_str}")
+
+
+        return parsed_results_str
+
+    except mysql.connector.Error as err:
+        print(f"DEBUG: Database Error: {err}")
+        return []
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
+
+
 # Run this to create/update tables
 if __name__ == "__main__":
     print("Creating/Updating tables...")
