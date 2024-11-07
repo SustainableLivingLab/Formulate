@@ -250,9 +250,50 @@ def get_survey_data(survey_id: str) -> Dict:
         if conn and conn.is_connected():
             conn.close()
 
+def get_trainee_responses(survey_id: str) -> list[Dict[str, Any]]:
+    """Retrieve all trainee responses for a given survey ID from the Response table."""
+    db_config = load_db_config()
+    print(f"DEBUG: Fetching trainee responses for survey ID: {survey_id}")
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+        SELECT trainee_responses
+        FROM Response
+        WHERE survey_id = %s
+        """
+
+        cursor.execute(query, (survey_id,))
+        results = cursor.fetchall()
+
+        print(f"DEBUG : Number of responses found: {len(results)}")
+     
+
+        # Parse JSON responses
+        for result in results:
+            if "trainee_responses" in result:
+                result["trainee_responses"] = json.loads(result["trainee_responses"])
+                
+        results_str = json.dumps(results, indent=4) 
+        print(f"DEBUG : Type of results: {type(results_str)}")
+        print(f"DEBUG : trainee response \n\n {results_str}")
+
+        return results_str
+
+    except mysql.connector.Error as err:
+        print(f"DEBUG: Database Error: {err}")
+        return []
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
 
 
 # Run this to create/update tables
 if __name__ == "__main__":
     print("Creating/Updating tables...")
     create_tables()
+    
