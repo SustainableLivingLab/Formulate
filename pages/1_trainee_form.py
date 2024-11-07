@@ -250,9 +250,9 @@ def main():
     survey_data = get_survey_data(survey_id)
     print(f"DEBUG: Full survey data: {survey_data}")
     
-    if not survey_data:
-        st.error("Survey not found or has expired.")
-        return
+    # if not survey_data:
+    #     st.error("Survey not found or has expired.")
+    #     return
 
     # Check expiration status
     if survey_data['is_expired']:
