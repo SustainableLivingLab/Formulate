@@ -67,40 +67,59 @@ def load_survey_json(file_path=None, survey_id=None):
         return None
 
 
-def render_multiple_choice(question, index):
+def render_multiple_choice(question):
     """Render a multiple choice question without default selection."""
     return st.radio(
         question["question_text"],
         options=question["options"],
         index=None,  # This removes default selection
-        key=f"mc_{index}_{question['question_text']}"
+        key=f"mc_{question['question_text']}"
     )
 
-def render_checkbox(question, index):
+
+def render_checkbox(question):
     """Render a checkbox question."""
+    # Container to store selected options
     selected_options = []
 
     st.write(question["question_text"])
+    # Create a checkbox for each option
     for option in question["options"]:
-        if st.checkbox(option, key=f"cb_{index}_{question['question_text']}_{option}"):
+        if st.checkbox(option, key=f"cb_{question['question_text']}_{option}"):
             selected_options.append(option)
 
     return selected_options
 
-def render_likert_scale(question, index):
+
+# def render_likert_scale(question):
+#     """Render a Likert scale question."""
+#     scale = question["scale"]
+#     return st.select_slider(
+#         question["question_text"],
+#         options=scale["range"],
+#         format_func=lambda x: f"{x} - {scale['max_label'] if x == max(scale['range']) else scale['min_label'] if x == min(scale['range']) else ''}",
+#         key=f"ls_{question['question_text']}"
+#     )
+
+
+def render_likert_scale(question):
     """Render a Likert scale question with numerical labels and specific text at the ends."""
     scale = question["scale"]
+    
+    # Create a label that combines question text with min/max labels
     label = f"{question['question_text']}\n({scale['min_label']} → {scale['max_label']})"
     
     return st.select_slider(
         label=label,
         options=scale["range"],
-        format_func=lambda x: str(x),
-        key=f"ls_{index}_{question['question_text']}"
+        format_func=lambda x: str(x),  # Simply show the number
+        key=f"ls_{question['question_text']}"
     )
 
-def render_open_ended(question, index):
+
+def render_open_ended(question):
     """Render an open-ended question with appropriate input field size."""
+    # List of questions that should use single-line input
     single_line_questions = [
         "What is your email address?",
         "What is your full name?",
@@ -111,13 +130,13 @@ def render_open_ended(question, index):
         return st.text_input(
             question["question_text"],
             placeholder="Please share your thoughts here...",
-            key=f"oe_{index}_{question['question_text']}"
+            key=f"oe_{question['question_text']}"
         )
     else:
         return st.text_area(
             question["question_text"],
             placeholder="Please share your thoughts here...",
-            key=f"oe_{index}_{question['question_text']}"
+            key=f"oe_{question['question_text']}"
         )
 
 
@@ -242,38 +261,30 @@ def main():
         st.info(f"Survey expired on: {expiry_date.strftime('%Y-%m-%d %H:%M')}")
         return
 
-    # Load and parse generated questions
     try:
-        generated_questions = survey_data['generated_questions']
-        print(f"DEBUG: Loaded generated questions: {generated_questions}")
-    except json.JSONDecodeError as e:
-        st.error(f"Error loading survey questions: {e}")
+        trainer_input = survey_data.get('trainer_questions_responses', {})
+        print(f"DEBUG: Parsed trainer input: {trainer_input}")
+        
+        # Display survey header
+        st.title(trainer_input.get('surveyTitle', 'Training Survey'))
+        
+        if trainer_input.get('surveyDescription'):
+            st.markdown("### About this Survey")
+            st.info(trainer_input['surveyDescription'])
+        
+        if trainer_input.get('surveyInstructions'):
+            st.markdown("### Instructions")
+            st.warning(trainer_input['surveyInstructions'])
+            
+        st.markdown("---")
+
+        # Get questions for the form
+        questions = survey_data.get('generated_questions', {}).get('questions', [])
+
+    except Exception as e:
+        print(f"Error processing questions: {e}")  # Debug log
+        st.error("Error loading survey questions. Please try again later.")
         return
-
-    # Ensure the structure is as expected
-    if 'questions' not in generated_questions:
-        st.error("Loaded questions do not have the expected structure.")
-        return
-
-    # Initialize survey responses here
-    survey_responses = {}
-
-    # Continue with rendering the survey questions
-    for question in generated_questions['questions']:
-        question_type = question.get('type')
-        question_text = question.get('question_text')
-
-        if question_type == "multiple_choice":
-            response = render_multiple_choice(question)
-        elif question_type == "checkbox":
-            response = render_checkbox(question)
-        elif question_type == "likert_scale":
-            response = render_likert_scale(question)
-        elif question_type == "open_ended":
-            response = render_open_ended(question)
-
-        # Store the response for later submission
-        survey_responses[question_text] = response
 
     # Create form
     with st.form("survey_form"):
@@ -301,23 +312,21 @@ def main():
         # Survey Questions Section
         st.header("Survey Questions")
         survey_responses = {}
+        
+        for i, question in enumerate(questions, 1):  # Changed to use questions from AI response
+            st.subheader(f"Question {i}")
+            question_type = question["type"].lower()  # Ensure lowercase for matching
             
-        # Continue with rendering the survey questions
-        for i, question in enumerate(generated_questions['questions']):
-            question_type = question.get('type')
-            question_text = question.get('question_text')
-
             if question_type == "multiple_choice":
-                response = render_multiple_choice(question, i)
+                response = render_multiple_choice(question)
             elif question_type == "checkbox":
-                response = render_checkbox(question, i)
+                response = render_checkbox(question)
             elif question_type == "likert_scale":
-                response = render_likert_scale(question, i)
+                response = render_likert_scale(question)
             elif question_type == "open_ended":
-                response = render_open_ended(question, i)
-
-            # Store the response for later submission
-            survey_responses[question_text] = response
+                response = render_open_ended(question)
+                    
+            survey_responses[f"Q{i}"] = response
             st.markdown("---")
 
         # Submit button
