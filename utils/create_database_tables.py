@@ -26,32 +26,30 @@ TABLES = {}
 
 TABLES["Trainer"] = (
     "CREATE TABLE IF NOT EXISTS Trainer ("
-    "  trainer_id INT PRIMARY KEY,"
-    "  trainer_questions_responses JSON,"
-    "  survey_id CHAR(36),"
-    "  INDEX idx_survey_id (survey_id)"
+    "  trainer_id INT PRIMARY KEY AUTO_INCREMENT,"
+    "  trainer_username VARCHAR(50) UNIQUE NOT NULL,"
+    "  trainer_questions_responses JSON"
     ") ENGINE=InnoDB"
 )
 
 TABLES["Survey"] = (
     "CREATE TABLE IF NOT EXISTS Survey ("
     "  survey_id CHAR(36) PRIMARY KEY,"
-    "  trainer_id INT,"
+    "  trainer_username VARCHAR(50),"
     "  generated_questions JSON,"
     "  expiration_datetime DATETIME,"
     "  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-    "  INDEX idx_trainer_id (trainer_id),"
-    "  FOREIGN KEY (trainer_id) REFERENCES Trainer(trainer_id)"
+    "  FOREIGN KEY (trainer_username) REFERENCES Trainer(trainer_username)"
     ") ENGINE=InnoDB"
 )
 
 TABLES["Response"] = (
     "CREATE TABLE IF NOT EXISTS Response ("
+    "  response_id CHAR(36) PRIMARY KEY,"
     "  survey_id CHAR(36),"
     "  trainee_email VARCHAR(255),"
     "  trainee_responses JSON,"
     "  submission_datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-    "  PRIMARY KEY (survey_id, trainee_email),"
     "  FOREIGN KEY (survey_id) REFERENCES Survey(survey_id)"
     ") ENGINE=InnoDB"
 )
@@ -102,14 +100,16 @@ def create_tables():
 
 
 def insert_survey_data(
-    trainer_id: int,
+    trainer_username: str,
     trainer_questions_responses: str,
     expiration_datetime: datetime,
     ai_generated_questions: str,
 ) -> tuple[bool, str]:
     """Insert data into both Trainer and Survey tables."""
     db_config = load_db_config()
-    print(f"DEBUG: Starting survey data insertion for trainer_id: {trainer_id}")
+    print(
+        f"DEBUG: Starting survey data insertion for trainer_username: {trainer_username}"
+    )
 
     try:
         conn = mysql.connector.connect(**db_config)
@@ -120,40 +120,30 @@ def insert_survey_data(
         print(f"DEBUG: Generated survey_id: {survey_id}")
 
         # Check if trainer exists
-        check_query = "SELECT trainer_id FROM Trainer WHERE trainer_id = %s"
-        cursor.execute(check_query, (trainer_id,))
+        check_query = "SELECT trainer_username FROM Trainer WHERE trainer_username = %s"
+        cursor.execute(check_query, (trainer_username,))
         trainer_exists = cursor.fetchone()
 
         if not trainer_exists:
             trainer_query = """
-            INSERT INTO Trainer (trainer_id, trainer_questions_responses, survey_id)
-            VALUES (%s, %s, %s)
+            INSERT INTO Trainer (trainer_username, trainer_questions_responses)
+            VALUES (%s, %s)
             """
             cursor.execute(
-                trainer_query, (trainer_id, trainer_questions_responses, survey_id)
+                trainer_query, (trainer_username, trainer_questions_responses)
             )
             print("DEBUG: Inserted new trainer")
-        else:
-            update_query = """
-            UPDATE Trainer 
-            SET trainer_questions_responses = %s, survey_id = %s
-            WHERE trainer_id = %s
-            """
-            cursor.execute(
-                update_query, (trainer_questions_responses, survey_id, trainer_id)
-            )
-            print("DEBUG: Updated existing trainer")
 
         # Insert into Survey table with AI generated questions
         survey_query = """
-        INSERT INTO Survey (survey_id, trainer_id, generated_questions, expiration_datetime)
+        INSERT INTO Survey (survey_id, trainer_username, generated_questions, expiration_datetime)
         VALUES (%s, %s, %s, %s)
         """
         cursor.execute(
             survey_query,
             (
                 survey_id,
-                trainer_id,
+                trainer_username,
                 ai_generated_questions,  # Use the AI generated questions
                 expiration_datetime,
             ),
@@ -186,11 +176,15 @@ def insert_response_data(
         cursor = conn.cursor()
 
         query = """
-        INSERT INTO Response (survey_id, trainee_email, trainee_responses)
-        VALUES (%s, %s, %s)
+        INSERT INTO Response (response_id, survey_id, trainee_email, trainee_responses)
+        VALUES (%s, %s, %s, %s)
         """
 
-        cursor.execute(query, (survey_id, trainee_email, json.dumps(trainee_responses)))
+        response_id = str(uuid.uuid4())
+        cursor.execute(
+            query,
+            (response_id, survey_id, trainee_email, json.dumps(trainee_responses)),
+        )
 
         conn.commit()
         return True
@@ -220,7 +214,7 @@ def get_survey_data(survey_id: str) -> Dict:
         SELECT s.survey_id, s.generated_questions, s.created_at, s.expiration_datetime,
                t.trainer_questions_responses
         FROM Survey s
-        JOIN Trainer t ON s.survey_id = t.survey_id
+        JOIN Trainer t ON s.trainer_username = t.trainer_username
         WHERE s.survey_id = %s 
         AND s.created_at <= NOW()
         """
@@ -234,19 +228,23 @@ def get_survey_data(survey_id: str) -> Dict:
 
         # Parse JSON strings and add expiration status
         if result:
-            if result['generated_questions']:
-                result['generated_questions'] = json.loads(result['generated_questions'])
-            if result['trainer_questions_responses']:
-                result['trainer_questions_responses'] = json.loads(result['trainer_questions_responses'])
-            
+            if result["generated_questions"]:
+                result["generated_questions"] = json.loads(
+                    result["generated_questions"]
+                )
+            if result["trainer_questions_responses"]:
+                result["trainer_questions_responses"] = json.loads(
+                    result["trainer_questions_responses"]
+                )
+
             # Add expiration status
             current_time = datetime.now()
-            result['is_expired'] = current_time > result['expiration_datetime']
-            result['expiration_status'] = {
-                'expired': result['is_expired'],
-                'expiry_date': result['expiration_datetime']
+            result["is_expired"] = current_time > result["expiration_datetime"]
+            result["expiration_status"] = {
+                "expired": result["is_expired"],
+                "expiry_date": result["expiration_datetime"],
             }
-            
+
             print(f"DEBUG: Survey created at: {result['created_at']}")
             print(f"DEBUG: Survey expires at: {result['expiration_datetime']}")
             print(f"DEBUG: Expiration status: {result['expiration_status']}")
@@ -261,7 +259,6 @@ def get_survey_data(survey_id: str) -> Dict:
             cursor.close()
         if conn and conn.is_connected():
             conn.close()
-
 
 
 # Run this to create/update tables
