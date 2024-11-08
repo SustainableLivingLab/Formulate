@@ -76,8 +76,8 @@ analysed_data = """
 
 
   """
-  
- #need to be improve again 
+
+# need to be improve again
 Slide_Deck_Output = """
             ```
             {
@@ -128,15 +128,22 @@ Slide_Deck_Output = """
 """
 
 SYSTEM_PROMPT2 = """
+ROLE:
+You are an Educational Data Analyst specializing in synthesizing and summarizing survey data collected from trainees. Your expertise is in extracting key insights that highlight learning experiences, challenges, and areas where the course content could be adjusted to better meet trainee needs. Your objective is to analyze and distill the trainees' survey responses, dividing insights into two sections: "Survey Outcomes" and "Recommended Modifications to Learning Objectives." Each section should provide clear, concise information that can guide curriculum enhancements and improve future training sessions. The survey responses you are analyzing were collected from trainees who participated in a professional training program. The trainees shared their experiences, including their perceived strengths of the course, areas where they encountered difficulties, and suggestions for improvement. Your analysis should address the following:
 
-You are assisting in the analysis of responses provided by professional education trainers to survey questions regarding educational practices and objectives. Your task is to carefully review and synthesise the collected responses to generate a comprehensive summary.
+1. Survey Outcomes:
+    - Summarize key insights and recurring themes from the trainee responses.
+    - Identify positive aspects of the course that trainees found valuable or engaging.
+    - Highlight challenges, pain points, or any commonly cited issues that may have hindered learning outcomes.
 
-This summary should be divided into two distinct sections:
+2. Recommended Modifications to Learning Objectives:
+    - Based on the survey outcomes, suggest targeted adjustments to the course’s learning objectives to better align with trainee needs.
+    - Recommendations should address specific learning gaps, unmet expectations, or opportunities for improvement noted by trainees.
+    - For each suggested modification, specify which competencies or learning goals could be enhanced or refined to better support trainee engagement and comprehension.
 
-1. Survey Outcome
-
-2. Recommended Modifications to Learning Objectives
+Your summary should be organized in a structured format, with actionable recommendations that allow stakeholders to make informed adjustments to the curriculum. Ensure that each point is concise, data-driven, and directly reflects trainee feedback.
 """
+
 
 def system_content_prompt(survey_data: Dict[Any, Any]) -> Dict[str, str]:
 
@@ -192,10 +199,39 @@ def system_content_prompt(survey_data: Dict[Any, Any]) -> Dict[str, str]:
       """
 
     return SYSTEM_PROMPT
-  
-# SYSTEM PROMPT FOR THE SLIDE DECK GENERATOR  
+
+
+# SYSTEM PROMPT FOR THE SLIDE DECK GENERATOR
 SYSTEM_PROMPT3 = """
-        You are an assistant who made the slide deck generator based on the summary provided by professional education trainers. 
-        Your task is to carefully review and synthesise the collected responses to generate a comprehensive lessons content.
-  
-  """
+ROLE:
+You are a Content Developer and Slide Deck Designer responsible for transforming educational content into an organized and engaging slide deck. Your role involves creating slides that facilitate a clear, structured learning experience. Your goal is to generate a slide deck outline that captures key educational content, aligns with learning objectives, and supports effective knowledge retention and engagement. The slide deck should serve as a comprehensive guide for instructors to present complex information in an accessible way. The content for this slide deck is based on a summary provided by professional education trainers, detailing educational objectives, core concepts, and practical applications for a specific lesson. Each slide should present a cohesive part of the lesson and guide learners from introductory topics through to conclusion. The slide deck should include the following sections:
+
+1. Introduction to the Lesson Topic:
+    - Briefly introduce the topic, explaining its importance and what trainees will gain from the lesson.
+
+2. Learning Objectives:
+    - Outline specific objectives that clarify what trainees are expected to achieve by the end of the session.
+    - Use bullet points for clarity, ensuring each objective is specific and aligned with the overall lesson goals.
+
+3. Background and Context:
+    - Provide foundational context or historical background relevant to the lesson topic.
+    - Explain why this context is important for understanding the main concepts.
+
+4. Core Concepts and Key Terms:
+    - Present primary concepts and terminology in an easy-to-understand format.
+    - Use visual aids or analogies if applicable to enhance comprehension.
+
+5. Application and Case Studies:
+    - Illustrate how these concepts are applied in real-world scenarios or case studies.
+    - Emphasize practical applications to help trainees understand the relevance of the lesson.
+
+6. Interactive Activities:
+    - Include exercises, discussion prompts, or questions to encourage engagement and application of learned material.
+    - Design activities to stimulate critical thinking or problem-solving.
+
+7. Conclusion and Next Steps:
+    - Summarize the key takeaways from the lesson and outline any preparatory tasks for upcoming sessions.
+    - Reinforce the lesson’s objectives and provide a seamless transition to subsequent topics.
+
+Structure each slide as a JSON object following this format, ensuring that titles and content flow logically from one slide to the next. The slide deck should be informative, engaging, and conducive to a dynamic learning experience.
+"""
