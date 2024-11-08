@@ -212,11 +212,16 @@ def get_survey_data(survey_id: str) -> Dict:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
 
+        # Modified query to use trainer_id for joining instead of trainer_username
         query = """
-        SELECT s.survey_id, s.generated_questions, s.created_at, s.expiration_datetime,
-               t.trainer_questions_responses
+        SELECT s.survey_id, 
+               s.generated_questions, 
+               s.created_at, 
+               s.expiration_datetime,
+               t.trainer_questions_responses,
+               t.trainer_username
         FROM Survey s
-        JOIN Trainer t ON s.trainer_username = t.trainer_username
+        JOIN Trainer t ON s.trainer_id = t.trainer_id
         WHERE s.survey_id = %s
         AND s.created_at <= NOW()
         """
@@ -228,26 +233,26 @@ def get_survey_data(survey_id: str) -> Dict:
             print("DEBUG: No survey found")
             return None
 
-        # Clear any remaining unread results in the cursor (this is safe even if there are no more results)
-        cursor.fetchall()  # This clears the buffer
-
         # Parse JSON strings
         if result:
             if result["generated_questions"]:
-                result["generated_questions"] = json.loads(
-                    result["generated_questions"]
-                )
+                result["generated_questions"] = json.loads(result["generated_questions"])
             if result["trainer_questions_responses"]:
-                result["trainer_questions_responses"] = json.loads(
-                    result["trainer_questions_responses"]
-                )
+                result["trainer_questions_responses"] = json.loads(result["trainer_questions_responses"])
+                
+                # Validate required fields exist
+                required_fields = ["surveyTitle", "surveyDescription", "surveyInstructions"]
+                missing_fields = [field for field in required_fields 
+                                if field not in result["trainer_questions_responses"]]
+                if missing_fields:
+                    print(f"DEBUG: Missing fields in trainer_questions_responses: {missing_fields}")
 
             # Add expiration status
             current_time = datetime.now()
             result["is_expired"] = current_time > result["expiration_datetime"]
             result["expiration_status"] = {
                 "expired": result["is_expired"],
-                "expiry_date": result["expiration_datetime"],
+                "expiry_date": result["expiration_datetime"]
             }
 
         return result
