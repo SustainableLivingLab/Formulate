@@ -4,7 +4,7 @@ from utils.create_database_tables import get_survey_data, fetch_survey_responses
 
 
 def show_survey_responses():
-    st.header("📊 Survey Responses")
+    st.header("📋 Survey Responses")
 
     # Input for Survey ID
     survey_id = st.text_input(

@@ -6,3 +6,8 @@ openai==1.37.1
 streamlit==1.36.0
 python-dotenv
 mysql-connector-python
+matplotlib
+seaborn
+textblob
+scikit-learn
+wordcloud
