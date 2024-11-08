@@ -213,15 +213,14 @@ def show_survey_management():
                             ai_generated_questions=ai_generated_questions,
                         )
                         
+                        # DEBUG - PULLING RESPONSE DATA TO BE SUMMARISED AND GENERATED SLIDE DECK LESSON CONTENT
                         pulling_response_data = get_trainee_responses(
-                            survey_id= survey_id
+                            # survey_id= survey_id
+                            survey_id= "f4c9693b-721c-47b3-a31c-f931af1ae255"
                             )
-                        
-                        
-                        
                         ai_summarisation = generate_AI_summarisation(pulling_response_data)
                         Lesson_Contents = generate_slide_deck(ai_summarisation)
-                        
+                        #=======================================
                         if success:
                             # Display survey link
                             base_url = "https://formulate.streamlit.app"
