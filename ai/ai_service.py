@@ -37,9 +37,9 @@ def generate_AI_summarisation(survey_data: str):
  
  
 #CODE TO GENERATE SLIDE DECK GENERATOR FOR LESSON CONTENT       
-def generate_slide_deck(ai_summary: str):
+def generate_slide_deck(ai_summary: str, survey_data: Dict[Any, Any]):
     try:
-        Slide_deck = SlideDeckGenerator(SYSTEM_PROMPT=SYSTEM_PROMPT3, AI_Summary=ai_summary)
+        Slide_deck = SlideDeckGenerator(SYSTEM_PROMPT=SYSTEM_PROMPT3, AI_Summary=ai_summary, survey_data=survey_data)
         
         print(f"DEBUG : AI Lesson Content Result {Slide_deck}")
         
