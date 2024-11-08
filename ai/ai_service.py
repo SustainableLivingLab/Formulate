@@ -5,7 +5,7 @@ from ai.generate import surveyQuestions, analysis_Trainer_Response, SlideDeckGen
 import json
 import streamlit as st
 
-
+#CODE TO GENERATE SURVEY QUESTIONS
 def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, str]:
     SYSTEM_PROMPT = system_content_prompt(survey_data)
     try:
@@ -23,7 +23,7 @@ def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, str]:
     except Exception as e:
         print(e)
         
-# Separated  function
+#CODE TO GENERATE AI SUMMARY
 def generate_AI_summarisation(survey_data: str):
     try:
         analysisTrainerQuestionare = analysis_Trainer_Response(SYSTEM_PROMPT=SYSTEM_PROMPT2,survey_responses=survey_data)
@@ -36,7 +36,7 @@ def generate_AI_summarisation(survey_data: str):
         print(e)
  
  
-# For Slide Deck Generator        
+#CODE TO GENERATE SLIDE DECK GENERATOR FOR LESSON CONTENT       
 def generate_slide_deck(ai_summary: str):
     try:
         Slide_deck = SlideDeckGenerator(SYSTEM_PROMPT=SYSTEM_PROMPT3, AI_Summary=ai_summary)

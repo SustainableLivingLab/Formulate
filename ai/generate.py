@@ -265,6 +265,7 @@ def SlideDeckGenerator(SYSTEM_PROMPT: str,AI_Summary: str):
                 2. Use Advanced British English: Write with precision, using formal British English. Maintain a tone that reflects professionalism and a formal education.
                 3. Align with Learning Objectives: Ensure each slide is relevant and clearly linked to the recommended modifications to the learning objectives. Integrate measurable verbs from Bloom’s Taxonomy, such as ‘analyse,’ ‘evaluate,’ ‘synthesise,’ ‘compare,’ ‘apply,’ and ‘explain’ to establish specific, actionable goals.
                 4. The structure should consist of 10 slides, each comprising a minimum of two descriptive paragraphs.
+                5. Each slide concise explaining about the learning objective.
                 
                 **Data to be analysed**: {AI_Summary}
 
