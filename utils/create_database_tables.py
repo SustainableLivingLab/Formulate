@@ -219,7 +219,6 @@ def get_survey_data(survey_id: str) -> Dict:
         JOIN Trainer t ON s.trainer_username = t.trainer_username
         WHERE s.survey_id = %s
         AND s.created_at <= NOW()
-        LIMIT 1
         """
 
         cursor.execute(query, (survey_id,))
