@@ -228,6 +228,9 @@ def get_survey_data(survey_id: str) -> Dict:
             print("DEBUG: No survey found")
             return None
 
+        # Clear any remaining unread results in the cursor (this is safe even if there are no more results)
+        cursor.fetchall()  # This clears the buffer
+
         # Parse JSON strings
         if result:
             if result["generated_questions"]:
