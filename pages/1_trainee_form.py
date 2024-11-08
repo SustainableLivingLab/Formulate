@@ -246,8 +246,11 @@ def main():
         st.error("No survey ID provided.")
         return
         
-    # Get survey data
-    survey_data = get_survey_data(survey_id)
+    # Get survey data - only make one database call
+    if "survey_data" not in st.session_state:
+        st.session_state.survey_data = get_survey_data(survey_id)
+    
+    survey_data = st.session_state.survey_data
     print(f"DEBUG: Full survey data: {survey_data}")
     
     if not survey_data:
