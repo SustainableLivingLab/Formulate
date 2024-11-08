@@ -219,6 +219,7 @@ def get_survey_data(survey_id: str) -> Dict:
         JOIN Trainer t ON s.trainer_username = t.trainer_username
         WHERE s.survey_id = %s
         AND s.created_at <= NOW()
+        LIMIT 1
         """
 
         cursor.execute(query, (survey_id,))
@@ -336,6 +337,8 @@ if __name__ == "__main__":
     # Uncomment below line to create tables
     # create_tables()
 
+    get_survey_data("6c5e9fc4-5125-4d34-8928-0794ac4ae3c3")
+
     # Path to the Excel file containing dummy responses
-    excel_file_path = 'utils\dummy_responses.xlsx'  # Update with actual file path
-    populate_responses_from_excel(excel_file_path)
+    # excel_file_path = 'utils\dummy_responses.xlsx'  # Update with actual file path
+    # populate_responses_from_excel(excel_file_path)
