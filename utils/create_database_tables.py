@@ -121,6 +121,9 @@ def insert_survey_data(
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
 
+        # Set session timezone to Singapore
+        cursor.execute("SET time_zone = '+08:00'")
+
         # Generate survey_id
         survey_id = str(uuid.uuid4())
 
@@ -177,6 +180,9 @@ def insert_response_data(
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
 
+        # Set session timezone to Singapore
+        cursor.execute("SET time_zone = '+08:00'")
+
         query = """
         INSERT INTO Response (response_id, survey_id, trainee_email, trainee_responses)
         VALUES (%s, %s, %s, %s)
@@ -212,7 +218,10 @@ def get_survey_data(survey_id: str) -> Dict:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
 
-        # Modified query to use trainer_id for joining instead of trainer_username
+        # Set session timezone to Singapore
+        cursor.execute("SET time_zone = '+08:00'")
+
+        # Modify query to remove CONVERT_TZ since session timezone is already set
         query = """
         SELECT s.survey_id, 
                s.generated_questions, 
@@ -223,6 +232,7 @@ def get_survey_data(survey_id: str) -> Dict:
         FROM Survey s
         JOIN Trainer t ON s.trainer_id = t.trainer_id
         WHERE s.survey_id = %s
+        AND s.created_at <= NOW()
         AND s.created_at <= NOW()
         """
 
@@ -276,7 +286,10 @@ def fetch_active_surveys(trainer_username: str) -> List[Dict]:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
 
-        # Query to fetch surveys where the expiration date is in the future
+        # Set session timezone to Singapore
+        cursor.execute("SET time_zone = '+08:00'")
+
+        # Modify query to remove CONVERT_TZ since session timezone is already set
         query = """
         SELECT s.survey_id, 
                t.trainer_questions_responses, 
