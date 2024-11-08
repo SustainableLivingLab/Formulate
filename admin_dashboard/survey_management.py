@@ -219,7 +219,7 @@ def show_survey_management():
                             survey_id= "f4c9693b-721c-47b3-a31c-f931af1ae255"
                             )
                         ai_summarisation = generate_AI_summarisation(pulling_response_data)
-                        Lesson_Contents = generate_slide_deck(ai_summarisation)
+                        Lesson_Contents = generate_slide_deck(ai_summary=ai_summarisation,survey_data=survey_data)
                         #=======================================
                         if success:
                             # Display survey link
