@@ -292,7 +292,7 @@ def get_trainee_responses(survey_id: str) -> list[Dict[str, Any]]:
         if conn and conn.is_connected():
             conn.close()
 
-
+# FOR PULLING ALL TRAINEE_RESPONSES BASED ON THE SURVEY ID
 def get_trainee_responses(survey_id: str) -> list[dict[str, Any]]:
     """Retrieve all trainee responses and their corresponding emails for a given survey ID from the Response table."""
     db_config = load_db_config()
