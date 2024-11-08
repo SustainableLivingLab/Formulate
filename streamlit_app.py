@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.auth import authenticate, login, logout
 from admin_dashboard.survey_management import show_survey_management
-from admin_dashboard import survey_reports, survey_recommendations
+from admin_dashboard import survey_reports, survey_recommendations, survey_responses
 
 st.set_page_config(
     page_title="Formulate",
@@ -81,7 +81,7 @@ def show_dashboard():
         show_survey_management()
 
     elif section == "📋 Survey Responses":
-        show_survey_responses()
+        survey_responses.show_survey_responses()
 
     elif section == "📊 Survey Reports":
         survey_reports.show_survey_reports()

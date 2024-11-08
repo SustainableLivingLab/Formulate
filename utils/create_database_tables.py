@@ -236,23 +236,36 @@ def get_survey_data(survey_id: str) -> Dict:
         # Parse JSON strings
         if result:
             if result["generated_questions"]:
-                result["generated_questions"] = json.loads(result["generated_questions"])
+                result["generated_questions"] = json.loads(
+                    result["generated_questions"]
+                )
             if result["trainer_questions_responses"]:
-                result["trainer_questions_responses"] = json.loads(result["trainer_questions_responses"])
-                
+                result["trainer_questions_responses"] = json.loads(
+                    result["trainer_questions_responses"]
+                )
+
                 # Validate required fields exist
-                required_fields = ["surveyTitle", "surveyDescription", "surveyInstructions"]
-                missing_fields = [field for field in required_fields 
-                                if field not in result["trainer_questions_responses"]]
+                required_fields = [
+                    "surveyTitle",
+                    "surveyDescription",
+                    "surveyInstructions",
+                ]
+                missing_fields = [
+                    field
+                    for field in required_fields
+                    if field not in result["trainer_questions_responses"]
+                ]
                 if missing_fields:
-                    print(f"DEBUG: Missing fields in trainer_questions_responses: {missing_fields}")
+                    print(
+                        f"DEBUG: Missing fields in trainer_questions_responses: {missing_fields}"
+                    )
 
             # Add expiration status
             current_time = datetime.now()
             result["is_expired"] = current_time > result["expiration_datetime"]
             result["expiration_status"] = {
                 "expired": result["is_expired"],
-                "expiry_date": result["expiration_datetime"]
+                "expiry_date": result["expiration_datetime"],
             }
 
         return result
@@ -328,15 +341,108 @@ def populate_responses_from_excel(file_path: str):
 
     # Loop through each row in the DataFrame and insert into the Response table
     for _, row in df.iterrows():
-        survey_id = row['survey_id']
-        trainee_email = row['trainee_email']
-        trainee_responses = json.loads(row['trainee_responses'])  # Assuming JSON string in Excel
+        survey_id = row["survey_id"]
+        trainee_email = row["trainee_email"]
+        trainee_responses = json.loads(
+            row["trainee_responses"]
+        )  # Assuming JSON string in Excel
 
         success = insert_response_data(survey_id, trainee_email, trainee_responses)
         if success:
             print(f"Inserted response for {trainee_email}")
         else:
             print(f"Failed to insert response for {trainee_email}")
+
+
+def fetch_closed_surveys(trainer_username: str) -> List[Dict]:
+    """Fetch closed (expired) surveys for a given trainer_username from the Survey table."""
+    db_config = load_db_config()
+    surveys = []
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        # Query to fetch surveys where the expiration date is in the past
+        query = """
+        SELECT s.survey_id, 
+               t.trainer_questions_responses, 
+               s.generated_questions, 
+               s.created_at, 
+               s.expiration_datetime
+        FROM Survey AS s
+        JOIN Trainer AS t ON s.trainer_id = t.trainer_id
+        WHERE t.trainer_username = %s
+        AND s.expiration_datetime <= NOW()
+        ORDER BY s.created_at DESC
+        """
+
+        cursor.execute(query, (trainer_username,))
+        results = cursor.fetchall()
+
+        for row in results:
+            # Parse JSON fields
+            trainer_data = json.loads(row["trainer_questions_responses"])
+            survey_data = {
+                "survey_id": row["survey_id"],
+                "surveyTitle": trainer_data.get("surveyTitle"),
+                "surveyDescription": trainer_data.get("surveyDescription"),
+                "generated_questions": (
+                    json.loads(row["generated_questions"])
+                    if row["generated_questions"]
+                    else None
+                ),
+                "created_at": row["created_at"],
+                "expiration_datetime": row["expiration_datetime"],
+            }
+            surveys.append(survey_data)
+
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
+
+    return surveys
+
+
+# Define a function to fetch responses for a given survey ID
+def fetch_survey_responses(survey_id: str) -> list:
+    """Fetch responses for a given survey ID from the database."""
+    db_config = load_db_config()
+    responses = []
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        # Fetch responses for the specified survey_id
+        query = """
+        SELECT trainee_email, trainee_responses, submission_datetime
+        FROM Response
+        WHERE survey_id = %s
+        ORDER BY submission_datetime DESC
+        """
+        cursor.execute(query, (survey_id,))
+        results = cursor.fetchall()
+
+        for row in results:
+            row["trainee_responses"] = (
+                json.loads(row["trainee_responses"]) if row["trainee_responses"] else {}
+            )
+            responses.append(row)
+
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
+
+    return responses
 
 
 # Run this to create/update tables and populate response data

@@ -1,5 +1,9 @@
 from ai.ai_service import generate_survey_questions
-from utils.create_database_tables import insert_survey_data, fetch_active_surveys
+from utils.create_database_tables import (
+    insert_survey_data,
+    fetch_active_surveys,
+    fetch_closed_surveys,
+)
 import streamlit as st
 import uuid
 import json
@@ -274,19 +278,35 @@ def show_survey_management():
             else:
                 st.error("Please fill in all required fields to create a survey.")
 
-    # Section for listing active surveys
-    st.subheader("Active Surveys")
+    # Display Active Surveys and Closed Surveys side by side
+    col1, col2 = st.columns(2)
 
-    # Fetch and display active surveys
-    active_surveys = fetch_active_surveys(trainer_username=trainer_username)
-    if active_surveys:
-        for survey in active_surveys:
-            with st.expander(survey["surveyTitle"]):
-                st.write(f"**Description**: {survey['surveyDescription']}")
-                st.write(f"**Created At**: {survey['created_at']}")
-                st.write(f"**Expires At**: {survey['expiration_datetime']}")
-                st.write(
-                    f"**Generated Questions**: {json.dumps(survey['generated_questions'], indent=2)}"
-                )
-    else:
-        st.info("No active surveys available.")
+    with col1:
+        st.subheader("Active Surveys")
+        active_surveys = fetch_active_surveys(trainer_username=trainer_username)
+        if active_surveys:
+            for survey in active_surveys:
+                with st.expander(survey["surveyTitle"]):
+                    st.write(f"**Description**: {survey['surveyDescription']}")
+                    st.write(f"**Created At**: {survey['created_at']}")
+                    st.write(f"**Expires At**: {survey['expiration_datetime']}")
+                    survey_link = f"https://formulate.streamlit.app/trainee_form?id={survey['survey_id']}"
+                    st.write(f"**Survey ID**: {survey['survey_id']}")
+                    st.write(f"[Trainee Form Link]({survey_link})")
+        else:
+            st.info("No active surveys available.")
+
+    with col2:
+        st.subheader("Closed Surveys")
+        closed_surveys = fetch_closed_surveys(trainer_username=trainer_username)
+        if closed_surveys:
+            for survey in closed_surveys:
+                with st.expander(survey["surveyTitle"]):
+                    st.write(f"**Description**: {survey['surveyDescription']}")
+                    st.write(f"**Created At**: {survey['created_at']}")
+                    st.write(f"**Expired On**: {survey['expiration_datetime']}")
+                    survey_link = f"https://formulate.streamlit.app/trainee_form?id={survey['survey_id']}"
+                    st.write(f"**Survey ID**: {survey['survey_id']}")
+                    st.write(f"[Trainee Form Link]({survey_link})")
+        else:
+            st.info("No closed surveys available.")
