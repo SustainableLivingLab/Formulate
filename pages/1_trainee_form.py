@@ -371,7 +371,7 @@ def main():
                 "profile": profile_responses_without_email,
                 "survey": survey_responses_with_questions,
                 "metadata": {
-                    "submission_datetime": str(datetime.now()),
+                    "submission_datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "survey_id": survey_id
                 }
             }

@@ -26,6 +26,7 @@ def load_db_config():
         "database": db_config["database"],
         "user": db_config["username"],
         "password": db_config["password"],
+        "time_zone": "+08:00"
     }
 
 
