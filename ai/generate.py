@@ -124,11 +124,11 @@ def surveyQuestions(SYSTEM_PROMPT: str, survey_data: Dict[Any, Any]) -> Dict[str
         raise #Lempar ulang error
 
 
-def analysis_Trainer_Response(SYSTEM_PROMPT: str,survey_responses: str):
+def analysis_Trainee_Response(SYSTEM_PROMPT: str,survey_responses: str):
     print(f"DEBUG: Received survey_response in AI summarization: {survey_responses}")
     
     
-    section = "Anlysed summarisation Trainer Questionare" 
+    section = "Analysed summarisation Trainer Questionare" 
     
     try:
         analysisTQ = client.chat.completions.create(

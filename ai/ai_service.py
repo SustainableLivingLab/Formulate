@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from ai.system_content import system_content_prompt, SYSTEM_PROMPT2, SYSTEM_PROMPT3
-from ai.generate import surveyQuestions, analysis_Trainer_Response, SlideDeckGenerator
+from ai.generate import surveyQuestions, analysis_Trainee_Response, SlideDeckGenerator
 
 import json
 import streamlit as st
@@ -26,7 +26,7 @@ def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, str]:
 #CODE TO GENERATE AI SUMMARY
 def generate_AI_summarisation(survey_data: str):
     try:
-        analysisTrainerQuestionare = analysis_Trainer_Response(SYSTEM_PROMPT=SYSTEM_PROMPT2,survey_responses=survey_data)
+        analysisTrainerQuestionare = analysis_Trainee_Response(SYSTEM_PROMPT=SYSTEM_PROMPT2,survey_responses=survey_data)
         
         print(f"DEBUG : AI summarisation result {analysisTrainerQuestionare}")
         return analysisTrainerQuestionare
