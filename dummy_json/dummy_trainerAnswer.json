@@ -1,0 +1,182 @@
+{
+  "responses": [
+    {
+      "question": "What is the primary aim of the 'Digital Literacy for Educators' course?",
+      "answer": "To enhance classroom engagement and teaching effectiveness"
+    },
+    {
+      "question": "Which group of educators is this course primarily designed for?",
+      "answer": "Middle school teachers"
+    },
+    {
+      "question": "Which of the following is a key competency targeted by the course?",
+      "answer": "Understanding basic digital literacy concepts"
+    },
+    {
+      "question": "What is one of the anticipated challenges for teachers taking this course?",
+      "answer": "Feeling overwhelmed by technological advancements"
+    },
+    {
+      "question": "What is the expected application level for participants by the end of the course?",
+      "answer": "Understanding and practical application"
+    },
+    {
+      "question": "How many sessions does the course include?",
+      "answer": "Five sessions"
+    },
+    {
+      "question": "What is a recommended solution to help teachers manage the rapid pace of technological changes?",
+      "answer": "Providing ongoing support and resources"
+    },
+    {
+      "question": "How long does each session of the course last?",
+      "answer": "Two hours"
+    },
+    {
+      "question": "What aspect of digital literacy is emphasised to alleviate concerns about online safety?",
+      "answer": "Comprehensive modules on digital safety"
+    },
+    {
+      "question": "What is a potential benefit of extending the course duration?",
+      "answer": "Enhancing retention and mastery of the material"
+    },
+    {
+      "question": "Which of the following digital tools have you previously used in your teaching practice?",
+      "answer": [
+        "Interactive whiteboards",
+        "Educational apps",
+        "Online collaboration platforms"
+      ]
+    },
+    {
+      "question": "What are your main concerns when integrating digital tools into your classroom?",
+      "answer": ["Lack of technical support", "Data privacy issues"]
+    },
+    {
+      "question": "Which basic digital literacy concepts are you already familiar with?",
+      "answer": ["Email communication", "Basic troubleshooting"]
+    },
+    {
+      "question": "In which areas do you feel you need more training to effectively use technology in your teaching?",
+      "answer": ["Digital content creation"]
+    },
+    {
+      "question": "What digital safety measures do you currently implement in your classroom?",
+      "answer": [
+        "Monitoring online activity",
+        "Educating students on digital etiquette"
+      ]
+    },
+    {
+      "question": "Which of the following outcomes do you hope to achieve by the end of this course?",
+      "answer": [
+        "Improved digital tool usage",
+        "Greater confidence in digital safety"
+      ]
+    },
+    {
+      "question": "What challenges have you encountered when trying to stay updated with technological trends?",
+      "answer": [
+        "Time constraints",
+        "Rapid technology changes",
+        "Limited access to resources"
+      ]
+    },
+    {
+      "question": "Which digital tools do you believe could most enhance your teaching effectiveness?",
+      "answer": ["Video conferencing tools"]
+    },
+    {
+      "question": "What support do you find most beneficial when learning new digital technologies?",
+      "answer": ["Online tutorials"]
+    },
+    {
+      "question": "Which aspects of digital safety are you most interested in exploring further?",
+      "answer": [
+        "Cyberbullying prevention",
+        "Data protection",
+        "Safe internet practices"
+      ]
+    },
+    {
+      "question": "How comfortable are you with integrating digital tools into your teaching practices?",
+      "answer": 4
+    },
+    {
+      "question": "How confident do you feel about understanding basic digital literacy concepts?",
+      "answer": 4
+    },
+    {
+      "question": "How prepared do you feel to promote digital safety in your classroom?",
+      "answer": 3
+    },
+    {
+      "question": "How comfortable are you with using technology to enhance student engagement?",
+      "answer": 5
+    },
+    {
+      "question": "How confident are you in your ability to keep up with technological advancements in education?",
+      "answer": 3
+    },
+    {
+      "question": "How well do you understand the importance of digital safety for students?",
+      "answer": 5
+    },
+    {
+      "question": "How comfortable are you with identifying appropriate digital tools for classroom use?",
+      "answer": 4
+    },
+    {
+      "question": "How confident do you feel about implementing digital literacy skills in your daily teaching routine?",
+      "answer": 3
+    },
+    {
+      "question": "How prepared are you to address online safety concerns in your classroom?",
+      "answer": 4
+    },
+    {
+      "question": "How comfortable are you with the pace of learning new digital technologies?",
+      "answer": 3
+    },
+    {
+      "question": "What are your current experiences with using digital tools in your classroom?",
+      "answer": "Digital tools have enhanced my ability to engage students and support interactive learning experiences."
+    },
+    {
+      "question": "How do you perceive the role of digital literacy in enhancing student engagement?",
+      "answer": "Digital literacy is essential as it provides students with relevant skills and makes learning more engaging and accessible."
+    },
+    {
+      "question": "Can you describe a situation where digital safety was a concern in your teaching practice?",
+      "answer": "I encountered a situation where students accessed inappropriate content online, which highlighted the need for better content monitoring and digital safety education."
+    },
+    {
+      "question": "What digital tools are you most interested in learning about during this course?",
+      "answer": "I am interested in learning more about online collaboration platforms and tools for digital assessment."
+    },
+    {
+      "question": "How confident do you feel about integrating new technologies into your teaching methods?",
+      "answer": "I feel fairly confident but am always open to learning more about the latest tools."
+    },
+    {
+      "question": "What challenges have you faced when trying to incorporate digital tools into your lessons?",
+      "answer": "One of the main challenges has been ensuring all students have access to necessary technology outside of school hours."
+    },
+    {
+      "question": "In what ways do you think digital literacy can impact your students' learning outcomes?",
+      "answer": "Digital literacy can significantly improve engagement, critical thinking, and preparedness for a technology-driven world."
+    },
+    {
+      "question": "What strategies do you currently use to ensure online safety for your students?",
+      "answer": "I use secure passwords, monitor student activity, and educate them on digital etiquette."
+    },
+    {
+      "question": "How do you stay updated with the latest technological trends in education?",
+      "answer": "I attend workshops, engage in peer discussions, and follow educational technology blogs and resources."
+    },
+    {
+      "question": "What support or resources would be most helpful for you in improving your digital literacy skills?",
+      "answer": "Hands-on workshops and access to online tutorials would be extremely helpful."
+    }
+  ]
+}

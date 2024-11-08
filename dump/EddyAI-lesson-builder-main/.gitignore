@@ -1,0 +1,16 @@
+# virtual environment
+.venv
+
+# env configuration
+.env*
+!.env.example
+
+# cache
+app/**/__pycache__
+
+# log files
+logs/*
+!logs/.gitkeep
+
+# Temporary files
+tmp

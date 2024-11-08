@@ -1,0 +1,13 @@
+version: '3.8'
+
+name: eddy-builder-ai
+services:
+  app:
+    build: .
+    image: eddy-builder-ai
+    container_name: eddy-builder-ai
+    ports:
+      - "5500:5500"
+    volumes:
+      - ./.env:/app/.env
+      - ./logs:/app/logs

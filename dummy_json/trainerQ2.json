@@ -1,0 +1,45 @@
+{
+  "Trainer_questionare": [
+    {
+      "Course Title": "Digital Literacy for Educators"
+    },
+    {
+      "Target Audience": "K-12 teachers"
+    },
+    {
+      "Course Overview": "This course introduces essential digital literacy skills for middle school teachers to enhance classroom engagement and teaching effectiveness."
+    },
+    {
+      "Target Skill Level": "Beginner to Intermediate"
+    },
+    {
+      "Key Competency Areas": [
+        "Basic digital literacy concepts",
+        "Use of digital tools in education",
+        "Digital safety and responsible use"
+      ]
+    },
+    {
+      "Learning Outcome Goals": [
+        "Teachers should understand fundamental digital literacy concepts.",
+        "Teachers should recognize the importance of digital safety.",
+        "Teachers should be able to identify and use digital tools for classroom engagement."
+      ]
+    },
+    {
+      "Expected Application Level": "Understanding and Application"
+    },
+    {
+      "Known Pain Points or Challenges": [
+        "Teachers may feel overwhelmed by the fast pace of technology.",
+        "Teachers may have concerns about online safety for students."
+      ]
+    },
+    {
+      "Course Duration and Structure": "3 sessions over 1 week, each session lasting 2 hours."
+    },
+    {
+      "Number of Survey Questions": "10"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "Trainer_questionare": [
+    {
+      "Course Title": "AI in the Classroom"
+    },
+    {
+      "Target Audience": "K-12 teachers"
+    },
+    {
+      "Course Overview": "This course empowers educators with the knowledge and skills to integrate Artificial Intelligence (AI) tools into teaching practices, helping them enhance student learning and engagement."
+    },
+    {
+      "Target Skill Level": "Beginner to Intermediate"
+    },
+    {
+      "Key Competency Areas": [
+        "Understanding basic AI concepts relevant to education",
+        "Identifying and using AI tools for teaching",
+        "Recognizing ethical considerations of AI in the classroom"
+      ]
+    },
+    {
+      "Learning Outcome Goals": [
+        "Teachers should understand foundational AI concepts.",
+        "Teachers should explore practical applications of AI tools in educational settings.",
+        "Teachers should recognize the ethical considerations involved in using AI tools with students."
+      ]
+    },
+    {
+      "Expected Application Level": "Understanding and Basic Application"
+    },
+    {
+      "Known Pain Points or Challenges": [
+        "Teachers may be unsure how to practically incorporate AI tools into lesson plans.",
+        "Teachers may have concerns about privacy and ethical implications of AI use in the classroom."
+      ]
+    },
+    {
+      "Course Duration and Structure": "4 sessions over 2 weeks, each session lasting 1.5 hours."
+    },
+    {
+      "Number of Survey Questions": "10"
+    }
+  ]
+}

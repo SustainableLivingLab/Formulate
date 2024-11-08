@@ -1,0 +1,379 @@
+grade,subject,tech domain,software recommendation
+Lower Elementary,English,App Development,MIT App Inventor
+Lower Elementary,English,App Development,Scratch
+Lower Elementary,English,App Development,Thunkable
+Lower Elementary,English,Artificial Intelligence,Google AutoDraw
+Lower Elementary,English,Design & Simulation (2D Design),Jamboard
+Lower Elementary,English,Design & Simulation (2D Design),Brush Ninja
+Lower Elementary,English,Design & Simulation (3D Design),Tinkercad
+Lower Elementary,English,Design & Simulation (3D Design),Sketch.io
+Lower Elementary,English,Design & Simulation (3D Design),Canva
+Lower Elementary,English,Design & Simulation (3D Design),CoSpaces
+Lower Elementary,English,Design & Simulation (3D Design),Animaker
+Lower Elementary,English,Extended Reality (AR/VR/MR),Flip
+Lower Elementary,English,Extended Reality (AR/VR/MR),Google Maps
+Lower Elementary,English,Multimedia and Animation,Brush Ninja
+Lower Elementary,English,Programming & Coding,Scratch
+Lower Elementary,English,Programming & Coding,Pencil Code
+Lower Elementary,English,Programming & Coding,MIT App Inventor
+Lower Elementary,English,Programming & Coding,Tynker
+Lower Elementary,English,Programming & Coding,Code.org
+Lower Elementary,Science,App Development,MIT App Inventor
+Lower Elementary,Science,App Development,Scratch
+Lower Elementary,Science,App Development,Tinkercad
+Lower Elementary,Science,Artificial Intelligence,Google AutoDraw
+Lower Elementary,Science,Design & Simulation (2D Design),Jamboard
+Lower Elementary,Science,Design & Simulation (2D Design),Brush Ninja
+Lower Elementary,Science,Design & Simulation (3D Design),Tinkercad
+Lower Elementary,Science,Design & Simulation (3D Design),Mecabricks
+Lower Elementary,Science,Design & Simulation (3D Design),CoSpaces
+Lower Elementary,Science,Extended Reality (AR/VR/MR),Google Maps
+Lower Elementary,Science,Multimedia and Animation,Infinite Drum Machine
+Lower Elementary,Science,Multimedia and Animation,Brush Ninja
+Lower Elementary,Science,Programming & Coding,Scratch
+Lower Elementary,Science,Programming & Coding,MIT App Inventor
+Lower Elementary,Science,Programming & Coding,Pencil Code
+Lower Elementary,Science,Programming & Coding,Tinkercad
+Lower Elementary,Math,App Development,MIT App Inventor
+Lower Elementary,Math,App Development,Scratch
+Lower Elementary,Math,App Development,Tinkercad
+Lower Elementary,Math,Artificial Intelligence,Google AutoDraw
+Lower Elementary,Math,Design & Simulation (2D Design),Jamboard
+Lower Elementary,Math,Design & Simulation (2D Design),Brush Ninja
+Lower Elementary,Math,Design & Simulation (3D Design),Tinkercad
+Lower Elementary,Math,Extended Reality (AR/VR/MR),Google Maps
+Lower Elementary,Math,Multimedia and Animation,Brush Ninja
+Lower Elementary,Math,Programming & Coding,Pencil Code
+Lower Elementary,Social Studies,App Development,MIT App Inventor
+Lower Elementary,Social Studies,App Development,Scratch
+Lower Elementary,Social Studies,App Development,Tinkercad
+Lower Elementary,Social Studies,Artificial Intelligence,Google AutoDraw
+Lower Elementary,Social Studies,Design & Simulation (2D Design),Jamboard
+Lower Elementary,Social Studies,Design & Simulation (2D Design),Brush Ninja
+Lower Elementary,Social Studies,Design & Simulation (3D Design),Tinkercad
+Lower Elementary,Social Studies,Design & Simulation (3D Design),CoSpaces
+Lower Elementary,Social Studies,Design & Simulation (3D Design),Sketch.io
+Lower Elementary,Social Studies,Extended Reality (AR/VR/MR),Google Arts and Culture
+Lower Elementary,Social Studies,Extended Reality (AR/VR/MR),Google Maps
+Lower Elementary,Social Studies,Multimedia and Animation,Google Arts and Culture
+Lower Elementary,Social Studies,Multimedia and Animation,Brush Ninja
+Lower Elementary,Social Studies,Programming & Coding,Scratch
+Lower Elementary,Social Studies,Programming & Coding,MIT App Inventor
+Lower Elementary,Social Studies,Programming & Coding,Pencil Code
+Lower Elementary,Social Studies,Programming & Coding,Tinkercad
+Lower Elementary,Other,App Development,MIT App Inventor
+Lower Elementary,Other,App Development,Scratch
+Lower Elementary,Other,App Development,Thunkable
+Lower Elementary,Other,Artificial Intelligence,Google AutoDraw
+Lower Elementary,Other,Design & Simulation (2D Design),Jamboard
+Lower Elementary,Other,Design & Simulation (2D Design),Brush Ninja
+Lower Elementary,Other,Design & Simulation (3D Design),Tinkercad
+Lower Elementary,Other,Design & Simulation (3D Design),Mecabricks
+Lower Elementary,Other,Design & Simulation (3D Design),CoSpaces
+Lower Elementary,Other,Extended Reality (AR/VR/MR),Google Maps
+Lower Elementary,Other,Multimedia and Animation,Brush Ninja
+Lower Elementary,Other,Programming & Coding,Scratch
+Lower Elementary,Other,Programming & Coding,MIT App Inventor
+Lower Elementary,Other,Programming & Coding,Pencil Code
+Lower Elementary,Other,Programming & Coding,Tinkercad
+Upper Elementary,English,App Development,MIT App Inventor
+Upper Elementary,English,App Development,Scratch
+Upper Elementary,English,App Development,Thunkable
+Upper Elementary,English,Artificial Intelligence,AI Dungeon
+Upper Elementary,English,Artificial Intelligence,AI Experiments with Google
+Upper Elementary,English,Artificial Intelligence,ChatGPT
+Upper Elementary,English,Artificial Intelligence,Machine Learning for Kids
+Upper Elementary,English,Artificial Intelligence,Teachable Machine - Google
+Upper Elementary,English,Design & Simulation (2D Design),Genially
+Upper Elementary,English,Design & Simulation (2D Design),Canva
+Upper Elementary,English,Design & Simulation (2D Design),Brush Ninja
+Upper Elementary,English,Design & Simulation (2D Design),Thinglink
+Upper Elementary,English,Design & Simulation (3D Design),Tinkercad
+Upper Elementary,English,Design & Simulation (3D Design),Sketch.io
+Upper Elementary,English,Design & Simulation (3D Design),CoSpaces
+Upper Elementary,English,Design & Simulation (3D Design),Assemblr Edu
+Upper Elementary,English,Extended Reality (AR/VR/MR),MegaMinds
+Upper Elementary,English,Extended Reality (AR/VR/MR),Google Maps
+Upper Elementary,English,Multimedia and Animation,Animaker
+Upper Elementary,English,Multimedia and Animation,Google Sheets
+Upper Elementary,English,Multimedia and Animation,Brush Ninja
+Upper Elementary,English,Programming & Coding,Scratch
+Upper Elementary,English,Programming & Coding,PictoBlox
+Upper Elementary,English,Programming & Coding,Tinkercad Circuits
+Upper Elementary,Science,App Development,MIT App Inventor
+Upper Elementary,Science,App Development,Scratch
+Upper Elementary,Science,App Development,Thunkable
+Upper Elementary,Science,Artificial Intelligence,MIT App Inventor
+Upper Elementary,Science,Artificial Intelligence,Machine Learning for Kids
+Upper Elementary,Science,Artificial Intelligence,ChatGPT
+Upper Elementary,Science,Artificial Intelligence,Teachable Machine - Google
+Upper Elementary,Science,Design & Simulation (2D Design),Genially
+Upper Elementary,Science,Design & Simulation (2D Design),Canva
+Upper Elementary,Science,Design & Simulation (2D Design),Food Chain Simulator
+Upper Elementary,Science,Design & Simulation (2D Design),Brush Ninja
+Upper Elementary,Science,Design & Simulation (2D Design),Thinglink
+Upper Elementary,Science,Design & Simulation (3D Design),Tinkercad
+Upper Elementary,Science,Design & Simulation (3D Design),Mecabricks
+Upper Elementary,Science,Design & Simulation (3D Design),Sketch.io
+Upper Elementary,Science,Extended Reality (AR/VR/MR),MegaMinds
+Upper Elementary,Science,Extended Reality (AR/VR/MR),Google Maps
+Upper Elementary,Science,Multimedia and Animation,Infinite Drum Machine
+Upper Elementary,Science,Multimedia and Animation,Google Sheets
+Upper Elementary,Science,Multimedia and Animation,Brush Ninja
+Upper Elementary,Science,Programming & Coding,Scratch
+Upper Elementary,Science,Programming & Coding,Tinkercad Circuits
+Upper Elementary,Math,App Development,MIT App Inventor
+Upper Elementary,Math,App Development,Scratch
+Upper Elementary,Math,App Development,Tinkercad
+Upper Elementary,Math,Artificial Intelligence,MIT App Inventor
+Upper Elementary,Math,Artificial Intelligence,Scratch
+Upper Elementary,Math,Artificial Intelligence,Google Sheets
+Upper Elementary,Math,Artificial Intelligence,Mathigon
+Upper Elementary,Math,Artificial Intelligence,Machine Learning for Kids
+Upper Elementary,Math,Design & Simulation (2D Design),Genially
+Upper Elementary,Math,Design & Simulation (2D Design),Canva
+Upper Elementary,Math,Design & Simulation (2D Design),Brush Ninja
+Upper Elementary,Math,Design & Simulation (2D Design),Thinglink
+Upper Elementary,Math,Design & Simulation (3D Design),Mathigon
+Upper Elementary,Math,Extended Reality (AR/VR/MR),MegaMinds
+Upper Elementary,Math,Extended Reality (AR/VR/MR),Google Maps
+Upper Elementary,Math,Multimedia and Animation,Google Sheets
+Upper Elementary,Math,Multimedia and Animation,Brush Ninja
+Upper Elementary,Math,Programming & Coding,Scratch
+Upper Elementary,Math,Programming & Coding,Pencil Code
+Upper Elementary,Math,Programming & Coding,Tinkercad Circuits
+Upper Elementary,Social Studies,App Development,MIT App Inventor
+Upper Elementary,Social Studies,App Development,Scratch
+Upper Elementary,Social Studies,App Development,Thunkable
+Upper Elementary,Social Studies,Artificial Intelligence,MIT App Inventor
+Upper Elementary,Social Studies,Artificial Intelligence,Google Arts and Culture
+Upper Elementary,Social Studies,Artificial Intelligence,Google Maps
+Upper Elementary,Social Studies,Artificial Intelligence,Google Sheets
+Upper Elementary,Social Studies,Artificial Intelligence,Machine Learning for Kids
+Upper Elementary,Social Studies,Artificial Intelligence,Scratch
+Upper Elementary,Social Studies,Artificial Intelligence,Teachable Machine - Google
+Upper Elementary,Social Studies,Design & Simulation (2D Design),Genially
+Upper Elementary,Social Studies,Design & Simulation (2D Design),Canva
+Upper Elementary,Social Studies,Design & Simulation (2D Design),Brush Ninja
+Upper Elementary,Social Studies,Design & Simulation (2D Design),Thinglink
+Upper Elementary,Social Studies,Design & Simulation (3D Design),CoSpaces
+Upper Elementary,Social Studies,Design & Simulation (3D Design),CoSpaces
+Upper Elementary,Social Studies,Extended Reality (AR/VR/MR),MegaMinds
+Upper Elementary,Social Studies,Extended Reality (AR/VR/MR),Google Maps
+Upper Elementary,Social Studies,Multimedia and Animation,Google Sheets
+Upper Elementary,Social Studies,Multimedia and Animation,Brush Ninja
+Upper Elementary,Social Studies,Programming & Coding,Scratch
+Upper Elementary,Social Studies,Programming & Coding,Tinkercad Circuits
+Upper Elementary,Other,App Development,MIT App Inventor
+Upper Elementary,Other,App Development,Scratch
+Upper Elementary,Other,App Development,Thunkable
+Upper Elementary,Other,Artificial Intelligence,MIT App Inventor
+Upper Elementary,Other,Artificial Intelligence,Machine Learning for Kids
+Upper Elementary,Other,Artificial Intelligence,ChatGPT
+Upper Elementary,Other,Artificial Intelligence,Teachable Machine - Google
+Upper Elementary,Other,Design & Simulation (2D Design),Genially
+Upper Elementary,Other,Design & Simulation (2D Design),Canva
+Upper Elementary,Other,Design & Simulation (2D Design),Brush Ninja
+Upper Elementary,Other,Design & Simulation (2D Design),Thinglink
+Upper Elementary,Other,Design & Simulation (3D Design),Tinkercad
+Upper Elementary,Other,Design & Simulation (3D Design),Mecabricks
+Upper Elementary,Other,Design & Simulation (3D Design),Sketch.io
+Upper Elementary,Other,Extended Reality (AR/VR/MR),MegaMinds
+Upper Elementary,Other,Extended Reality (AR/VR/MR),Google Maps
+Upper Elementary,Other,Multimedia and Animation,Google Sheets
+Upper Elementary,Other,Multimedia and Animation,Brush Ninja
+Upper Elementary,Other,Programming & Coding,Scratch
+Upper Elementary,Other,Programming & Coding,Tinkercad Circuits
+Middle School,English,App Development,MIT App Inventor
+Middle School,English,App Development,ChatterOn
+Middle School,English,Artificial Intelligence,MIT App Inventor
+Middle School,English,Artificial Intelligence,AI Dungeon
+Middle School,English,Artificial Intelligence,ChatGPT
+Middle School,English,Artificial Intelligence,ChatterOn
+Middle School,English,Design & Simulation (2D Design),Piktochart
+Middle School,English,Design & Simulation (2D Design),Adobe Express
+Middle School,English,Design & Simulation (2D Design),StoryMap JS
+Middle School,English,Design & Simulation (3D Design),Tinkercad
+Middle School,English,Design & Simulation (3D Design),Sketch.io
+Middle School,English,Design & Simulation (3D Design),CoSpaces
+Middle School,English,Extended Reality (AR/VR/MR),CoSpaces
+Middle School,English,Extended Reality (AR/VR/MR),Google Arts and Culture
+Middle School,English,Extended Reality (AR/VR/MR),Thinglink
+Middle School,English,Multimedia and Animation,Canva
+Middle School,English,Multimedia and Animation,Google Sheets
+Middle School,English,Programming & Coding,Tinkercad Circuits
+Middle School,Science,App Development,MIT App Inventor
+Middle School,Science,Artificial Intelligence,MIT App Inventor
+Middle School,Science,Artificial Intelligence,ChatGPT
+Middle School,Science,Design & Simulation (2D Design),Adobe Express
+Middle School,Science,Design & Simulation (3D Design),Fusion 360
+Middle School,Science,Design & Simulation (3D Design),Blender
+Middle School,Science,Design & Simulation (3D Design),Assemblr Edu
+Middle School,Science,Extended Reality (AR/VR/MR),CoSpaces
+Middle School,Science,Extended Reality (AR/VR/MR),Tinkercad
+Middle School,Science,Extended Reality (AR/VR/MR),Thinglink
+Middle School,Science,Multimedia and Animation,Infinite Drum Machine
+Middle School,Science,Multimedia and Animation,Canva
+Middle School,Science,Multimedia and Animation,Google Sheets
+Middle School,Science,Programming & Coding,Python
+Middle School,Science,Programming & Coding,Tinkercad Circuits
+Middle School,Math,App Development,MIT App Inventor
+Middle School,Math,Artificial Intelligence,MIT App Inventor
+Middle School,Math,Artificial Intelligence,ChatGPT
+Middle School,Math,Design & Simulation (2D Design),Adobe Express
+Middle School,Math,Design & Simulation (3D Design),Tinkercad
+Middle School,Math,Extended Reality (AR/VR/MR),CoSpaces
+Middle School,Math,Extended Reality (AR/VR/MR),Tinkercad
+Middle School,Math,Extended Reality (AR/VR/MR),Thinglink
+Middle School,Math,Multimedia and Animation,Google Sheets
+Middle School,Math,Programming & Coding,Python
+Middle School,Math,Programming & Coding,Tinkercad Circuits
+Middle School,Social Studies,App Development,MIT App Inventor
+Middle School,Social Studies,App Development,ChatterOn
+Middle School,Social Studies,Artificial Intelligence,MIT App Inventor
+Middle School,Social Studies,Artificial Intelligence,ChatGPT
+Middle School,Social Studies,Artificial Intelligence,ChatterOn
+Middle School,Social Studies,Design & Simulation (2D Design),Piktochart
+Middle School,Social Studies,Design & Simulation (2D Design),Adobe Express
+Middle School,Social Studies,Design & Simulation (2D Design),StoryMap JS
+Middle School,Social Studies,Design & Simulation (3D Design),Assemblr Edu
+Middle School,Social Studies,Extended Reality (AR/VR/MR),Google Arts and Culture
+Middle School,Social Studies,Multimedia and Animation,Google Arts and Culture
+Middle School,Social Studies,Multimedia and Animation,Google Sheets
+Middle School,Social Studies,Programming & Coding,Tinkercad Circuits
+Middle School,Other,App Development,MIT App Inventor
+Middle School,Other,Artificial Intelligence,MIT App Inventor
+Middle School,Other,Artificial Intelligence,ChatGPT
+Middle School,Other,Design & Simulation (2D Design),Adobe Express
+Middle School,Other,Design & Simulation (3D Design),Tinkercad
+Middle School,Other,Extended Reality (AR/VR/MR),CoSpaces
+Middle School,Other,Multimedia and Animation,Canva
+Middle School,Other,Multimedia and Animation,Google Sheets
+Middle School,Other,Programming & Coding,Tinkercad Circuits
+High School,English,App Development,MIT App Inventor
+High School,English,App Development,Thunkable
+High School,English,App Development,Pencil Code
+High School,English,App Development,Scratch
+High School,English,Artificial Intelligence,AI Dungeon
+High School,English,Artificial Intelligence,AI Experiments with Google
+High School,English,Artificial Intelligence,ChatGPT
+High School,English,Artificial Intelligence,Machine Learning for Kids
+High School,English,Artificial Intelligence,Teachable Machine - Google
+High School,English,Design & Simulation (2D Design),Canva
+High School,English,Design & Simulation (2D Design),Sketch.io
+High School,English,Design & Simulation (2D Design),Piktochart
+High School,English,Design & Simulation (3D Design),Tinkercad
+High School,English,Design & Simulation (3D Design),Sketch.io
+High School,English,Design & Simulation (3D Design),CoSpaces
+High School,English,Extended Reality (AR/VR/MR),CoSpaces
+High School,English,Extended Reality (AR/VR/MR),Thinglink
+High School,English,Extended Reality (AR/VR/MR),Tinkercad
+High School,English,Extended Reality (AR/VR/MR),Assemblr Edu
+High School,English,Multimedia and Animation,SimCity
+High School,English,Multimedia and Animation,Animaker
+High School,English,Multimedia and Animation,Sony Vegas
+High School,English,Multimedia and Animation,Stopomtion studio
+High School,English,Multimedia and Animation,Google Sheets
+High School,English,Programming & Coding,Scratch
+High School,English,Programming & Coding,Pencil Code
+High School,English,Programming & Coding,MIT App Inventor
+High School,English,Programming & Coding,Thunkable
+High School,Science,App Development,MIT App Inventor
+High School,Science,App Development,Thunkable
+High School,Science,App Development,Pencil Code
+High School,Science,App Development,Scratch
+High School,Science,Artificial Intelligence,AI Dungeon
+High School,Science,Artificial Intelligence,AI Experiments with Google
+High School,Science,Artificial Intelligence,ChatGPT
+High School,Science,Artificial Intelligence,Machine Learning for Kids
+High School,Science,Artificial Intelligence,MIT App Inventor
+High School,Science,Artificial Intelligence,Teachable Machine - Google
+High School,Science,Design & Simulation (2D Design),Tinkercad
+High School,Science,Design & Simulation (2D Design),Sketch.io
+High School,Science,Design & Simulation (2D Design),SimCity
+High School,Science,Design & Simulation (3D Design),Fusion 360
+High School,Science,Design & Simulation (3D Design),Unity
+High School,Science,Design & Simulation (3D Design),Autodesk CFD 2021
+High School,Science,Extended Reality (AR/VR/MR),CoSpaces
+High School,Science,Extended Reality (AR/VR/MR),Tinkercad
+High School,Science,Extended Reality (AR/VR/MR),Thinglink
+High School,Science,Multimedia and Animation,SimCity
+High School,Science,Multimedia and Animation,Animaker
+High School,Science,Multimedia and Animation,Sony Vegas
+High School,Science,Multimedia and Animation,Stopomtion studio
+High School,Science,Multimedia and Animation,Google Sheets
+High School,Science,Programming & Coding,Unity
+High School,Science,Programming & Coding,Python
+High School,Science,Programming & Coding,Arduino
+High School,Math,App Development,MIT App Inventor
+High School,Math,App Development,Scratch
+High School,Math,App Development,Thunkable
+High School,Math,Artificial Intelligence,Mathigon
+High School,Math,Artificial Intelligence,MIT App Inventor
+High School,Math,Artificial Intelligence,Machine Learning for Kids
+High School,Math,Design & Simulation (2D Design),Canva
+High School,Math,Design & Simulation (2D Design),Sketch.io
+High School,Math,Design & Simulation (2D Design),Tinkercad
+High School,Math,Design & Simulation (3D Design),Tinkercad
+High School,Math,Design & Simulation (3D Design),Sketch.io
+High School,Math,Design & Simulation (3D Design),CoSpaces
+High School,Math,Extended Reality (AR/VR/MR),CoSpaces
+High School,Math,Extended Reality (AR/VR/MR),Tinkercad
+High School,Math,Extended Reality (AR/VR/MR),Scratch
+High School,Math,Extended Reality (AR/VR/MR),Google Maps
+High School,Math,Multimedia and Animation,Google Sheets
+High School,Math,Programming & Coding,Python
+High School,Social Studies,App Development,MIT App Inventor
+High School,Social Studies,App Development,Thunkable
+High School,Social Studies,App Development,Pencil Code
+High School,Social Studies,App Development,Scratch
+High School,Social Studies,Artificial Intelligence,AI Dungeon
+High School,Social Studies,Artificial Intelligence,AI Experiments with Google
+High School,Social Studies,Artificial Intelligence,ChatGPT
+High School,Social Studies,Artificial Intelligence,Machine Learning for Kids
+High School,Social Studies,Artificial Intelligence,Teachable Machine - Google
+High School,Social Studies,Design & Simulation (2D Design),Canva
+High School,Social Studies,Design & Simulation (2D Design),Google Arts and Culture
+High School,Social Studies,Design & Simulation (2D Design),Google Maps
+High School,Social Studies,Design & Simulation (2D Design),Piktochart
+High School,Social Studies,Design & Simulation (2D Design),Sketch.io
+High School,Social Studies,Design & Simulation (3D Design),Tinkercad
+High School,Social Studies,Design & Simulation (3D Design),Sketch.io
+High School,Social Studies,Design & Simulation (3D Design),CoSpaces
+High School,Social Studies,Extended Reality (AR/VR/MR),CoSpaces
+High School,Social Studies,Extended Reality (AR/VR/MR),Thinglink
+High School,Social Studies,Extended Reality (AR/VR/MR),Assemblr Edu
+High School,Social Studies,Multimedia and Animation,Google Sheets
+High School,Social Studies,Multimedia and Animation,SimCity
+High School,Social Studies,Multimedia and Animation,Animaker
+High School,Social Studies,Multimedia and Animation,Sony Vegas
+High School,Social Studies,Multimedia and Animation,Stopomtion studio
+High School,Social Studies,Programming & Coding,Scratch
+High School,Social Studies,Programming & Coding,MIT App Inventor
+High School,Social Studies,Programming & Coding,Pencil Code
+High School,Other,App Development,MIT App Inventor
+High School,Other,App Development,Thunkable
+High School,Other,App Development,Pencil Code
+High School,Other,App Development,Scratch
+High School,Other,Artificial Intelligence,AI Dungeon
+High School,Other,Artificial Intelligence,AI Experiments with Google
+High School,Other,Artificial Intelligence,Machine Learning for Kids
+High School,Other,Artificial Intelligence,MIT App Inventor
+High School,Other,Artificial Intelligence,Teachable Machine - Google
+High School,Other,Design & Simulation (2D Design),Canva
+High School,Other,Design & Simulation (2D Design),Sketch.io
+High School,Other,Design & Simulation (2D Design),Tinkercad
+High School,Other,Design & Simulation (3D Design),Tinkercad
+High School,Other,Extended Reality (AR/VR/MR),CoSpaces
+High School,Other,Extended Reality (AR/VR/MR),Tinkercad
+High School,Other,Extended Reality (AR/VR/MR),Thinglink
+High School,Other,Extended Reality (AR/VR/MR),Assemblr Edu
+High School,Other,Multimedia and Animation,SimCity
+High School,Other,Multimedia and Animation,Animaker
+High School,Other,Multimedia and Animation,Sony Vegas
+High School,Other,Multimedia and Animation,Stopomtion studio
+High School,Other,Multimedia and Animation,Google Sheets
+High School,Other,Programming & Coding,Scratch
+High School,Other,Programming & Coding,MIT App Inventor
+High School,Other,Programming & Coding,Pencil Code
+High School,Other,Programming & Coding,Thunkable
