@@ -142,8 +142,8 @@ def analysis_Trainee_Response(SYSTEM_PROMPT: str,survey_responses: str):
                 "role": "user",
                 "content": f"""
 
-                1. Analyze and summarize the responses provided by professional education trainers to the recent questionnaire. 
-                2 The data would be anlysed is json.dumps file which contains severals response from the trainers.
+                1. Analyze and summarize the responses provided by professional education trainee to the recent questionnaire. 
+                2 The data would be anlysed is json.dumps file which contains severals response from the trainee.
                 
                 
                 The analysis should be presented in two main sections:
