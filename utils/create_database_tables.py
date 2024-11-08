@@ -1,6 +1,7 @@
 import mysql.connector
 import toml
 from mysql.connector import errorcode
+import streamlit as st
 import uuid
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
@@ -217,14 +218,14 @@ def get_survey_data(survey_id: str) -> Dict:
         query = """
         SELECT s.survey_id, 
                s.generated_questions, 
-               s.created_at, 
-               s.expiration_datetime,
+               CONVERT_TZ(s.created_at, '+00:00', '+08:00') as created_at,
+               CONVERT_TZ(s.expiration_datetime, '+00:00', '+08:00') as expiration_datetime,
                t.trainer_questions_responses,
                t.trainer_username
         FROM Survey s
         JOIN Trainer t ON s.trainer_id = t.trainer_id
         WHERE s.survey_id = %s
-        AND s.created_at <= NOW()
+        AND CONVERT_TZ(s.created_at, '+00:00', '+08:00') <= NOW()
         """
 
         cursor.execute(query, (survey_id,))
@@ -282,12 +283,12 @@ def fetch_active_surveys(trainer_username: str) -> List[Dict]:
         SELECT s.survey_id, 
                t.trainer_questions_responses, 
                s.generated_questions, 
-               s.created_at, 
-               s.expiration_datetime
+               CONVERT_TZ(s.created_at, '+00:00', '+08:00') as created_at,
+               CONVERT_TZ(s.expiration_datetime, '+00:00', '+08:00') as expiration_datetime
         FROM Survey AS s
         JOIN Trainer AS t ON s.trainer_id = t.trainer_id
         WHERE t.trainer_username = %s
-        AND s.expiration_datetime > NOW()
+        AND CONVERT_TZ(s.expiration_datetime, '+00:00', '+08:00') > NOW()
         ORDER BY s.created_at DESC
         """
 
