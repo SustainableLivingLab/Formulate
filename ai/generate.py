@@ -243,8 +243,11 @@ def analysis_Trainee_Response(SYSTEM_PROMPT: str, survey_responses: str):
         raise  # Lempar ulang error
 
 
-def SlideDeckGenerator(SYSTEM_PROMPT: str, AI_Summary: str):
+def SlideDeckGenerator(
+    SYSTEM_PROMPT: str, AI_Summary: str, survey_data: Dict[Any, Any]
+):
     print(f"DEBUG: Received AI Summary in Slide Deck Generator: {AI_Summary}")
+    print(f"DEBUG: Received Survey Data in Slide Deck Generator: {survey_data}")
 
     section = "Slide Deck Generator"
 
@@ -261,14 +264,16 @@ def SlideDeckGenerator(SYSTEM_PROMPT: str, AI_Summary: str):
                     "content": f"""
 
                 Develop comprehensive lesson content for each slide based on the summarised learning outcomes and recommended modifications to the learning objectives. Follow these guidelines:
-                
+
                 1. Analyse and Synthesise Data: Evaluate the provided data to derive essential insights and convert these into coherent lesson content. Ensure that each slide integrates key aspects of the data in a way that supports learning objectives.
                 2. Use Advanced British English: Write with precision, using formal British English. Maintain a tone that reflects professionalism and a formal education.
                 3. Align with Learning Objectives: Ensure each slide is relevant and clearly linked to the recommended modifications to the learning objectives. Integrate measurable verbs from Bloom’s Taxonomy, such as ‘analyse,’ ‘evaluate,’ ‘synthesise,’ ‘compare,’ ‘apply,’ and ‘explain’ to establish specific, actionable goals.
-                4. The structure should consist of 10 slides, each comprising a minimum of two descriptive paragraphs.
-                5. Each slide concise explaining about the learning objective.
+                4. Develop a presentation structure comprising 10 slides, each containing at least two descriptive paragraphs. The content should be based on the following:
+                          - Course Title: {survey_data.get('courseTitle')}, the course title should be mentioned in the first slide.
+                          - Target Audience: {survey_data.get('targetAudience')}, the Target audience should be mentioned in the first slide.
+                          - Recommended Learning Objectives: {AI_Summary}, this data should be analysed for the content in all of the slides
                 
-                **Data to be analysed**: {AI_Summary}
+
 
                 **Response Format (JSON)**:
                 Provide a response strictly in JSON format, with each section following this structure:
