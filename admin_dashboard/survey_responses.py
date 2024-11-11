@@ -125,11 +125,6 @@ def show_survey_responses():
             recent_responses = sum(1 for r in responses 
                                  if parse_datetime(r.get('submission_datetime')) and 
                                  (datetime.now() - parse_datetime(r.get('submission_datetime'))).days <= 7)
-            avg_response_time = np.mean([
-                (parse_datetime(r.get('submission_datetime')) - parse_datetime(r.get('start_time'))).total_seconds() / 60
-                for r in responses 
-                if parse_datetime(r.get('submission_datetime')) and parse_datetime(r.get('start_time'))
-            ]) if responses else 0
 
             # Display metrics
             cols = st.columns(4)
@@ -149,15 +144,15 @@ def show_survey_responses():
             )
             cols[2].markdown(
                 f"""<div class='quick-stats'>
-                    <h1>{avg_response_time:.0f}min</h1>
-                    <p>Avg Response Time</p>
+                    <h1>{len([r for r in responses if parse_datetime(r.get('submission_datetime')).date() == datetime.now().date()])}</h1>
+                    <p>Today's Responses</p>
                 </div>""", 
                 unsafe_allow_html=True
             )
             cols[3].markdown(
                 f"""<div class='quick-stats'>
                     <h1>{calculate_time_left(survey_data.get('expiration_datetime'))}</h1>
-                    <p>Time Left</p>
+                    <p>Time Until Expiry</p>
                 </div>""", 
                 unsafe_allow_html=True
             )
@@ -300,22 +295,31 @@ def show_survey_responses():
                         })
 
             # Updated Quick Insights
-            st.markdown("### 🎯 Quick Insights")
-            insight_cols = st.columns(2)
-            
-            with insight_cols[0]:
-                st.markdown(f"""
-                    <div class='insight-pill'>Peak response time: {timeline_df['date'].dt.hour.mode().iloc[0]}:00</div>
-                    <div class='insight-pill'>Average response time: {avg_response_time:.0f} min</div>
-                    <div class='insight-pill'>Responses today: {sum(1 for r in filtered_responses if parse_datetime(r.get('submission_datetime')).date() == datetime.now().date())}</div>
-                """, unsafe_allow_html=True)
-            
-            with insight_cols[1]:
-                st.markdown(f"""
-                    <div class='insight-pill'>Total responses: {len(filtered_responses)}</div>
-                    <div class='insight-pill'>Recent responses: {recent_responses}</div>
-                    <div class='insight-pill'>Time until expiry: {calculate_time_left(survey_data.get('expiration_datetime'))}</div>
-                """, unsafe_allow_html=True)
+            if timeline_data:
+                timeline_df = pd.DataFrame(timeline_data)
+                st.markdown("### 🎯 Quick Insights")
+                insight_cols = st.columns(2)
+                
+                with insight_cols[0]:
+                    # Calculate most active hour if we have data
+                    if not timeline_df.empty:
+                        peak_hour = timeline_df['date'].dt.hour.mode().iloc[0]
+                        peak_hour_str = f"{peak_hour:02d}:00"
+                    else:
+                        peak_hour_str = "N/A"
+                        
+                    st.markdown(f"""
+                        <div class='insight-pill'>Most active hour: {peak_hour_str}</div>
+                        <div class='insight-pill'>Responses today: {len([r for r in filtered_responses if parse_datetime(r.get('submission_datetime')).date() == datetime.now().date()])}</div>
+                        <div class='insight-pill'>Total responses: {len(filtered_responses)}</div>
+                    """, unsafe_allow_html=True)
+                
+                with insight_cols[1]:
+                    st.markdown(f"""
+                        <div class='insight-pill'>Recent responses: {recent_responses}</div>
+                        <div class='insight-pill'>Time until expiry: {calculate_time_left(survey_data.get('expiration_datetime'))}</div>
+                        <div class='insight-pill'>Survey status: {'Active' if not survey_data.get('is_expired') else 'Expired'}</div>
+                    """, unsafe_allow_html=True)
 
         except Exception as e:
             st.error(f"Error displaying survey responses: {str(e)}")
