@@ -412,8 +412,9 @@ def show_survey_reports():
 
             with tabs[2]:
                 st.subheader("Response Trends")
-                df['timestamp'] = pd.to_datetime(df['timestamp'])
-                daily_responses = df.groupby(df['timestamp'].dt.date).size().reset_index()
+                # Group by timestamp and trainee_email to get unique responses per day
+                daily_responses = df.groupby(['timestamp', 'trainee_email']).size().reset_index()
+                daily_responses = daily_responses.groupby(daily_responses['timestamp'].dt.date).size().reset_index()
                 daily_responses.columns = ['date', 'count']
                 
                 fig = px.line(
@@ -457,7 +458,8 @@ def show_survey_reports():
                 col1, col2 = st.columns(2)
                 with col1:
                     # Day of week analysis
-                    day_counts = df['day_of_week'].value_counts()
+                    day_counts = df.groupby(['day_of_week', 'trainee_email']).size().reset_index()
+                    day_counts = day_counts.groupby('day_of_week').size()
                     fig = px.bar(
                         x=day_counts.index,
                         y=day_counts.values,
@@ -475,7 +477,8 @@ def show_survey_reports():
 
                 with col2:
                     # Hour of day analysis
-                    hour_counts = df['hour_of_day'].value_counts().sort_index()
+                    hour_counts = df.groupby(['hour_of_day', 'trainee_email']).size().reset_index()
+                    hour_counts = hour_counts.groupby('hour_of_day').size().sort_index()
                     fig = px.line(
                         x=hour_counts.index,
                         y=hour_counts.values,
