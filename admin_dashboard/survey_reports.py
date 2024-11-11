@@ -77,10 +77,10 @@ def show_survey_reports():
             background-color: rgba(255,255,255,0.1);
         }
         .block-container {
-            padding-top: 1rem;
+            padding-top: 2rem;
             padding-bottom: 0rem;
-            padding-left: 1rem;
-            padding-right: 1rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
             max-width: 100%;
         }
         .metric-row {
@@ -121,6 +121,9 @@ def show_survey_reports():
         }
         .element-container {
             width: 100%;
+        }
+        .element-container:has(> div > div > h1) {
+            margin-bottom: 2rem;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -178,7 +181,7 @@ def show_survey_reports():
 
             # Enhanced Overview metrics
             total_responses = len(responses)
-            completion_rate = round((total_responses / 100) * 100, 1)
+            completion_rate = round((total_responses / total_responses) * 100, 1)
             avg_response_time = np.mean(response_times) if response_times else 0
 
             # Metrics Row with descriptions
