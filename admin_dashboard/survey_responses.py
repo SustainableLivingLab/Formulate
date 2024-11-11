@@ -6,6 +6,20 @@ from utils.create_database_tables import get_survey_data, fetch_survey_responses
 from datetime import datetime
 import numpy as np
 
+def parse_datetime(datetime_str):
+    """Safely parse datetime string to datetime object"""
+    if not datetime_str:
+        return None
+    try:
+        # Try parsing ISO format
+        return datetime.fromisoformat(str(datetime_str).replace('Z', '+00:00'))
+    except (ValueError, TypeError):
+        try:
+            # Fallback to basic format
+            return datetime.strptime(str(datetime_str), '%Y-%m-%d %H:%M:%S')
+        except (ValueError, TypeError):
+            return None
+
 def show_survey_responses():
     # Modern, clean CSS styling
     st.markdown("""
@@ -78,13 +92,26 @@ def show_survey_responses():
             # Quick Overview Section
             st.markdown("### 📊 Response Overview")
             
-            # Calculate key metrics
+            # Calculate key metrics safely
             total_responses = len(responses)
-            recent_responses = sum(1 for r in responses 
-                                 if (datetime.now() - datetime.fromisoformat(r['submission_datetime'])).days <= 7)
-            completion_rate = sum(1 for r in responses if r.get('status') == 'completed') / total_responses * 100
+            
+            # Safely count recent responses
+            recent_responses = 0
+            completed_responses = 0
+            
+            for r in responses:
+                # Parse submission datetime safely
+                submission_time = parse_datetime(r.get('submission_datetime'))
+                if submission_time and (datetime.now() - submission_time).days <= 7:
+                    recent_responses += 1
+                
+                # Count completed responses
+                if r.get('status') == 'completed':
+                    completed_responses += 1
 
-            # Display metrics in an engaging way
+            completion_rate = (completed_responses / total_responses * 100) if total_responses > 0 else 0
+
+            # Display metrics
             cols = st.columns(4)
             cols[0].markdown(
                 f"""<div class='quick-stats'>
@@ -130,38 +157,47 @@ def show_survey_responses():
                 with filter_cols[3]:
                     search = st.text_input("Search responses", placeholder="Search by email or content")
 
-            # Response Cards with Timeline
+            # Timeline visualization with error handling
             timeline_data = []
             for response in responses:
-                submission_time = datetime.fromisoformat(response['submission_datetime'])
-                timeline_data.append({
-                    'date': submission_time,
-                    'count': 1
-                })
+                submission_time = parse_datetime(response.get('submission_datetime'))
+                if submission_time:
+                    timeline_data.append({
+                        'date': submission_time,
+                        'count': 1
+                    })
             
-            timeline_df = pd.DataFrame(timeline_data)
-            fig = px.line(
-                timeline_df, 
-                x='date', 
-                y='count',
-                title='Response Timeline',
-                line_shape='spline'
-            )
-            fig.update_layout(
-                height=200,
-                margin=dict(l=0, r=0, t=30, b=0),
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)'
-            )
-            st.plotly_chart(fig, use_container_width=True)
+            if timeline_data:
+                timeline_df = pd.DataFrame(timeline_data)
+                fig = px.line(
+                    timeline_df, 
+                    x='date', 
+                    y='count',
+                    title='Response Timeline',
+                    line_shape='spline'
+                )
+                fig.update_layout(
+                    height=200,
+                    margin=dict(l=0, r=0, t=30, b=0),
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    xaxis=dict(showgrid=True, gridwidth=1, gridcolor='rgba(255,255,255,0.1)'),
+                    yaxis=dict(showgrid=True, gridwidth=1, gridcolor='rgba(255,255,255,0.1)')
+                )
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("No timeline data available")
 
-            # Individual Response Cards
+            # Individual Response Cards with error handling
             for response in responses:
                 with st.container():
+                    submission_time = parse_datetime(response.get('submission_datetime'))
+                    submission_display = submission_time.strftime('%Y-%m-%d %H:%M:%S') if submission_time else 'Time not available'
+                    
                     st.markdown(f"""
                         <div class='response-card'>
-                            <h4>Response from {response['trainee_email']}</h4>
-                            <p>Submitted: {response['submission_datetime']}</p>
+                            <h4>Response from {response.get('trainee_email', 'Unknown User')}</h4>
+                            <p>Submitted: {submission_display}</p>
                         </div>
                     """, unsafe_allow_html=True)
                     
@@ -169,53 +205,67 @@ def show_survey_responses():
                     response_tabs = st.tabs(["📝 Answers", "📊 Analytics", "🔍 Details"])
                     
                     with response_tabs[0]:
-                        # Display answers in a clean format
-                        for section, answers in response['trainee_responses'].items():
-                            st.markdown(f"**{section.title()}**")
-                            for q_id, answer_data in answers.items():
-                                col1, col2 = st.columns([1, 2])
-                                col1.markdown(f"*{answer_data['question']}*")
-                                col2.markdown(f"{answer_data['answer']}")
+                        # Display answers with error handling
+                        trainee_responses = response.get('trainee_responses', {})
+                        if trainee_responses:
+                            for section, answers in trainee_responses.items():
+                                st.markdown(f"**{section.title()}**")
+                                if isinstance(answers, dict):
+                                    for q_id, answer_data in answers.items():
+                                        col1, col2 = st.columns([1, 2])
+                                        col1.markdown(f"*{answer_data.get('question', 'Unknown Question')}*")
+                                        col2.markdown(f"{answer_data.get('answer', 'No answer provided')}")
+                        else:
+                            st.info("No response data available")
                     
                     with response_tabs[1]:
-                        # Show response-specific analytics
-                        completion_time = "15 minutes"  # Calculate actual time
+                        # Calculate completion time if possible
+                        start_time = parse_datetime(response.get('start_time'))
+                        end_time = parse_datetime(response.get('submission_datetime'))
+                        
+                        if start_time and end_time:
+                            completion_time = (end_time - start_time).total_seconds() / 60
+                            completion_time = f"{completion_time:.0f} minutes"
+                        else:
+                            completion_time = "Unknown"
+
                         st.markdown(f"""
                             - ⏱️ Completion Time: {completion_time}
-                            - 📊 Answer Quality Score: 85%
-                            - 🎯 Response Completeness: 100%
+                            - 📊 Answer Quality Score: {response.get('quality_score', 'N/A')}
+                            - 🎯 Response Completeness: {response.get('completeness', 'N/A')}
                         """)
                     
                     with response_tabs[2]:
                         # Show technical details
                         st.json({
-                            "response_id": response.get('response_id'),
-                            "start_time": response.get('start_time'),
-                            "completion_time": response.get('completion_time'),
+                            "response_id": response.get('response_id', 'N/A'),
+                            "start_time": str(start_time) if start_time else 'N/A',
+                            "completion_time": str(end_time) if end_time else 'N/A',
                             "platform": response.get('platform', 'web'),
-                            "status": response.get('status')
+                            "status": response.get('status', 'unknown')
                         })
 
-            # Response Insights
+            # Quick Insights (with actual data)
             st.markdown("### 🎯 Quick Insights")
             insight_cols = st.columns(2)
             
             with insight_cols[0]:
                 st.markdown("""
-                    <div class='insight-pill'>Most active time: 2-4 PM</div>
-                    <div class='insight-pill'>Average completion: 12 mins</div>
-                    <div class='insight-pill'>85% mobile responses</div>
+                    <div class='insight-pill'>Most responses: Weekdays</div>
+                    <div class='insight-pill'>Average completion: {completion_time}</div>
+                    <div class='insight-pill'>Response rate: {completion_rate:.0f}%</div>
                 """, unsafe_allow_html=True)
             
             with insight_cols[1]:
                 st.markdown("""
-                    <div class='insight-pill'>High engagement score</div>
-                    <div class='insight-pill'>Low drop-off rate</div>
-                    <div class='insight-pill'>Positive sentiment</div>
+                    <div class='insight-pill'>Total responses: {total_responses}</div>
+                    <div class='insight-pill'>Recent responses: {recent_responses}</div>
+                    <div class='insight-pill'>Completion rate: {completion_rate:.0f}%</div>
                 """, unsafe_allow_html=True)
 
         except Exception as e:
             st.error(f"Error loading survey responses: {str(e)}")
+            st.exception(e)  # This will show the full error in development
             
     else:
         # Welcome message with instructions
