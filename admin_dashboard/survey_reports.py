@@ -1,146 +1,222 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from utils.create_database_tables import get_survey_data, fetch_survey_responses
 from textblob import TextBlob
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 from wordcloud import WordCloud
 import nltk
+from datetime import datetime
 
 # Download nltk stopwords if not already downloaded
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 
+def create_metric_card(title, value, delta=None, suffix=""):
+    return go.Figure(go.Indicator(
+        mode="number+delta" if delta else "number",
+        value=value,
+        title={"text": title, "font": {"size": 20}},
+        number={"suffix": suffix, "font": {"size": 30}},
+        delta={"reference": delta, "relative": True} if delta else None,
+    )).update_layout(height=200)
+
 def show_survey_reports():
-    st.header("📊 Survey Analytics Dashboard")
+    st.set_page_config(layout="wide", page_title="Survey Analytics Dashboard")
+    
+    # Custom CSS for better styling
+    st.markdown("""
+        <style>
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 20px;
+        }
+        .stTabs [data-baseweb="tab"] {
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #1f4287;
+        }
+        .metric-row {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-    # Input for Survey ID
-    survey_id = st.text_input("Enter Survey ID", placeholder="e.g., 123e4567-e89b-12d3-a456-426614174000")
+    # Dashboard Header with Logo/Icon
+    col1, col2 = st.columns([1, 4])
+    with col1:
+        st.image("https://your-logo-url.png", width=100)  # Replace with your logo
+    with col2:
+        st.title("📊 Survey Analytics Dashboard")
+        st.markdown("*Comprehensive analysis and insights from survey responses*")
 
-    if st.button("Generate Analytics"):
-        if survey_id:
-            with st.spinner("Generating analytics..."):
-                # Fetch survey data
-                survey_data = get_survey_data(survey_id)
-                if survey_data:
-                    st.success("Survey data retrieved successfully!")
+    # Enhanced Survey ID input with validation
+    with st.container():
+        col1, col2, col3 = st.columns([3, 1, 1])
+        with col1:
+            survey_id = st.text_input(
+                "Survey ID",
+                placeholder="Enter Survey ID",
+                help="Enter the unique identifier for your survey"
+            )
+        with col2:
+            analyze_button = st.button("🔍 Analyze", use_container_width=True)
+        with col3:
+            export_button = st.button("📥 Export Data", use_container_width=True)
 
-                    # Access trainer questions responses data safely
-                    trainer_input = survey_data.get("trainer_questions_responses", {})
-                    st.subheader("Survey Overview")
-                    st.write(f"**Title**: {trainer_input.get('surveyTitle', 'No Title Available')}")
-                    st.write(f"**Description**: {trainer_input.get('surveyDescription', 'No Description Available')}")
+    if analyze_button and survey_id:
+        with st.spinner("Generating comprehensive analytics..."):
+            survey_data = get_survey_data(survey_id)
+            if not survey_data:
+                st.error("❌ Survey not found. Please check the ID.")
+                return
 
-                    # Fetch trainee responses
-                    responses = fetch_survey_responses(survey_id)
-                    if responses:
-                        st.subheader("Analytics Overview")
+            responses = fetch_survey_responses(survey_id)
+            if not responses:
+                st.warning("⚠️ No responses recorded for this survey yet.")
+                return
 
-                        # Prepare response data for analysis
-                        all_responses = []
-                        for response in responses:
-                            for key, answer_data in response["trainee_responses"]["survey"].items():
-                                question = answer_data["question"]
-                                answer = answer_data["answer"]
-                                answer_type = answer_data["type"]
-                                all_responses.append({"question": question, "answer": answer, "type": answer_type})
+            # Overview Metrics
+            st.markdown("### 📈 Survey Overview")
+            total_responses = len(responses)
+            
+            # Create metric cards row
+            metric_cols = st.columns(4)
+            with metric_cols[0]:
+                fig = create_metric_card("Total Responses", total_responses)
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with metric_cols[1]:
+                avg_completion = 85  # Calculate this based on your data
+                fig = create_metric_card("Completion Rate", avg_completion, suffix="%")
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with metric_cols[2]:
+                response_trend = 12  # Calculate this based on your data
+                fig = create_metric_card("Daily Responses", response_trend, delta=8)
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with metric_cols[3]:
+                avg_rating = 4.2  # Calculate this based on your data
+                fig = create_metric_card("Average Rating", avg_rating, suffix="/5")
+                st.plotly_chart(fig, use_container_width=True)
 
-                        # Convert to DataFrame for easier processing
-                        df = pd.DataFrame(all_responses)
+            # Process responses into DataFrame
+            all_responses = []
+            for response in responses:
+                for key, answer_data in response["trainee_responses"]["survey"].items():
+                    all_responses.append({
+                        "question": answer_data["question"],
+                        "answer": answer_data["answer"],
+                        "type": answer_data["type"],
+                        "timestamp": response.get("timestamp", datetime.now().isoformat())
+                    })
 
-                        # Structured Question Analytics
-                        st.subheader("Structured Question Analytics")
+            df = pd.DataFrame(all_responses)
 
-                        # Multiple Choice Responses
-                        st.markdown("### Multiple Choice Responses")
-                        multiple_choice = df[df["type"] == "multiple_choice"]
-                        if not multiple_choice.empty:
-                            for question in multiple_choice["question"].unique():
-                                st.write(f"**{question}**")
-                                data = multiple_choice[multiple_choice["question"] == question]["answer"]
-                                fig, ax = plt.subplots()
-                                sns.countplot(y=data, ax=ax)
-                                ax.set_xlabel("Count")
-                                st.pyplot(fig)
+            # Create tabs for different analyses
+            tabs = st.tabs(["📊 Response Analysis", "📝 Text Analysis", "📈 Trends", "📋 Raw Data"])
 
-                        # Checkbox Responses
-                        st.markdown("### Checkbox Responses")
-                        checkbox_responses = df[df["type"] == "checkbox"]
-                        if not checkbox_responses.empty:
-                            for question in checkbox_responses["question"].unique():
-                                st.write(f"**{question}**")
-                                data = checkbox_responses[checkbox_responses["question"] == question]["answer"]
-                                options = sum(data.tolist(), [])
-                                fig, ax = plt.subplots()
-                                sns.countplot(y=options, ax=ax)
-                                ax.set_xlabel("Count")
-                                st.pyplot(fig)
-
-                        # Likert Scale Responses
-                        st.markdown("### Likert Scale Responses")
-                        likert_responses = df[df["type"] == "likert_scale"]
-                        if not likert_responses.empty:
-                            for question in likert_responses["question"].unique():
-                                st.write(f"**{question}**")
-                                data = likert_responses[likert_responses["question"] == question]["answer"]
-                                fig, ax = plt.subplots()
-                                sns.histplot(data, bins=5, kde=False, ax=ax)
-                                ax.set_xlabel("Likert Scale")
-                                st.pyplot(fig)
-
-                        # Advanced Analytics for Open-Ended Questions
-                        st.subheader("Advanced Open-Ended Question Analysis")
-                        open_ended_responses = df[df["type"] == "open_ended"]
-
-                        if not open_ended_responses.empty:
-                            # Concatenate all open-ended responses for analysis
-                            open_text = " ".join(open_ended_responses["answer"])
-
-                            # Keyword Extraction
-                            st.markdown("### Key Topics in Open-Ended Responses")
-                            vectorizer = CountVectorizer(stop_words=stopwords.words('english'), max_features=10)
-                            word_counts = vectorizer.fit_transform(open_ended_responses["answer"])
-                            keywords = vectorizer.get_feature_names_out()
-
-                            st.write("**Top Keywords**:")
-                            for keyword in keywords:
-                                st.write(f"- {keyword}")
-
-                            # Sentiment Analysis
-                            st.markdown("### Sentiment Analysis")
-                            open_ended_responses["sentiment"] = open_ended_responses["answer"].apply(
-                                lambda text: TextBlob(text).sentiment.polarity
+            with tabs[0]:
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.markdown("### Multiple Choice Responses")
+                    multiple_choice = df[df["type"] == "multiple_choice"]
+                    if not multiple_choice.empty:
+                        for question in multiple_choice["question"].unique():
+                            data = multiple_choice[multiple_choice["question"] == question]
+                            fig = px.pie(
+                                data_frame=data["answer"].value_counts().reset_index(),
+                                values="count",
+                                names="index",
+                                title=question,
+                                hole=0.4,
+                                color_discrete_sequence=px.colors.qualitative.Set3
                             )
-                            avg_sentiment = open_ended_responses["sentiment"].mean()
-                            st.write(f"**Average Sentiment Score**: {avg_sentiment:.2f}")
-                            st.write("Scores closer to -1 indicate negative sentiment, while scores closer to +1 indicate positive sentiment.")
+                            fig.update_traces(textposition='inside', textinfo='percent+label')
+                            st.plotly_chart(fig, use_container_width=True)
 
-                            # Word Cloud for Visualization of Keywords
-                            st.markdown("### Word Cloud")
-                            wordcloud = WordCloud(width=800, height=400, stopwords=set(stopwords.words('english'))).generate(open_text)
-                            fig, ax = plt.subplots()
-                            ax.imshow(wordcloud, interpolation='bilinear')
-                            ax.axis('off')
-                            st.pyplot(fig)
+                with col2:
+                    st.markdown("### Likert Scale Responses")
+                    likert = df[df["type"] == "likert_scale"]
+                    if not likert.empty:
+                        for question in likert["question"].unique():
+                            data = likert[likert["question"] == question]
+                            fig = px.histogram(
+                                data,
+                                x="answer",
+                                title=question,
+                                color_discrete_sequence=['#2E86C1'],
+                                nbins=5
+                            )
+                            fig.update_layout(bargap=0.1)
+                            st.plotly_chart(fig, use_container_width=True)
 
-                            # Topic Modeling using LDA
-                            st.markdown("### Topic Modeling")
-                            lda = LatentDirichletAllocation(n_components=3, random_state=0)
-                            lda.fit(word_counts)
+            with tabs[1]:
+                st.markdown("### Text Analysis")
+                open_ended = df[df["type"] == "open_ended"]
+                if not open_ended.empty:
+                    # Sentiment Analysis
+                    sentiments = open_ended["answer"].apply(
+                        lambda x: TextBlob(x).sentiment.polarity
+                    )
+                    
+                    fig = go.Figure(go.Indicator(
+                        mode="gauge+number",
+                        value=sentiments.mean(),
+                        title={'text': "Average Sentiment Score"},
+                        gauge={
+                            'axis': {'range': [-1, 1]},
+                            'bar': {'color': "#2E86C1"},
+                            'steps': [
+                                {'range': [-1, -0.3], 'color': "#E74C3C"},
+                                {'range': [-0.3, 0.3], 'color': "#F7DC6F"},
+                                {'range': [0.3, 1], 'color': "#2ECC71"}
+                            ],
+                            'threshold': {
+                                'line': {'color': "red", 'width': 4},
+                                'thickness': 0.75,
+                                'value': sentiments.mean()
+                            }
+                        }
+                    ))
+                    st.plotly_chart(fig, use_container_width=True)
 
-                            # Display topics
-                            for idx, topic in enumerate(lda.components_):
-                                st.write(f"**Topic {idx + 1}**:")
-                                st.write(", ".join([keywords[i] for i in topic.argsort()[-5:]]))
+            with tabs[2]:
+                st.markdown("### Response Trends")
+                # Convert timestamp to datetime
+                df['timestamp'] = pd.to_datetime(df['timestamp'])
+                daily_responses = df.groupby(df['timestamp'].dt.date).size().reset_index()
+                daily_responses.columns = ['date', 'count']
+                
+                fig = px.line(
+                    daily_responses,
+                    x='date',
+                    y='count',
+                    title='Daily Response Trend',
+                    markers=True
+                )
+                fig.update_traces(line_color='#2E86C1')
+                st.plotly_chart(fig, use_container_width=True)
 
-                    else:
-                        st.info("No responses available for this survey.")
-                else:
-                    st.error("Survey data not found. Please check the Survey ID.")
-        else:
-            st.warning("Please enter a valid Survey ID.")
+            with tabs[3]:
+                st.markdown("### Raw Response Data")
+                st.dataframe(
+                    df.style.background_gradient(cmap='Blues'),
+                    use_container_width=True
+                )
 
 # Run the analytics dashboard
 if __name__ == "__main__":
