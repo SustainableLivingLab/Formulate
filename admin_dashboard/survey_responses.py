@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from utils.create_database_tables import get_survey_data, fetch_survey_responses
-from datetime import datetime
+from datetime import datetime, timedelta
 import numpy as np
 
 def parse_datetime(datetime_str):
@@ -11,14 +11,25 @@ def parse_datetime(datetime_str):
     if not datetime_str:
         return None
     try:
-        # Try parsing ISO format
         return datetime.fromisoformat(str(datetime_str).replace('Z', '+00:00'))
     except (ValueError, TypeError):
         try:
-            # Fallback to basic format
             return datetime.strptime(str(datetime_str), '%Y-%m-%d %H:%M:%S')
         except (ValueError, TypeError):
             return None
+
+def calculate_time_left(expiry_date):
+    """Calculate time left until expiry in days"""
+    if not expiry_date:
+        return "No expiry set"
+    now = datetime.now()
+    expiry = parse_datetime(expiry_date)
+    if not expiry:
+        return "Invalid date"
+    if expiry < now:
+        return "Expired"
+    days_left = (expiry - now).days
+    return f"{days_left} days"
 
 def show_survey_responses():
     # Modern, clean CSS styling
@@ -64,6 +75,12 @@ def show_survey_responses():
         </style>
     """, unsafe_allow_html=True)
 
+    # Initialize session state for survey data
+    if 'survey_data' not in st.session_state:
+        st.session_state.survey_data = None
+        st.session_state.responses = None
+        st.session_state.filtered_responses = None
+
     # Modern header with survey info
     st.markdown('<div class="response-header">', unsafe_allow_html=True)
     st.title("📝 Survey Response Explorer")
@@ -80,10 +97,21 @@ def show_survey_responses():
         load_responses = st.button("🔍 View", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
+    # Load survey data only when View button is clicked
     if load_responses and survey_id:
         try:
-            survey_data = get_survey_data(survey_id)
-            responses = fetch_survey_responses(survey_id)
+            st.session_state.survey_data = get_survey_data(survey_id)
+            st.session_state.responses = fetch_survey_responses(survey_id)
+            if st.session_state.responses:
+                st.session_state.filtered_responses = st.session_state.responses.copy()
+        except Exception as e:
+            st.error(f"Error loading survey data: {str(e)}")
+
+    # Display survey data if available in session state
+    if st.session_state.survey_data and st.session_state.responses:
+        try:
+            survey_data = st.session_state.survey_data
+            responses = st.session_state.responses
             
             if not survey_data or not responses:
                 st.error("No survey or responses found for this ID")
@@ -92,24 +120,16 @@ def show_survey_responses():
             # Quick Overview Section
             st.markdown("### 📊 Response Overview")
             
-            # Calculate key metrics safely
+            # Calculate relevant metrics
             total_responses = len(responses)
-            
-            # Safely count recent responses
-            recent_responses = 0
-            completed_responses = 0
-            
-            for r in responses:
-                # Parse submission datetime safely
-                submission_time = parse_datetime(r.get('submission_datetime'))
-                if submission_time and (datetime.now() - submission_time).days <= 7:
-                    recent_responses += 1
-                
-                # Count completed responses
-                if r.get('status') == 'completed':
-                    completed_responses += 1
-
-            completion_rate = (completed_responses / total_responses * 100) if total_responses > 0 else 0
+            recent_responses = sum(1 for r in responses 
+                                 if parse_datetime(r.get('submission_datetime')) and 
+                                 (datetime.now() - parse_datetime(r.get('submission_datetime'))).days <= 7)
+            avg_response_time = np.mean([
+                (parse_datetime(r.get('submission_datetime')) - parse_datetime(r.get('start_time'))).total_seconds() / 60
+                for r in responses 
+                if parse_datetime(r.get('submission_datetime')) and parse_datetime(r.get('start_time'))
+            ]) if responses else 0
 
             # Display metrics
             cols = st.columns(4)
@@ -129,15 +149,15 @@ def show_survey_responses():
             )
             cols[2].markdown(
                 f"""<div class='quick-stats'>
-                    <h1>{completion_rate:.0f}%</h1>
-                    <p>Completion Rate</p>
+                    <h1>{avg_response_time:.0f}min</h1>
+                    <p>Avg Response Time</p>
                 </div>""", 
                 unsafe_allow_html=True
             )
             cols[3].markdown(
                 f"""<div class='quick-stats'>
-                    <h1>Active</h1>
-                    <p>Survey Status</p>
+                    <h1>{calculate_time_left(survey_data.get('expiration_datetime'))}</h1>
+                    <p>Time Left</p>
                 </div>""", 
                 unsafe_allow_html=True
             )
@@ -147,19 +167,55 @@ def show_survey_responses():
             
             # Smart Filters
             with st.expander("📋 Filter Responses", expanded=True):
-                filter_cols = st.columns(4)
+                filter_cols = st.columns(3)
                 with filter_cols[0]:
                     date_range = st.date_input("Date Range", value=[])
                 with filter_cols[1]:
-                    completion_status = st.multiselect("Status", ["Completed", "Partial", "Started"])
+                    sort_by = st.selectbox("Sort by", ["Newest First", "Oldest First", "Response Time"])
                 with filter_cols[2]:
-                    sort_by = st.selectbox("Sort by", ["Newest First", "Oldest First", "Completion Time"])
-                with filter_cols[3]:
-                    search = st.text_input("Search responses", placeholder="Search by email or content")
+                    search = st.text_input("Search", placeholder="Search by email or content")
 
-            # Timeline visualization with error handling
+            # Apply filters
+            filtered_responses = st.session_state.responses.copy()
+            
+            # Date filter
+            if len(date_range) == 2:
+                filtered_responses = [
+                    r for r in filtered_responses
+                    if date_range[0] <= parse_datetime(r.get('submission_datetime')).date() <= date_range[1]
+                ]
+
+            # Search filter
+            if search:
+                search = search.lower()
+                filtered_responses = [
+                    r for r in filtered_responses
+                    if search in str(r.get('trainee_email', '')).lower() or 
+                    search in str(r.get('trainee_responses', {})).lower()
+                ]
+
+            # Sort responses
+            if sort_by == "Newest First":
+                filtered_responses.sort(
+                    key=lambda x: parse_datetime(x.get('submission_datetime')) or datetime.min,
+                    reverse=True
+                )
+            elif sort_by == "Oldest First":
+                filtered_responses.sort(
+                    key=lambda x: parse_datetime(x.get('submission_datetime')) or datetime.min
+                )
+            elif sort_by == "Response Time":
+                filtered_responses.sort(
+                    key=lambda x: (
+                        parse_datetime(x.get('submission_datetime')) - 
+                        parse_datetime(x.get('start_time'))
+                    ).total_seconds() if parse_datetime(x.get('submission_datetime')) and 
+                    parse_datetime(x.get('start_time')) else float('inf')
+                )
+
+            # Timeline visualization
             timeline_data = []
-            for response in responses:
+            for response in filtered_responses:
                 submission_time = parse_datetime(response.get('submission_datetime'))
                 if submission_time:
                     timeline_data.append({
@@ -185,11 +241,9 @@ def show_survey_responses():
                     yaxis=dict(showgrid=True, gridwidth=1, gridcolor='rgba(255,255,255,0.1)')
                 )
                 st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.warning("No timeline data available")
 
-            # Individual Response Cards with error handling
-            for response in responses:
+            # Display filtered responses
+            for response in filtered_responses:
                 with st.container():
                     submission_time = parse_datetime(response.get('submission_datetime'))
                     submission_display = submission_time.strftime('%Y-%m-%d %H:%M:%S') if submission_time else 'Time not available'
@@ -245,28 +299,28 @@ def show_survey_responses():
                             "status": response.get('status', 'unknown')
                         })
 
-            # Quick Insights (with actual data)
+            # Updated Quick Insights
             st.markdown("### 🎯 Quick Insights")
             insight_cols = st.columns(2)
             
             with insight_cols[0]:
-                st.markdown("""
-                    <div class='insight-pill'>Most responses: Weekdays</div>
-                    <div class='insight-pill'>Average completion: {completion_time}</div>
-                    <div class='insight-pill'>Response rate: {completion_rate:.0f}%</div>
+                st.markdown(f"""
+                    <div class='insight-pill'>Peak response time: {timeline_df['date'].dt.hour.mode().iloc[0]}:00</div>
+                    <div class='insight-pill'>Average response time: {avg_response_time:.0f} min</div>
+                    <div class='insight-pill'>Responses today: {sum(1 for r in filtered_responses if parse_datetime(r.get('submission_datetime')).date() == datetime.now().date())}</div>
                 """, unsafe_allow_html=True)
             
             with insight_cols[1]:
-                st.markdown("""
-                    <div class='insight-pill'>Total responses: {total_responses}</div>
+                st.markdown(f"""
+                    <div class='insight-pill'>Total responses: {len(filtered_responses)}</div>
                     <div class='insight-pill'>Recent responses: {recent_responses}</div>
-                    <div class='insight-pill'>Completion rate: {completion_rate:.0f}%</div>
+                    <div class='insight-pill'>Time until expiry: {calculate_time_left(survey_data.get('expiration_datetime'))}</div>
                 """, unsafe_allow_html=True)
 
         except Exception as e:
-            st.error(f"Error loading survey responses: {str(e)}")
-            st.exception(e)  # This will show the full error in development
-            
+            st.error(f"Error displaying survey responses: {str(e)}")
+            st.exception(e)
+    
     else:
         # Welcome message with instructions
         st.info("👆 Enter a Survey ID above to explore responses")
