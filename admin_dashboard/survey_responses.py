@@ -208,34 +208,8 @@ def show_survey_responses():
                     key=lambda x: parse_datetime(x.get('submission_datetime')) or datetime.min
                 )
 
-            # Display individual responses
-            for response in filtered_responses:
-                with st.container():
-                    submission_time = parse_datetime(response.get('submission_datetime'))
-                    submission_display = submission_time.strftime('%Y-%m-%d %H:%M:%S') if submission_time else 'Time not available'
-                    
-                    st.markdown(f"""
-                        <div class='response-card'>
-                            <h4>Response from {response.get('trainee_email', 'Unknown User')}</h4>
-                            <p>Submitted: {submission_display}</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Display answers with corrected data structure handling
-                    trainee_responses = response.get('trainee_responses', {})
-                    if trainee_responses:
-                        for section_name, section_data in trainee_responses.items():
-                            st.markdown(f"**{section_name.title()}**")
-                            if isinstance(section_data, dict):
-                                for question, answer in section_data.items():
-                                    col1, col2 = st.columns([1, 2])
-                                    col1.markdown(f"*{question}*")
-                                    col2.markdown(f"{answer}")
-
             # 4. Response Summary Table
             st.markdown("### 📋 Response Summary")
-            
-            # Create summary table data
             summary_data = []
             for idx, response in enumerate(filtered_responses, 1):
                 submission_time = parse_datetime(response.get('submission_datetime'))
@@ -262,9 +236,46 @@ def show_survey_responses():
             else:
                 st.info("No responses available to display in summary")
 
+            # 5. Individual Responses (with improved formatting)
+            for response in filtered_responses:
+                with st.container():
+                    submission_time = parse_datetime(response.get('submission_datetime'))
+                    submission_display = submission_time.strftime('%Y-%m-%d %H:%M:%S') if submission_time else 'Time not available'
+                    
+                    st.markdown(f"""
+                        <div class='response-card'>
+                            <h4>Response from {response.get('trainee_email', 'Unknown User')}</h4>
+                            <p>Submitted: {submission_display}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Display answers with better formatting
+                    trainee_responses = response.get('trainee_responses', {})
+                    if trainee_responses:
+                        for section_name, section_data in trainee_responses.items():
+                            st.markdown(f"**{section_name}**")
+                            if isinstance(section_data, dict):
+                                for q_id, answer_data in section_data.items():
+                                    if isinstance(answer_data, dict):
+                                        question = answer_data.get('question', '')
+                                        answer = answer_data.get('answer', '')
+                                        
+                                        # Format the answer based on its type
+                                        if isinstance(answer, list):
+                                            answer = ", ".join(answer)
+                                        elif isinstance(answer, (int, float)):
+                                            scale = answer_data.get('scale', {})
+                                            if scale:
+                                                max_label = scale.get('max_label', '')
+                                                answer = f"{answer} - {max_label}"
+                                        
+                                        col1, col2 = st.columns([1, 2])
+                                        col1.markdown(f"*{question}*")
+                                        col2.markdown(f"{answer}")
+
         except Exception as e:
             st.error(f"Error displaying survey responses: {str(e)}")
-            st.exception(e)  # This will show the full error trace in development
+            st.exception(e)
 
     else:
         # Welcome message with instructions
