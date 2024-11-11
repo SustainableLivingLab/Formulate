@@ -144,10 +144,14 @@ def show_survey_reports():
                     if not multiple_choice.empty:
                         for question in multiple_choice["question"].unique():
                             data = multiple_choice[multiple_choice["question"] == question]
+                            # Create value counts and convert to DataFrame
+                            value_counts = data["answer"].value_counts().reset_index()
+                            value_counts.columns = ["answer", "count"]  # Rename columns
+                            
                             fig = px.pie(
-                                data_frame=data["answer"].value_counts().reset_index(),
+                                data_frame=value_counts,
                                 values="count",
-                                names="index",
+                                names="answer",  # Changed from 'index' to 'answer'
                                 title=question,
                                 hole=0.4,
                                 color_discrete_sequence=px.colors.qualitative.Set3
@@ -180,7 +184,11 @@ def show_survey_reports():
                                 xaxis_title="Rating",
                                 yaxis_title="Count",
                                 bargap=0.1,
-                                height=400
+                                height=400,
+                                title_font_color="white",
+                                font_color="white",
+                                paper_bgcolor='rgba(0,0,0,0)',
+                                plot_bgcolor='rgba(0,0,0,0)'
                             )
                             st.plotly_chart(fig, use_container_width=True)
 
