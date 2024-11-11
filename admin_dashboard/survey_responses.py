@@ -89,20 +89,92 @@ def show_survey_responses():
                     if responses:
                         # Add response metrics
                         metrics_cols = st.columns(4)
-                        total_responses = len(responses)
-                        avg_completion_time = 15  # Calculate this based on actual data
-                        
-                        metrics_cols[0].metric("Total Responses", total_responses)
-                        metrics_cols[1].metric("Avg. Completion Time", f"{avg_completion_time}min")
-                        metrics_cols[2].metric("Response Rate", "85%")  # Calculate this
-                        metrics_cols[3].metric("Completion Rate", "95%")  # Calculate this
+                        try:
+                            total_responses = len(responses)
+                            
+                            # Calculate average completion time (if timestamp data available)
+                            completion_times = []
+                            for r in responses:
+                                if r.get('start_time') and r.get('submission_datetime'):
+                                    try:
+                                        start = datetime.fromisoformat(r['start_time'])
+                                        end = datetime.fromisoformat(r['submission_datetime'])
+                                        completion_times.append((end - start).total_seconds() / 60)  # Convert to minutes
+                                    except (ValueError, TypeError):
+                                        continue
+                            
+                            avg_completion_time = round(sum(completion_times) / len(completion_times)) if completion_times else 0
+                            
+                            # Calculate response rate (if you have total expected responses)
+                            expected_responses = total_responses  # Replace with actual expected count if available
+                            response_rate = round((total_responses / expected_responses * 100) if expected_responses else 100)
+                            
+                            # Calculate completion rate
+                            completed_responses = sum(1 for r in responses if r.get('status') == 'completed')
+                            completion_rate = round((completed_responses / total_responses * 100) if total_responses else 0)
+                            
+                            metrics_cols[0].metric(
+                                "Total Responses", 
+                                total_responses,
+                                help="Total number of survey submissions"
+                            )
+                            metrics_cols[1].metric(
+                                "Avg. Completion Time", 
+                                f"{avg_completion_time}min",
+                                help="Average time taken to complete the survey"
+                            )
+                            metrics_cols[2].metric(
+                                "Response Rate", 
+                                f"{response_rate}%",
+                                help="Percentage of invited participants who responded"
+                            )
+                            metrics_cols[3].metric(
+                                "Completion Rate", 
+                                f"{completion_rate}%",
+                                help="Percentage of started surveys that were completed"
+                            )
+
+                        except Exception as e:
+                            st.error("Error calculating metrics")
+                            print(f"Metrics error: {str(e)}")  # For debugging
 
                         # Response Timeline
-                        response_dates = [datetime.fromisoformat(r.get('submission_datetime', '')) for r in responses]
-                        timeline_df = pd.DataFrame({'date': response_dates})
-                        fig = px.line(timeline_df, x='date', title='Response Timeline')
-                        fig.update_layout(showlegend=False)
-                        st.plotly_chart(fig, use_container_width=True)
+                        try:
+                            response_dates = []
+                            for r in responses:
+                                submission_datetime = r.get('submission_datetime')
+                                if submission_datetime:
+                                    try:
+                                        date = datetime.fromisoformat(submission_datetime)
+                                        response_dates.append(date)
+                                    except (ValueError, TypeError):
+                                        continue
+                            
+                            if response_dates:
+                                timeline_df = pd.DataFrame({'date': response_dates})
+                                fig = px.line(
+                                    timeline_df, 
+                                    x='date', 
+                                    title='Response Timeline',
+                                    labels={'date': 'Submission Date', 'value': 'Count'}
+                                )
+                                fig.update_layout(
+                                    showlegend=False,
+                                    height=300,
+                                    title_font_color="white",
+                                    font_color="white",
+                                    paper_bgcolor='rgba(0,0,0,0)',
+                                    plot_bgcolor='rgba(0,0,0,0)',
+                                    xaxis=dict(showgrid=True, gridwidth=1, gridcolor='rgba(255,255,255,0.1)'),
+                                    yaxis=dict(showgrid=True, gridwidth=1, gridcolor='rgba(255,255,255,0.1)')
+                                )
+                                st.plotly_chart(fig, use_container_width=True)
+                            else:
+                                st.info("No timeline data available")
+
+                        except Exception as e:
+                            st.warning("Unable to generate response timeline")
+                            print(f"Timeline error: {str(e)}")  # For debugging
 
                         # Enhanced response display
                         for response in responses:
