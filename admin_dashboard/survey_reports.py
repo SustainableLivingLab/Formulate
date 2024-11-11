@@ -5,8 +5,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from utils.create_database_tables import get_survey_data, fetch_survey_responses
 from textblob import TextBlob
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import LatentDirichletAllocation
 from wordcloud import WordCloud
 import nltk
 from datetime import datetime
@@ -22,11 +20,12 @@ def create_metric_card(title, value, delta=None, suffix=""):
         title={"text": title, "font": {"size": 20}},
         number={"suffix": suffix, "font": {"size": 30}},
         delta={"reference": delta, "relative": True} if delta else None,
-    )).update_layout(height=200)
+    )).update_layout(
+        height=200,
+        margin=dict(l=10, r=10, t=30, b=10)
+    )
 
 def show_survey_reports():
-    st.set_page_config(layout="wide", page_title="Survey Analytics Dashboard")
-    
     # Custom CSS for better styling
     st.markdown("""
         <style>
@@ -50,33 +49,31 @@ def show_survey_reports():
             border-radius: 10px;
             margin: 10px 0;
         }
+        .stPlotlyChart {
+            background-color: white;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
         </style>
     """, unsafe_allow_html=True)
 
-    # Dashboard Header with Logo/Icon
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        st.image("https://your-logo-url.png", width=100)  # Replace with your logo
-    with col2:
-        st.title("📊 Survey Analytics Dashboard")
-        st.markdown("*Comprehensive analysis and insights from survey responses*")
+    st.title("📊 Survey Analytics Dashboard")
+    st.markdown("*Comprehensive analysis of survey responses*")
 
-    # Enhanced Survey ID input with validation
-    with st.container():
-        col1, col2, col3 = st.columns([3, 1, 1])
-        with col1:
-            survey_id = st.text_input(
-                "Survey ID",
-                placeholder="Enter Survey ID",
-                help="Enter the unique identifier for your survey"
-            )
-        with col2:
-            analyze_button = st.button("🔍 Analyze", use_container_width=True)
-        with col3:
-            export_button = st.button("📥 Export Data", use_container_width=True)
+    # Survey ID input with validation
+    col1, col2 = st.columns([4, 1])
+    with col1:
+        survey_id = st.text_input(
+            "Survey ID",
+            placeholder="Enter the Survey ID to analyze",
+            help="Enter the unique identifier for your survey"
+        )
+    with col2:
+        analyze_button = st.button("🔍 Analyze", use_container_width=True)
 
     if analyze_button and survey_id:
-        with st.spinner("Generating comprehensive analytics..."):
+        with st.spinner("Loading survey data..."):
             survey_data = get_survey_data(survey_id)
             if not survey_data:
                 st.error("❌ Survey not found. Please check the ID.")
@@ -87,32 +84,7 @@ def show_survey_reports():
                 st.warning("⚠️ No responses recorded for this survey yet.")
                 return
 
-            # Overview Metrics
-            st.markdown("### 📈 Survey Overview")
-            total_responses = len(responses)
-            
-            # Create metric cards row
-            metric_cols = st.columns(4)
-            with metric_cols[0]:
-                fig = create_metric_card("Total Responses", total_responses)
-                st.plotly_chart(fig, use_container_width=True)
-            
-            with metric_cols[1]:
-                avg_completion = 85  # Calculate this based on your data
-                fig = create_metric_card("Completion Rate", avg_completion, suffix="%")
-                st.plotly_chart(fig, use_container_width=True)
-            
-            with metric_cols[2]:
-                response_trend = 12  # Calculate this based on your data
-                fig = create_metric_card("Daily Responses", response_trend, delta=8)
-                st.plotly_chart(fig, use_container_width=True)
-            
-            with metric_cols[3]:
-                avg_rating = 4.2  # Calculate this based on your data
-                fig = create_metric_card("Average Rating", avg_rating, suffix="/5")
-                st.plotly_chart(fig, use_container_width=True)
-
-            # Process responses into DataFrame
+            # Process responses
             all_responses = []
             for response in responses:
                 for key, answer_data in response["trainee_responses"]["survey"].items():
@@ -124,15 +96,32 @@ def show_survey_reports():
                     })
 
             df = pd.DataFrame(all_responses)
+            
+            # Overview metrics
+            total_responses = len(responses)
+            completion_rate = round((total_responses / 100) * 100, 1)  # Example calculation
+            avg_time = "5 mins"  # Example value
 
-            # Create tabs for different analyses
-            tabs = st.tabs(["📊 Response Analysis", "📝 Text Analysis", "📈 Trends", "📋 Raw Data"])
+            # Metrics Row
+            metrics_cols = st.columns(3)
+            with metrics_cols[0]:
+                fig = create_metric_card("Total Responses", total_responses)
+                st.plotly_chart(fig, use_container_width=True)
+            with metrics_cols[1]:
+                fig = create_metric_card("Completion Rate", completion_rate, suffix="%")
+                st.plotly_chart(fig, use_container_width=True)
+            with metrics_cols[2]:
+                fig = create_metric_card("Avg. Time", avg_time)
+                st.plotly_chart(fig, use_container_width=True)
+
+            # Create tabs for analysis
+            tabs = st.tabs(["📊 Response Analysis", "📝 Text Analysis", "📈 Trends"])
 
             with tabs[0]:
                 col1, col2 = st.columns(2)
                 
                 with col1:
-                    st.markdown("### Multiple Choice Responses")
+                    st.subheader("Multiple Choice Responses")
                     multiple_choice = df[df["type"] == "multiple_choice"]
                     if not multiple_choice.empty:
                         for question in multiple_choice["question"].unique():
@@ -145,27 +134,36 @@ def show_survey_reports():
                                 hole=0.4,
                                 color_discrete_sequence=px.colors.qualitative.Set3
                             )
-                            fig.update_traces(textposition='inside', textinfo='percent+label')
+                            fig.update_layout(
+                                showlegend=True,
+                                margin=dict(t=50, l=0, r=0, b=0),
+                                height=400
+                            )
                             st.plotly_chart(fig, use_container_width=True)
 
                 with col2:
-                    st.markdown("### Likert Scale Responses")
+                    st.subheader("Rating Distributions")
                     likert = df[df["type"] == "likert_scale"]
                     if not likert.empty:
                         for question in likert["question"].unique():
                             data = likert[likert["question"] == question]
-                            fig = px.histogram(
-                                data,
-                                x="answer",
+                            fig = go.Figure()
+                            fig.add_trace(go.Histogram(
+                                x=data["answer"],
+                                nbinsx=5,
+                                marker_color='rgb(55, 83, 109)'
+                            ))
+                            fig.update_layout(
                                 title=question,
-                                color_discrete_sequence=['#2E86C1'],
-                                nbins=5
+                                xaxis_title="Rating",
+                                yaxis_title="Count",
+                                bargap=0.1,
+                                height=400
                             )
-                            fig.update_layout(bargap=0.1)
                             st.plotly_chart(fig, use_container_width=True)
 
             with tabs[1]:
-                st.markdown("### Text Analysis")
+                st.subheader("Text Analysis")
                 open_ended = df[df["type"] == "open_ended"]
                 if not open_ended.empty:
                     # Sentiment Analysis
@@ -192,11 +190,24 @@ def show_survey_reports():
                             }
                         }
                     ))
+                    fig.update_layout(height=300)
+                    st.plotly_chart(fig, use_container_width=True)
+
+                    # Word frequency analysis using Plotly
+                    words = ' '.join(open_ended['answer']).lower().split()
+                    word_freq = pd.Series(words).value_counts().head(10)
+                    
+                    fig = px.bar(
+                        x=word_freq.index,
+                        y=word_freq.values,
+                        title="Top 10 Most Common Words",
+                        labels={'x': 'Word', 'y': 'Frequency'}
+                    )
+                    fig.update_layout(height=400)
                     st.plotly_chart(fig, use_container_width=True)
 
             with tabs[2]:
-                st.markdown("### Response Trends")
-                # Convert timestamp to datetime
+                st.subheader("Response Trends")
                 df['timestamp'] = pd.to_datetime(df['timestamp'])
                 daily_responses = df.groupby(df['timestamp'].dt.date).size().reset_index()
                 daily_responses.columns = ['date', 'count']
@@ -208,16 +219,31 @@ def show_survey_reports():
                     title='Daily Response Trend',
                     markers=True
                 )
-                fig.update_traces(line_color='#2E86C1')
+                fig.update_traces(
+                    line_color='#2E86C1',
+                    marker=dict(size=8)
+                )
+                fig.update_layout(
+                    xaxis_title="Date",
+                    yaxis_title="Number of Responses",
+                    height=400
+                )
                 st.plotly_chart(fig, use_container_width=True)
 
-            with tabs[3]:
-                st.markdown("### Raw Response Data")
-                st.dataframe(
-                    df.style.background_gradient(cmap='Blues'),
-                    use_container_width=True
+                # Response time distribution
+                fig = px.histogram(
+                    df,
+                    x='timestamp',
+                    title='Response Time Distribution',
+                    nbins=20,
+                    color_discrete_sequence=['#2E86C1']
                 )
+                fig.update_layout(
+                    xaxis_title="Time",
+                    yaxis_title="Number of Responses",
+                    height=400
+                )
+                st.plotly_chart(fig, use_container_width=True)
 
-# Run the analytics dashboard
 if __name__ == "__main__":
     show_survey_reports()
