@@ -11,6 +11,43 @@ import json
 from datetime import datetime, timedelta
 
 
+# Add this right after imports
+st.markdown("""
+    <style>
+    /* Hide the actual button */
+    [data-testid="baseButton-secondary"] {
+        visibility: hidden;
+        height: 0;
+        padding: 0;
+        margin-top: -50px;  /* Pull the hidden button up */
+    }
+    
+    /* Style for our custom button */
+    .stButton button {
+        width: 100%;
+        background-color: #ff4b4b !important;
+        color: white !important;
+        padding: 0.5rem !important;
+        border-radius: 4px !important;
+        border: none !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .stButton button:hover {
+        background-color: #cc0000 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Make expander content more compact */
+    .streamlit-expanderContent {
+        padding-top: 0 !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+
 def show_survey_management():
     # Ensure trainer_username is available in session state
     if "username" not in st.session_state:
@@ -300,31 +337,31 @@ def show_survey_management():
                         st.write(f"[Trainee Form Link]({survey_link})")
                     with col_delete:
                         st.markdown(
-                            """
-                            <style>
-                            .delete-button {
-                                display: inline-flex;
-                                align-items: center;
-                                justify-content: center;
-                                padding: 0.25rem 0.75rem;
-                                background-color: #ff4b4b;
-                                color: white;
-                                border: none;
-                                border-radius: 0.25rem;
-                                cursor: pointer;
-                                text-decoration: none;
-                                transition: background-color 0.3s;
-                                width: 100%;
-                            }
-                            .delete-button:hover {
-                                background-color: #cc0000;
-                            }
-                            </style>
+                            f"""
+                            <div style='text-align: center;'>
+                                <button style='
+                                    background-color: #ff4b4b;
+                                    color: white;
+                                    padding: 8px 16px;
+                                    border: none;
+                                    border-radius: 4px;
+                                    cursor: not-allowed;
+                                    font-size: 14px;
+                                    width: 100%;
+                                    opacity: 0.9;
+                                '>
+                                    🗑️ Delete
+                                </button>
+                            </div>
                             """,
                             unsafe_allow_html=True
                         )
-                        if st.button("🗑️ Delete", key=f"delete_active_{survey['survey_id']}", 
-                                   help="Delete this survey", use_container_width=True):
+                        # Hidden button that actually performs the action
+                        if st.button("Delete Survey", key=f"delete_active_{survey['survey_id']}", 
+                                   help="Delete this survey", 
+                                   type="secondary",
+                                   use_container_width=True,
+                                   ):
                             if delete_survey(survey['survey_id']):
                                 st.success("Survey deleted successfully!")
                                 st.rerun()
@@ -352,31 +389,31 @@ def show_survey_management():
                         st.write(f"[Trainee Form Link]({survey_link})")
                     with col_delete:
                         st.markdown(
-                            """
-                            <style>
-                            .delete-button {
-                                display: inline-flex;
-                                align-items: center;
-                                justify-content: center;
-                                padding: 0.25rem 0.75rem;
-                                background-color: #ff4b4b;
-                                color: white;
-                                border: none;
-                                border-radius: 0.25rem;
-                                cursor: pointer;
-                                text-decoration: none;
-                                transition: background-color 0.3s;
-                                width: 100%;
-                            }
-                            .delete-button:hover {
-                                background-color: #cc0000;
-                            }
-                            </style>
+                            f"""
+                            <div style='text-align: center;'>
+                                <button style='
+                                    background-color: #ff4b4b;
+                                    color: white;
+                                    padding: 8px 16px;
+                                    border: none;
+                                    border-radius: 4px;
+                                    cursor: not-allowed;
+                                    font-size: 14px;
+                                    width: 100%;
+                                    opacity: 0.9;
+                                '>
+                                    🗑️ Delete
+                                </button>
+                            </div>
                             """,
                             unsafe_allow_html=True
                         )
-                        if st.button("🗑️ Delete", key=f"delete_closed_{survey['survey_id']}", 
-                                   help="Delete this survey", use_container_width=True):
+                        # Hidden button that actually performs the action
+                        if st.button("Delete Survey", key=f"delete_closed_{survey['survey_id']}", 
+                                   help="Delete this survey", 
+                                   type="secondary",
+                                   use_container_width=True,
+                                   ):
                             if delete_survey(survey['survey_id']):
                                 st.success("Survey deleted successfully!")
                                 st.rerun()
