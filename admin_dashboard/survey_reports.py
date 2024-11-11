@@ -7,13 +7,14 @@ from utils.create_database_tables import get_survey_data, fetch_survey_responses
 from textblob import TextBlob
 from wordcloud import WordCloud
 import nltk
-from datetime import datetime
+from datetime import datetime, timedelta
+import numpy as np
 
 # Download nltk stopwords if not already downloaded
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 
-def create_metric_card(title, value, delta=None, suffix=""):
+def create_metric_card(title, value, delta=None, suffix="", description=None):
     # Convert string value to numeric if it's a number with suffix
     display_value = value
     if isinstance(value, str):
@@ -24,61 +25,77 @@ def create_metric_card(title, value, delta=None, suffix=""):
     else:
         numeric_value = value
 
-    return go.Figure(go.Indicator(
+    fig = go.Figure(go.Indicator(
         mode="number+delta" if delta else "number",
         value=numeric_value,
-        title={"text": title, "font": {"size": 20, "color": "white"}},
+        title={
+            "text": f"{title}<br><span style='font-size:0.8em;color:gray'>{description if description else ''}</span>",
+            "font": {"size": 20, "color": "white"}
+        },
         number={
             "suffix": suffix,
             "font": {"size": 30, "color": "white"},
-            "valueformat": ".0f"
+            "valueformat": ".1f"
         },
         delta={"reference": delta, "relative": True} if delta else None,
-    )).update_layout(
+    ))
+    
+    fig.update_layout(
         height=200,
         margin=dict(l=10, r=10, t=30, b=10),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)'
     )
+    return fig
 
 def show_survey_reports():
-    # Custom CSS for better styling
+    # Custom CSS with improved styling
     st.markdown("""
         <style>
         .stTabs [data-baseweb="tab-list"] {
             gap: 20px;
+            background-color: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 10px;
         }
         .stTabs [data-baseweb="tab"] {
             padding: 10px 20px;
             border-radius: 5px;
         }
+        .stTabs [data-baseweb="tab"][aria-selected="true"] {
+            background-color: rgba(255,255,255,0.1);
+        }
         .block-container {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
+            padding: 2rem;
         }
         .metric-row {
-            background-color: #f8f9fa;
+            background-color: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        .stPlotlyChart {
+            background-color: rgba(0,0,0,0);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .insight-card {
+            background-color: rgba(255,255,255,0.05);
             padding: 15px;
             border-radius: 10px;
             margin: 10px 0;
         }
-        .stPlotlyChart {
-            background-color: rgba(0,0,0,0);
-            border-radius: 5px;
-            padding: 10px;
-        }
-        div[data-testid="stVerticalBlock"] > div:has(div.stButton) {
-            flex: 0;
-            display: flex;
-            align-items: center;
+        .stExpander {
+            background-color: rgba(255,255,255,0.02) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
         }
         </style>
     """, unsafe_allow_html=True)
 
+    # Header with survey info
     st.title("📊 Survey Analytics Dashboard")
-    st.markdown("*Comprehensive analysis of survey responses*")
-
-    # Survey ID input with validation - Fixed alignment
+    
+    # Survey selector with recent surveys list
     col1, col2 = st.columns([4, 1])
     with col1:
         survey_id = st.text_input(
@@ -102,38 +119,79 @@ def show_survey_reports():
                 st.warning("⚠️ No responses recorded for this survey yet.")
                 return
 
-            # Process responses
+            # Process responses with enhanced metadata
             all_responses = []
+            response_times = []
+            last_response_time = None
+            
             for response in responses:
+                timestamp = datetime.fromisoformat(response.get("timestamp", datetime.now().isoformat()))
+                if last_response_time:
+                    response_times.append((timestamp - last_response_time).total_seconds() / 3600)
+                last_response_time = timestamp
+                
                 for key, answer_data in response["trainee_responses"]["survey"].items():
                     all_responses.append({
                         "question": answer_data["question"],
                         "answer": answer_data["answer"],
                         "type": answer_data["type"],
-                        "timestamp": response.get("timestamp", datetime.now().isoformat())
+                        "timestamp": timestamp,
+                        "trainee_email": response.get("trainee_email"),
+                        "day_of_week": timestamp.strftime('%A'),
+                        "hour_of_day": timestamp.hour
                     })
 
             df = pd.DataFrame(all_responses)
-            
-            # Overview metrics
+
+            # Enhanced Overview metrics
             total_responses = len(responses)
             completion_rate = round((total_responses / 100) * 100, 1)
-            avg_time_mins = 5  # Example numeric value
+            avg_response_time = np.mean(response_times) if response_times else 0
 
-            # Metrics Row
-            metrics_cols = st.columns(3)
+            # Metrics Row with descriptions
+            metrics_cols = st.columns(4)
             with metrics_cols[0]:
-                fig = create_metric_card("Total Responses", total_responses)
+                fig = create_metric_card(
+                    "Total Responses", 
+                    total_responses,
+                    description="Number of survey submissions"
+                )
                 st.plotly_chart(fig, use_container_width=True)
+            
             with metrics_cols[1]:
-                fig = create_metric_card("Completion Rate", completion_rate, suffix="%")
+                fig = create_metric_card(
+                    "Completion Rate", 
+                    completion_rate, 
+                    suffix="%",
+                    description="Percentage of completed surveys"
+                )
                 st.plotly_chart(fig, use_container_width=True)
+            
             with metrics_cols[2]:
-                fig = create_metric_card("Avg. Time (mins)", avg_time_mins)
+                fig = create_metric_card(
+                    "Avg. Response Time", 
+                    avg_response_time,
+                    suffix="h",
+                    description="Average time between responses"
+                )
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with metrics_cols[3]:
+                engagement_score = (completion_rate * total_responses) / 100
+                fig = create_metric_card(
+                    "Engagement Score", 
+                    engagement_score,
+                    description="Combined metric of participation"
+                )
                 st.plotly_chart(fig, use_container_width=True)
 
-            # Create tabs for analysis
-            tabs = st.tabs(["📊 Response Analysis", "📝 Text Analysis", "📈 Trends"])
+            # Create tabs with enhanced analysis
+            tabs = st.tabs([
+                "📊 Response Analysis", 
+                "📝 Text Analysis", 
+                "📈 Trends",
+                "🎯 Insights Dashboard"
+            ])
 
             with tabs[0]:
                 st.markdown("### Response Analysis Overview")
@@ -352,6 +410,78 @@ def show_survey_reports():
                     height=400
                 )
                 st.plotly_chart(fig, use_container_width=True)
+
+            # New Insights Dashboard tab
+            with tabs[3]:
+                st.subheader("🎯 Key Insights Dashboard")
+                
+                # Response patterns
+                col1, col2 = st.columns(2)
+                with col1:
+                    # Day of week analysis
+                    day_counts = df['day_of_week'].value_counts()
+                    fig = px.bar(
+                        x=day_counts.index,
+                        y=day_counts.values,
+                        title="Response Distribution by Day",
+                        labels={'x': 'Day', 'y': 'Count'}
+                    )
+                    fig.update_layout(
+                        height=300,
+                        title_font_color="white",
+                        font_color="white",
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        plot_bgcolor='rgba(0,0,0,0)'
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+
+                with col2:
+                    # Hour of day analysis
+                    hour_counts = df['hour_of_day'].value_counts().sort_index()
+                    fig = px.line(
+                        x=hour_counts.index,
+                        y=hour_counts.values,
+                        title="Response Distribution by Hour",
+                        labels={'x': 'Hour', 'y': 'Count'}
+                    )
+                    fig.update_layout(
+                        height=300,
+                        title_font_color="white",
+                        font_color="white",
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        plot_bgcolor='rgba(0,0,0,0)'
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+
+                # Key findings section
+                st.markdown("""
+                    <div class='insight-card'>
+                        <h4>📌 Key Findings</h4>
+                        <ul>
+                            <li>Most active day: {}</li>
+                            <li>Peak response hour: {}:00</li>
+                            <li>Average response interval: {:.1f} hours</li>
+                            <li>Response trend: {}</li>
+                        </ul>
+                    </div>
+                """.format(
+                    day_counts.index[0],
+                    hour_counts.idxmax(),
+                    avg_response_time,
+                    "Increasing" if len(response_times) > 1 and response_times[-1] > response_times[0] else "Stable"
+                ), unsafe_allow_html=True)
+
+                # Export options
+                st.markdown("### 📤 Export Options")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("📊 Export as Excel"):
+                        # Add Excel export functionality
+                        pass
+                with col2:
+                    if st.button("📑 Export as PDF Report"):
+                        # Add PDF export functionality
+                        pass
 
 if __name__ == "__main__":
     show_survey_reports()
