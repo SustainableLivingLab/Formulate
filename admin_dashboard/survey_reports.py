@@ -136,61 +136,139 @@ def show_survey_reports():
             tabs = st.tabs(["📊 Response Analysis", "📝 Text Analysis", "📈 Trends"])
 
             with tabs[0]:
-                col1, col2 = st.columns(2)
+                st.markdown("### Response Analysis Overview")
                 
-                with col1:
-                    st.subheader("Multiple Choice Responses")
-                    multiple_choice = df[df["type"] == "multiple_choice"]
-                    if not multiple_choice.empty:
-                        for question in multiple_choice["question"].unique():
-                            data = multiple_choice[multiple_choice["question"] == question]
-                            # Create value counts and convert to DataFrame
-                            value_counts = data["answer"].value_counts().reset_index()
-                            value_counts.columns = ["answer", "count"]  # Rename columns
-                            
-                            fig = px.pie(
-                                data_frame=value_counts,
-                                values="count",
-                                names="answer",  # Changed from 'index' to 'answer'
-                                title=question,
-                                hole=0.4,
-                                color_discrete_sequence=px.colors.qualitative.Set3
-                            )
-                            fig.update_layout(
-                                showlegend=True,
-                                margin=dict(t=50, l=0, r=0, b=0),
-                                height=400,
-                                title_font_color="white",
-                                font_color="white",
-                                paper_bgcolor='rgba(0,0,0,0)',
-                                plot_bgcolor='rgba(0,0,0,0)'
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
+                # Summary statistics
+                total_questions = len(df["question"].unique())
+                mc_questions = len(df[df["type"] == "multiple_choice"]["question"].unique())
+                rating_questions = len(df[df["type"] == "likert_scale"]["question"].unique())
+                
+                # Quick stats row
+                stats_cols = st.columns(4)
+                stats_cols[0].metric("Total Questions", total_questions)
+                stats_cols[1].metric("Multiple Choice Questions", mc_questions)
+                stats_cols[2].metric("Rating Questions", rating_questions)
+                stats_cols[3].metric("Average Rating", f"{df[df['type'] == 'likert_scale']['answer'].astype(float).mean():.1f}/5")
 
-                with col2:
-                    st.subheader("Rating Distributions")
-                    likert = df[df["type"] == "likert_scale"]
-                    if not likert.empty:
-                        for question in likert["question"].unique():
-                            data = likert[likert["question"] == question]
-                            fig = go.Figure()
-                            fig.add_trace(go.Histogram(
-                                x=data["answer"],
-                                nbinsx=5,
-                                marker_color='rgb(55, 83, 109)'
-                            ))
-                            fig.update_layout(
-                                title=question,
-                                xaxis_title="Rating",
-                                yaxis_title="Count",
-                                bargap=0.1,
-                                height=400,
-                                title_font_color="white",
-                                font_color="white",
-                                paper_bgcolor='rgba(0,0,0,0)',
-                                plot_bgcolor='rgba(0,0,0,0)'
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
+                # Container for aligned columns
+                with st.container():
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.markdown("""
+                            <div style='background-color: rgba(255,255,255,0.1); padding: 15px; border-radius: 5px; margin-bottom: 15px;'>
+                                <h3 style='margin:0;'>Multiple Choice Responses</h3>
+                            </div>
+                        """, unsafe_allow_html=True)
+                        
+                        multiple_choice = df[df["type"] == "multiple_choice"]
+                        if not multiple_choice.empty:
+                            for question in multiple_choice["question"].unique():
+                                # Create expandable container for each question
+                                with st.expander(f"📊 {question}", expanded=True):
+                                    data = multiple_choice[multiple_choice["question"] == question]
+                                    value_counts = data["answer"].value_counts().reset_index()
+                                    value_counts.columns = ["answer", "count"]
+                                    
+                                    # Calculate percentages
+                                    total = value_counts["count"].sum()
+                                    value_counts["percentage"] = (value_counts["count"] / total * 100).round(1)
+                                    
+                                    # Create pie chart
+                                    fig = px.pie(
+                                        data_frame=value_counts,
+                                        values="count",
+                                        names="answer",
+                                        title=f"Response Distribution",
+                                        hole=0.4,
+                                        color_discrete_sequence=px.colors.qualitative.Set3
+                                    )
+                                    fig.update_layout(
+                                        showlegend=True,
+                                        margin=dict(t=50, l=0, r=0, b=0),
+                                        height=400,
+                                        title_font_color="white",
+                                        font_color="white",
+                                        paper_bgcolor='rgba(0,0,0,0)',
+                                        plot_bgcolor='rgba(0,0,0,0)'
+                                    )
+                                    
+                                    # Display chart and key insights
+                                    st.plotly_chart(fig, use_container_width=True)
+                                    
+                                    # Show key insights
+                                    top_answer = value_counts.iloc[0]
+                                    st.markdown(f"""
+                                        **Key Insights:**
+                                        - Most common response: **{top_answer['answer']}** ({top_answer['percentage']}%)
+                                        - Total responses: **{total}**
+                                        - Number of unique answers: **{len(value_counts)}**
+                                    """)
+
+                    with col2:
+                        st.markdown("""
+                            <div style='background-color: rgba(255,255,255,0.1); padding: 15px; border-radius: 5px; margin-bottom: 15px;'>
+                                <h3 style='margin:0;'>Rating Distributions</h3>
+                            </div>
+                        """, unsafe_allow_html=True)
+                        
+                        likert = df[df["type"] == "likert_scale"]
+                        if not likert.empty:
+                            for question in likert["question"].unique():
+                                with st.expander(f"📈 {question}", expanded=True):
+                                    data = likert[likert["question"] == question]
+                                    
+                                    # Convert answers to numeric
+                                    data["answer"] = pd.to_numeric(data["answer"])
+                                    
+                                    # Calculate statistics
+                                    avg_rating = data["answer"].mean()
+                                    median_rating = data["answer"].median()
+                                    mode_rating = data["answer"].mode().iloc[0]
+                                    
+                                    # Create histogram
+                                    fig = go.Figure()
+                                    fig.add_trace(go.Histogram(
+                                        x=data["answer"],
+                                        nbinsx=5,
+                                        marker_color='rgb(55, 83, 109)'
+                                    ))
+                                    
+                                    # Add mean line
+                                    fig.add_vline(
+                                        x=avg_rating,
+                                        line_dash="dash",
+                                        line_color="red",
+                                        annotation_text="Mean"
+                                    )
+                                    
+                                    fig.update_layout(
+                                        title="Response Distribution",
+                                        xaxis_title="Rating",
+                                        yaxis_title="Count",
+                                        bargap=0.1,
+                                        height=400,
+                                        title_font_color="white",
+                                        font_color="white",
+                                        paper_bgcolor='rgba(0,0,0,0)',
+                                        plot_bgcolor='rgba(0,0,0,0)'
+                                    )
+                                    
+                                    st.plotly_chart(fig, use_container_width=True)
+                                    
+                                    # Display statistics
+                                    stats_cols = st.columns(3)
+                                    stats_cols[0].metric("Average Rating", f"{avg_rating:.1f}")
+                                    stats_cols[1].metric("Median Rating", f"{median_rating:.1f}")
+                                    stats_cols[2].metric("Most Common", f"{mode_rating:.1f}")
+                                    
+                                    # Additional insights
+                                    st.markdown(f"""
+                                        **Rating Insights:**
+                                        - Response range: **{data['answer'].min()}-{data['answer'].max()}**
+                                        - Standard deviation: **{data['answer'].std():.2f}**
+                                        - Total responses: **{len(data)}**
+                                    """)
 
             with tabs[1]:
                 st.subheader("Text Analysis")
