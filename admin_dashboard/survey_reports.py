@@ -28,23 +28,34 @@ def create_metric_card(title, value, delta=None, suffix="", description=None):
         mode="number+delta" if delta else "number",
         value=numeric_value,
         title={
-            "text": f"{title}<br><span style='font-size:0.9em;color:rgba(255,255,255,0.7)'>{description if description else ''}</span>",
-            "font": {"size": 24, "color": "white", "family": "Arial"}
+            "text": f"{title}",
+            "font": {"size": 20, "color": "white", "family": "Arial"}
         },
         number={
             "suffix": suffix,
-            "font": {"size": 40, "color": "white", "family": "Arial"},
+            "font": {"size": 36, "color": "white", "family": "Arial"},
             "valueformat": ".1f"
         },
         delta={"reference": delta, "relative": True} if delta else None,
     ))
     
+    if description:
+        fig.add_annotation(
+            text=description,
+            xref="paper",
+            yref="paper",
+            x=0.5,
+            y=0,
+            showarrow=False,
+            font=dict(size=14, color="rgba(255,255,255,0.7)"),
+            xanchor="center"
+        )
+    
     fig.update_layout(
-        height=180,
-        margin=dict(l=10, r=10, t=60, b=10),
+        height=160,
+        margin=dict(l=10, r=10, t=30, b=40),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        width=None  # This allows the chart to be responsive
     )
     return fig
 
@@ -66,7 +77,11 @@ def show_survey_reports():
             background-color: rgba(255,255,255,0.1);
         }
         .block-container {
-            padding: 2rem;
+            padding-top: 1rem;
+            padding-bottom: 0rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            max-width: 100%;
         }
         .metric-row {
             background-color: rgba(255,255,255,0.05);
@@ -78,6 +93,7 @@ def show_survey_reports():
             background-color: rgba(0,0,0,0);
             border-radius: 10px;
             padding: 15px;
+            width: 100%;
         }
         .insight-card {
             background-color: rgba(255,255,255,0.05);
@@ -98,8 +114,13 @@ def show_survey_reports():
         .metric-container {
             background-color: rgba(255,255,255,0.05);
             border-radius: 10px;
-            padding: 20px;
-            margin: 10px 0;
+            padding: 1rem;
+            margin: 1rem 0;
+            width: 100%;
+            padding: 0.5rem;
+        }
+        .element-container {
+            width: 100%;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -162,12 +183,12 @@ def show_survey_reports():
 
             # Metrics Row with descriptions
             st.markdown('<div class="metric-container">', unsafe_allow_html=True)
-            metrics_cols = st.columns(4)
+            metrics_cols = st.columns([1, 1, 1, 1])
             with metrics_cols[0]:
                 fig = create_metric_card(
                     "Total Responses", 
                     total_responses,
-                    description="Number of completed survey submissions"
+                    description="Survey submissions"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
@@ -176,16 +197,16 @@ def show_survey_reports():
                     "Completion Rate", 
                     completion_rate, 
                     suffix="%",
-                    description="Percentage of surveys completed successfully"
+                    description="Completion success"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
             with metrics_cols[2]:
                 fig = create_metric_card(
-                    "Average Response Time", 
+                    "Avg Response Time", 
                     avg_response_time,
                     suffix="h",
-                    description="Mean time between consecutive responses"
+                    description="Between responses"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
@@ -194,7 +215,7 @@ def show_survey_reports():
                 fig = create_metric_card(
                     "Engagement Score", 
                     engagement_score,
-                    description="Overall participation and completion metric"
+                    description="Participation metric"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
