@@ -1,6 +1,6 @@
 from typing import Dict, Any
-from ai.system_content import system_content_prompt, SYSTEM_PROMPT2, SYSTEM_PROMPT3
-from ai.generate import surveyQuestions, analysis_Trainee_Response, SlideDeckGenerator
+from ai.system_content import system_content_prompt, SYSTEM_PROMPT2
+from ai.generate import surveyQuestions, analysis_Trainee_Response
 
 import json
 import streamlit as st
@@ -33,20 +33,5 @@ def generate_AI_summarisation(survey_data: str):
         return AI_summarastion
 
     # TO DO, in where this code will be executed?
-    except Exception as e:
-        print(e)
-
-
-# CODE TO GENERATE SLIDE DECK GENERATOR FOR LESSON CONTENT
-def generate_slide_deck(ai_summary: str, survey_data: Dict[Any, Any]):
-    try:
-        Slide_deck = SlideDeckGenerator(
-            SYSTEM_PROMPT=SYSTEM_PROMPT3, AI_Summary=ai_summary, survey_data=survey_data
-        )
-
-        print(f"DEBUG : AI Lesson Content Result {Slide_deck}")
-
-        return Slide_deck
-
     except Exception as e:
         print(e)
