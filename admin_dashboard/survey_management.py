@@ -299,7 +299,32 @@ def show_survey_management():
                     with col_link:
                         st.write(f"[Trainee Form Link]({survey_link})")
                     with col_delete:
-                        if st.button("🗑️ Delete", key=f"delete_active_{survey['survey_id']}"):
+                        st.markdown(
+                            """
+                            <style>
+                            .delete-button {
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                                padding: 0.25rem 0.75rem;
+                                background-color: #ff4b4b;
+                                color: white;
+                                border: none;
+                                border-radius: 0.25rem;
+                                cursor: pointer;
+                                text-decoration: none;
+                                transition: background-color 0.3s;
+                                width: 100%;
+                            }
+                            .delete-button:hover {
+                                background-color: #cc0000;
+                            }
+                            </style>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                        if st.button("🗑️ Delete", key=f"delete_active_{survey['survey_id']}", 
+                                   help="Delete this survey", use_container_width=True):
                             if delete_survey(survey['survey_id']):
                                 st.success("Survey deleted successfully!")
                                 st.rerun()
@@ -326,7 +351,32 @@ def show_survey_management():
                     with col_link:
                         st.write(f"[Trainee Form Link]({survey_link})")
                     with col_delete:
-                        if st.button("🗑️ Delete", key=f"delete_closed_{survey['survey_id']}"):
+                        st.markdown(
+                            """
+                            <style>
+                            .delete-button {
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                                padding: 0.25rem 0.75rem;
+                                background-color: #ff4b4b;
+                                color: white;
+                                border: none;
+                                border-radius: 0.25rem;
+                                cursor: pointer;
+                                text-decoration: none;
+                                transition: background-color 0.3s;
+                                width: 100%;
+                            }
+                            .delete-button:hover {
+                                background-color: #cc0000;
+                            }
+                            </style>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                        if st.button("🗑️ Delete", key=f"delete_closed_{survey['survey_id']}", 
+                                   help="Delete this survey", use_container_width=True):
                             if delete_survey(survey['survey_id']):
                                 st.success("Survey deleted successfully!")
                                 st.rerun()
