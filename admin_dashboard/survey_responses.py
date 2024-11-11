@@ -150,23 +150,7 @@ def show_survey_responses():
                 unsafe_allow_html=True
             )
 
-            # 2. Quick Insights Section
-            st.markdown("### 🎯 Quick Insights")
-            insight_cols = st.columns(2)
-            
-            with insight_cols[0]:
-                st.markdown(f"""
-                    <div class='insight-pill'>Responses today: {len([r for r in responses if parse_datetime(r.get('submission_datetime')).date() == datetime.now().date()])}</div>
-                    <div class='insight-pill'>Total responses: {len(responses)}</div>
-                """, unsafe_allow_html=True)
-            
-            with insight_cols[1]:
-                st.markdown(f"""
-                    <div class='insight-pill'>Recent responses: {recent_responses}</div>
-                    <div class='insight-pill'>Time until expiry: {calculate_time_left(survey_data.get('expiration_datetime'))}</div>
-                """, unsafe_allow_html=True)
-
-            # 3. Response Explorer Section
+            # 2. Response Explorer Section
             st.markdown("### 🔍 Response Explorer")
             
             # Filters
@@ -208,7 +192,7 @@ def show_survey_responses():
                     key=lambda x: parse_datetime(x.get('submission_datetime')) or datetime.min
                 )
 
-            # 4. Response Summary Table
+            # 3. Response Summary Table
             st.markdown("### 📋 Response Summary")
             summary_data = []
             for idx, response in enumerate(filtered_responses, 1):
@@ -236,7 +220,7 @@ def show_survey_responses():
             else:
                 st.info("No responses available to display in summary")
 
-            # 5. Individual Responses (with improved formatting)
+            # 4. Individual Responses
             for response in filtered_responses:
                 with st.container():
                     submission_time = parse_datetime(response.get('submission_datetime'))
