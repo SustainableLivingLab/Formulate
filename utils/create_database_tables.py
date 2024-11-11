@@ -445,6 +445,35 @@ def fetch_survey_responses(survey_id: str) -> list:
     return responses
 
 
+def delete_survey(survey_id: str) -> bool:
+    """Delete a survey and its associated responses from the database."""
+    db_config = load_db_config()
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        # First delete associated responses due to foreign key constraint
+        cursor.execute("DELETE FROM Response WHERE survey_id = %s", (survey_id,))
+        
+        # Then delete the survey
+        cursor.execute("DELETE FROM Survey WHERE survey_id = %s", (survey_id,))
+        
+        conn.commit()
+        return True
+
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")
+        if conn:
+            conn.rollback()
+        return False
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
+
+
 # Run this to create/update tables and populate response data
 if __name__ == "__main__":
     # Uncomment below line to create tables

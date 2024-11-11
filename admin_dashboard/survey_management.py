@@ -3,6 +3,7 @@ from utils.create_database_tables import (
     insert_survey_data,
     fetch_active_surveys,
     fetch_closed_surveys,
+    delete_survey,
 )
 import streamlit as st
 import uuid
@@ -292,7 +293,19 @@ def show_survey_management():
                     st.write(f"**Expires At**: {survey['expiration_datetime']}")
                     survey_link = f"https://formulate.streamlit.app/trainee_form?id={survey['survey_id']}"
                     st.write(f"**Survey ID**: {survey['survey_id']}")
-                    st.write(f"[Trainee Form Link]({survey_link})")
+                    
+                    # Create a row with link and delete button
+                    col_link, col_delete = st.columns([4, 1])
+                    with col_link:
+                        st.write(f"[Trainee Form Link]({survey_link})")
+                    with col_delete:
+                        if st.button("🗑️ Delete", key=f"delete_active_{survey['survey_id']}"):
+                            if delete_survey(survey['survey_id']):
+                                st.success("Survey deleted successfully!")
+                                st.rerun()
+                            else:
+                                st.error("Failed to delete survey.")
+
         else:
             st.info("No active surveys available.")
 
@@ -307,6 +320,18 @@ def show_survey_management():
                     st.write(f"**Expired On**: {survey['expiration_datetime']}")
                     survey_link = f"https://formulate.streamlit.app/trainee_form?id={survey['survey_id']}"
                     st.write(f"**Survey ID**: {survey['survey_id']}")
-                    st.write(f"[Trainee Form Link]({survey_link})")
+                    
+                    # Create a row with link and delete button
+                    col_link, col_delete = st.columns([4, 1])
+                    with col_link:
+                        st.write(f"[Trainee Form Link]({survey_link})")
+                    with col_delete:
+                        if st.button("🗑️ Delete", key=f"delete_closed_{survey['survey_id']}"):
+                            if delete_survey(survey['survey_id']):
+                                st.success("Survey deleted successfully!")
+                                st.rerun()
+                            else:
+                                st.error("Failed to delete survey.")
+
         else:
             st.info("No closed surveys available.")
