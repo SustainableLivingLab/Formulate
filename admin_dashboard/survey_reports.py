@@ -14,15 +14,31 @@ nltk.download('stopwords')
 from nltk.corpus import stopwords
 
 def create_metric_card(title, value, delta=None, suffix=""):
+    # Convert string value to numeric if it's a number with suffix
+    display_value = value
+    if isinstance(value, str):
+        try:
+            numeric_value = float(''.join(filter(str.isdigit, value)))
+        except ValueError:
+            numeric_value = 0
+    else:
+        numeric_value = value
+
     return go.Figure(go.Indicator(
         mode="number+delta" if delta else "number",
-        value=value,
-        title={"text": title, "font": {"size": 20}},
-        number={"suffix": suffix, "font": {"size": 30}},
+        value=numeric_value,
+        title={"text": title, "font": {"size": 20, "color": "white"}},
+        number={
+            "suffix": suffix,
+            "font": {"size": 30, "color": "white"},
+            "valueformat": ".0f"
+        },
         delta={"reference": delta, "relative": True} if delta else None,
     )).update_layout(
         height=200,
-        margin=dict(l=10, r=10, t=30, b=10)
+        margin=dict(l=10, r=10, t=30, b=10),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'
     )
 
 def show_survey_reports():
@@ -40,9 +56,6 @@ def show_survey_reports():
             padding-top: 2rem;
             padding-bottom: 2rem;
         }
-        h1, h2, h3, h4, h5, h6 {
-            color: #1f4287;
-        }
         .metric-row {
             background-color: #f8f9fa;
             padding: 15px;
@@ -50,10 +63,14 @@ def show_survey_reports():
             margin: 10px 0;
         }
         .stPlotlyChart {
-            background-color: white;
+            background-color: rgba(0,0,0,0);
             border-radius: 5px;
             padding: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        div[data-testid="stVerticalBlock"] > div:has(div.stButton) {
+            flex: 0;
+            display: flex;
+            align-items: center;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -61,13 +78,14 @@ def show_survey_reports():
     st.title("📊 Survey Analytics Dashboard")
     st.markdown("*Comprehensive analysis of survey responses*")
 
-    # Survey ID input with validation
+    # Survey ID input with validation - Fixed alignment
     col1, col2 = st.columns([4, 1])
     with col1:
         survey_id = st.text_input(
             "Survey ID",
             placeholder="Enter the Survey ID to analyze",
-            help="Enter the unique identifier for your survey"
+            help="Enter the unique identifier for your survey",
+            label_visibility="collapsed"
         )
     with col2:
         analyze_button = st.button("🔍 Analyze", use_container_width=True)
@@ -99,8 +117,8 @@ def show_survey_reports():
             
             # Overview metrics
             total_responses = len(responses)
-            completion_rate = round((total_responses / 100) * 100, 1)  # Example calculation
-            avg_time = "5 mins"  # Example value
+            completion_rate = round((total_responses / 100) * 100, 1)
+            avg_time_mins = 5  # Example numeric value
 
             # Metrics Row
             metrics_cols = st.columns(3)
@@ -111,7 +129,7 @@ def show_survey_reports():
                 fig = create_metric_card("Completion Rate", completion_rate, suffix="%")
                 st.plotly_chart(fig, use_container_width=True)
             with metrics_cols[2]:
-                fig = create_metric_card("Avg. Time", avg_time)
+                fig = create_metric_card("Avg. Time (mins)", avg_time_mins)
                 st.plotly_chart(fig, use_container_width=True)
 
             # Create tabs for analysis
@@ -137,7 +155,11 @@ def show_survey_reports():
                             fig.update_layout(
                                 showlegend=True,
                                 margin=dict(t=50, l=0, r=0, b=0),
-                                height=400
+                                height=400,
+                                title_font_color="white",
+                                font_color="white",
+                                paper_bgcolor='rgba(0,0,0,0)',
+                                plot_bgcolor='rgba(0,0,0,0)'
                             )
                             st.plotly_chart(fig, use_container_width=True)
 
