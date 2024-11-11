@@ -34,7 +34,8 @@ def surveyQuestions(SYSTEM_PROMPT: str, survey_data: Dict[Any, Any]) -> Dict[str
                 {
                     "role": "user",
                     "content": f"""
-                     Provide the  Survey Questions Generation based on a comprehensive analysis ,adhering to the following guidelines:
+                You are a professional education trainer skilled in gathering insights from trainees through surveys.
+                Your task is making the survey questions based on a comprehensive analysis ,adhering to the following guidelines:
                 1. ensure the output in json structure
                 2. Ensure the text in formal British English, ensuring advanced grammar, precision, and professionalism tone              
                 3. Develop a set of {survey_data["questionCount"]} questions, ensuring a diverse range of question types, including multiple-choice, checkbox, Likert scale, and open-ended questions.
@@ -142,17 +143,23 @@ def analysis_Trainee_Response(SYSTEM_PROMPT: str,survey_responses: str):
                 "role": "user",
                 "content": f"""
 
-                1. Analyze and summarize the responses provided by professional education trainee to the recent questionnaire. 
-                2 The data would be anlysed is json.dumps file which contains severals response from the trainee.
-                
-                
+                You are an expert professional education trainers with knowledge of creating the educational lessons.  
+                I'm assisting in creating a summary that includes the outcomes of the survey and provides recommendations for modifications to the learning objectives to be used as a standard reference for lesson planning. 
+                I have attached a dataset from a recent  answers from trainee questionaree surveys that includes both quantitative and qualitative responses. 
+                Your task is to analyze the data and identify key trends and related action steps. 
+                Please include the following in your analysis: 
+                1. Quantitative data analysis:  for each quantitative question and identify any significant correlations between different quantitative variables if available
+                2. Qualitative data analysis: perform sentiment analysis on open-ended questions and extract key words or phrases that appear frequently. Do not include common words like the, and, and for, but focus on concepts specific to [TOPIC OF SURVEY] 
+
+
+
                 The analysis should be presented in two main sections:
 
                   - **Survey Outcome** – Identify and evaluate the key insights shared by trainers. Focus on any recurring themes, patterns, or notable points that reflect common perspectives or diverging views. Additionally, interpret how these insights might impact the effectiveness of current learning objectives.
 
                   - **Recommended Modifications to Learning Objectives** – Based on the survey feedback, propose and justify specific, actionable changes to improve clarity, engagement, and measurable impact of the learning objectives. These modifications should aim to help learners better understand, apply, and master the content.
 
-                3. Structure each section in short, highlighted bullet points to enhance clarity and readability.
+                Structure each section in short, highlighted bullet points to enhance clarity and readability.
 
                 **Data for analysis**: {survey_responses}
 
