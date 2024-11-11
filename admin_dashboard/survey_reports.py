@@ -9,6 +9,11 @@ from wordcloud import WordCloud
 import nltk
 from datetime import datetime, timedelta
 import numpy as np
+import io
+import xlsxwriter
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
 
 # Download nltk stopwords if not already downloaded
 nltk.download('stopwords')
@@ -77,10 +82,10 @@ def show_survey_reports():
             background-color: rgba(255,255,255,0.1);
         }
         .block-container {
-            padding-top: 1rem;
+            padding-top: 2rem;
             padding-bottom: 0rem;
-            padding-left: 1rem;
-            padding-right: 1rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
             max-width: 100%;
         }
         .metric-row {
@@ -121,6 +126,9 @@ def show_survey_reports():
         }
         .element-container {
             width: 100%;
+        }
+        .element-container:has(> div > div > h1) {
+            margin-bottom: 2rem;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -178,7 +186,7 @@ def show_survey_reports():
 
             # Enhanced Overview metrics
             total_responses = len(responses)
-            completion_rate = round((total_responses / 100) * 100, 1)
+            completion_rate = round((total_responses / total_responses) * 100, 1)
             avg_response_time = np.mean(response_times) if response_times else 0
 
             # Metrics Row with descriptions
@@ -511,12 +519,54 @@ def show_survey_reports():
                 col1, col2 = st.columns(2)
                 with col1:
                     if st.button("📊 Export as Excel"):
-                        # Add Excel export functionality
-                        pass
+                        excel_data = export_to_excel(df)
+                        st.download_button(
+                            label="Download Excel Report",
+                            data=excel_data,
+                            file_name="survey_report.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
                 with col2:
                     if st.button("📑 Export as PDF Report"):
-                        # Add PDF export functionality
-                        pass
+                        pdf_data = export_to_pdf(df)
+                        st.download_button(
+                            label="Download PDF Report",
+                            data=pdf_data,
+                            file_name="survey_report.pdf",
+                            mime="application/pdf"
+                        )
+
+def export_to_excel(df):
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        # Summary sheet
+        summary = pd.DataFrame({
+            'Metric': ['Total Responses', 'Completion Rate', 'Avg Response Time'],
+            'Value': [total_responses, f"{completion_rate}%", f"{avg_response_time:.1f}h"]
+        })
+        summary.to_excel(writer, sheet_name='Summary', index=False)
+        
+        # Response data
+        df.to_excel(writer, sheet_name='Raw Data', index=False)
+        
+    return output.getvalue()
+
+def export_to_pdf(df):
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    
+    # Add title
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(50, 750, "Survey Analysis Report")
+    
+    # Add summary statistics
+    p.setFont("Helvetica", 12)
+    p.drawString(50, 700, f"Total Responses: {total_responses}")
+    p.drawString(50, 680, f"Completion Rate: {completion_rate}%")
+    p.drawString(50, 660, f"Average Response Time: {avg_response_time:.1f}h")
+    
+    p.save()
+    return buffer.getvalue()
 
 if __name__ == "__main__":
     show_survey_reports()
