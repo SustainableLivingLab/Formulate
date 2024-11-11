@@ -15,7 +15,6 @@ nltk.download('stopwords')
 from nltk.corpus import stopwords
 
 def create_metric_card(title, value, delta=None, suffix="", description=None):
-    # Convert string value to numeric if it's a number with suffix
     display_value = value
     if isinstance(value, str):
         try:
@@ -29,22 +28,23 @@ def create_metric_card(title, value, delta=None, suffix="", description=None):
         mode="number+delta" if delta else "number",
         value=numeric_value,
         title={
-            "text": f"{title}<br><span style='font-size:0.8em;color:gray'>{description if description else ''}</span>",
-            "font": {"size": 20, "color": "white"}
+            "text": f"{title}<br><span style='font-size:0.9em;color:rgba(255,255,255,0.7)'>{description if description else ''}</span>",
+            "font": {"size": 24, "color": "white", "family": "Arial"}
         },
         number={
             "suffix": suffix,
-            "font": {"size": 30, "color": "white"},
+            "font": {"size": 40, "color": "white", "family": "Arial"},
             "valueformat": ".1f"
         },
         delta={"reference": delta, "relative": True} if delta else None,
     ))
     
     fig.update_layout(
-        height=200,
-        margin=dict(l=10, r=10, t=30, b=10),
+        height=180,
+        margin=dict(l=10, r=10, t=60, b=10),
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
+        plot_bgcolor='rgba(0,0,0,0)',
+        width=None  # This allows the chart to be responsive
     )
     return fig
 
@@ -88,6 +88,18 @@ def show_survey_reports():
         .stExpander {
             background-color: rgba(255,255,255,0.02) !important;
             border: 1px solid rgba(255,255,255,0.1) !important;
+        }
+        [data-testid="stMetricValue"] {
+            font-size: 28px;
+        }
+        [data-testid="stMetricDelta"] {
+            font-size: 20px;
+        }
+        .metric-container {
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -149,12 +161,13 @@ def show_survey_reports():
             avg_response_time = np.mean(response_times) if response_times else 0
 
             # Metrics Row with descriptions
+            st.markdown('<div class="metric-container">', unsafe_allow_html=True)
             metrics_cols = st.columns(4)
             with metrics_cols[0]:
                 fig = create_metric_card(
                     "Total Responses", 
                     total_responses,
-                    description="Number of survey submissions"
+                    description="Number of completed survey submissions"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
@@ -163,16 +176,16 @@ def show_survey_reports():
                     "Completion Rate", 
                     completion_rate, 
                     suffix="%",
-                    description="Percentage of completed surveys"
+                    description="Percentage of surveys completed successfully"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
             with metrics_cols[2]:
                 fig = create_metric_card(
-                    "Avg. Response Time", 
+                    "Average Response Time", 
                     avg_response_time,
                     suffix="h",
-                    description="Average time between responses"
+                    description="Mean time between consecutive responses"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
@@ -181,9 +194,10 @@ def show_survey_reports():
                 fig = create_metric_card(
                     "Engagement Score", 
                     engagement_score,
-                    description="Combined metric of participation"
+                    description="Overall participation and completion metric"
                 )
                 st.plotly_chart(fig, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
             # Create tabs with enhanced analysis
             tabs = st.tabs([
