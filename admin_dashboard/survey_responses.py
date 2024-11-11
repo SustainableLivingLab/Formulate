@@ -221,25 +221,26 @@ def show_survey_responses():
                         </div>
                     """, unsafe_allow_html=True)
                     
-                    # Display answers
+                    # Display answers with corrected data structure handling
                     trainee_responses = response.get('trainee_responses', {})
                     if trainee_responses:
-                        for section, answers in trainee_responses.items():
-                            st.markdown(f"**{section.title()}**")
-                            if isinstance(answers, dict):
-                                for q_id, answer_data in answers.items():
+                        for section_name, section_data in trainee_responses.items():
+                            st.markdown(f"**{section_name.title()}**")
+                            if isinstance(section_data, dict):
+                                for question, answer in section_data.items():
                                     col1, col2 = st.columns([1, 2])
-                                    col1.markdown(f"*{answer_data.get('question', 'Unknown Question')}*")
-                                    col2.markdown(f"{answer_data.get('answer', 'No answer provided')}")
+                                    col1.markdown(f"*{question}*")
+                                    col2.markdown(f"{answer}")
 
             # 4. Response Summary Table
             st.markdown("### 📋 Response Summary")
             
             # Create summary table data
             summary_data = []
-            for response in filtered_responses:
+            for idx, response in enumerate(filtered_responses, 1):
                 submission_time = parse_datetime(response.get('submission_datetime'))
                 summary_data.append({
+                    'Response ID': idx,
                     'Email': response.get('trainee_email', 'Unknown'),
                     'Submission Date': submission_time.strftime('%Y-%m-%d') if submission_time else 'N/A',
                     'Submission Time': submission_time.strftime('%H:%M:%S') if submission_time else 'N/A'
@@ -251,13 +252,19 @@ def show_survey_responses():
                     summary_df,
                     use_container_width=True,
                     hide_index=True,
+                    column_config={
+                        "Response ID": st.column_config.NumberColumn("ID", width="small"),
+                        "Email": st.column_config.TextColumn("Email", width="medium"),
+                        "Submission Date": st.column_config.TextColumn("Date", width="small"),
+                        "Submission Time": st.column_config.TextColumn("Time", width="small")
+                    }
                 )
             else:
                 st.info("No responses available to display in summary")
 
         except Exception as e:
             st.error(f"Error displaying survey responses: {str(e)}")
-            st.exception(e)
+            st.exception(e)  # This will show the full error trace in development
 
     else:
         # Welcome message with instructions
