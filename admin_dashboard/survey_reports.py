@@ -14,7 +14,7 @@ import numpy as np
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 
-def create_metric_card(title, value, delta=None, suffix="", description=None):
+def create_metric_card(title, value, delta=None, suffix="", description=None, help=None):
     display_value = value
     if isinstance(value, str):
         try:
@@ -222,36 +222,44 @@ def show_survey_reports():
                 fig = create_metric_card(
                     "Total Responses", 
                     total_responses,
-                    description="Survey submissions"
+                    description="Survey submissions",
+                    help="The total number of completed survey submissions received"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True, 
+                    help="Shows the absolute count of all survey responses received so far")
             
             with metrics_cols[1]:
                 fig = create_metric_card(
                     "Peak Activity Time", 
                     peak_percentage,
                     suffix="%",
-                    description=f"at {peak_window}"
+                    description=f"at {peak_window}",
+                    help="The time window when most responses were submitted, helping identify optimal survey timing"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True,
+                    help="Indicates when participants are most likely to respond, useful for scheduling future surveys")
             
             with metrics_cols[2]:
                 fig = create_metric_card(
                     "Response Diversity", 
                     diversity_score,
                     suffix="%",
-                    description=f"{repeat_respondents} repeat participants"
+                    description=f"{repeat_respondents} repeat participants",
+                    help="Measures how varied your respondent pool is, with higher percentages indicating more unique participants"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True,
+                    help="Shows the balance between new and returning participants, helping track engagement breadth")
             
             with metrics_cols[3]:
                 fig = create_metric_card(
                     "Engagement Score", 
                     avg_engagement,
                     suffix="%",
-                    description="Based on response quality"
+                    description="Based on response quality",
+                    help="A composite score measuring response completeness, detail level, and thoughtfulness"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True,
+                    help="Indicates how thoroughly participants are engaging with the survey questions")
             st.markdown('</div>', unsafe_allow_html=True)
 
             # Create tabs with enhanced analysis
