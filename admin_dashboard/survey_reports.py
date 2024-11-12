@@ -223,10 +223,10 @@ def show_survey_reports():
                     "Total Responses", 
                     total_responses,
                     description="Survey submissions",
-                    help="The total number of completed survey submissions received"
+                    help="The total number of completed survey submissions received. This metric helps you understand the level of engagement with your survey."
                 )
                 st.plotly_chart(fig, use_container_width=True, 
-                    help="Shows the absolute count of all survey responses received so far")
+                    help="Shows the absolute count of all survey responses received so far. A higher number indicates greater participation.")
             
             with metrics_cols[1]:
                 fig = create_metric_card(
@@ -234,10 +234,10 @@ def show_survey_reports():
                     peak_percentage,
                     suffix="%",
                     description=f"at {peak_window}",
-                    help="The time window when most responses were submitted, helping identify optimal survey timing"
+                    help="The time window when most responses were submitted, helping identify optimal survey timing. This insight can guide you in scheduling future surveys for maximum engagement."
                 )
                 st.plotly_chart(fig, use_container_width=True,
-                    help="Indicates when participants are most likely to respond, useful for scheduling future surveys")
+                    help="Indicates when participants are most likely to respond, useful for scheduling future surveys.")
             
             with metrics_cols[2]:
                 fig = create_metric_card(
@@ -245,10 +245,10 @@ def show_survey_reports():
                     diversity_score,
                     suffix="%",
                     description=f"{repeat_respondents} repeat participants",
-                    help="Measures how varied your respondent pool is, with higher percentages indicating more unique participants"
+                    help="Measures how varied your respondent pool is, with higher percentages indicating more unique participants. This insight helps track the breadth of engagement across different participants."
                 )
                 st.plotly_chart(fig, use_container_width=True,
-                    help="Shows the balance between new and returning participants, helping track engagement breadth")
+                    help="Shows the balance between new and returning participants, helping track engagement breadth.")
             
             with metrics_cols[3]:
                 fig = create_metric_card(
@@ -256,10 +256,10 @@ def show_survey_reports():
                     avg_engagement,
                     suffix="%",
                     description="Based on response quality",
-                    help="A composite score measuring response completeness, detail level, and thoughtfulness"
+                    help="A composite score measuring response completeness, detail level, and thoughtfulness. This insight reflects how thoroughly participants are engaging with the survey questions."
                 )
                 st.plotly_chart(fig, use_container_width=True,
-                    help="Indicates how thoroughly participants are engaging with the survey questions")
+                    help="Indicates how thoroughly participants are engaging with the survey questions.")
             st.markdown('</div>', unsafe_allow_html=True)
 
             # Create tabs with enhanced analysis
