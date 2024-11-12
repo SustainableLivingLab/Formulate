@@ -30,7 +30,7 @@ def generate_AI_summarisation(survey_data: str) -> Dict[str, Any]:
         )
 
         print(f"DEBUG: AI summarisation result: {ai_summarisation}")
-        return json.loads(ai_summarisation)
+        return ai_summarisation
 
     except Exception as e:
         print(f"Error generating AI summarisation: {e}")
