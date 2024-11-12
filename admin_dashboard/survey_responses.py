@@ -221,41 +221,79 @@ def show_survey_responses():
                 st.info("No responses available to display in summary")
 
             # 4. Individual Responses
-            for response in filtered_responses:
-                with st.container():
-                    submission_time = parse_datetime(response.get('submission_datetime'))
-                    submission_display = submission_time.strftime('%Y-%m-%d %H:%M:%S') if submission_time else 'Time not available'
-                    
-                    st.markdown(f"""
-                        <div class='response-card'>
-                            <h4>Response from {response.get('trainee_email', 'Unknown User')}</h4>
-                            <p>Submitted: {submission_display}</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Display answers with better formatting
+            for idx, response in enumerate(filtered_responses, 1):
+                submission_time = parse_datetime(response.get('submission_datetime'))
+                submission_display = submission_time.strftime('%Y-%m-%d %H:%M:%S') if submission_time else 'Time not available'
+                
+                with st.expander(f"Response from {response.get('trainee_email', 'Unknown User')} - {submission_display}"):
                     trainee_responses = response.get('trainee_responses', {})
+                    
                     if trainee_responses:
-                        for section_name, section_data in trainee_responses.items():
-                            st.markdown(f"**{section_name}**")
-                            if isinstance(section_data, dict):
-                                for q_id, answer_data in section_data.items():
-                                    if isinstance(answer_data, dict):
-                                        question = answer_data.get('question', '')
-                                        answer = answer_data.get('answer', '')
-                                        
-                                        # Format the answer based on its type
-                                        if isinstance(answer, list):
-                                            answer = ", ".join(answer)
-                                        elif isinstance(answer, (int, float)):
-                                            scale = answer_data.get('scale', {})
-                                            if scale:
-                                                max_label = scale.get('max_label', '')
-                                                answer = f"{answer} - {max_label}"
-                                        
-                                        col1, col2 = st.columns([1, 2])
-                                        col1.markdown(f"*{question}*")
-                                        col2.markdown(f"{answer}")
+                        # First display Profile section
+                        if 'Profile' in trainee_responses:
+                            st.markdown("#### 👤 Profile Information")
+                            profile_data = []
+                            profile_section = trainee_responses['Profile']
+                            
+                            for q_id, answer_data in profile_section.items():
+                                if isinstance(answer_data, dict):
+                                    question = answer_data.get('question', '')
+                                    answer = answer_data.get('answer', '')
+                                    if isinstance(answer, list):
+                                        answer = ", ".join(answer)
+                                    profile_data.append({
+                                        "Question": question,
+                                        "Answer": answer
+                                    })
+                            
+                            if profile_data:
+                                profile_df = pd.DataFrame(profile_data)
+                                st.dataframe(
+                                    profile_df,
+                                    use_container_width=True,
+                                    hide_index=True,
+                                    column_config={
+                                        "Question": st.column_config.TextColumn("Question", width="medium"),
+                                        "Answer": st.column_config.TextColumn("Response", width="medium")
+                                    }
+                                )
+                        
+                        # Then display Survey section
+                        if 'Survey' in trainee_responses:
+                            st.markdown("#### 📝 Survey Responses")
+                            survey_data = []
+                            survey_section = trainee_responses['Survey']
+                            
+                            for q_id, answer_data in survey_section.items():
+                                if isinstance(answer_data, dict):
+                                    question = answer_data.get('question', '')
+                                    answer = answer_data.get('answer', '')
+                                    
+                                    # Format the answer based on its type
+                                    if isinstance(answer, list):
+                                        answer = ", ".join(answer)
+                                    elif isinstance(answer, (int, float)):
+                                        scale = answer_data.get('scale', {})
+                                        if scale:
+                                            max_label = scale.get('max_label', '')
+                                            answer = f"{answer} - {max_label}"
+                                    
+                                    survey_data.append({
+                                        "Question": question,
+                                        "Answer": answer
+                                    })
+                            
+                            if survey_data:
+                                survey_df = pd.DataFrame(survey_data)
+                                st.dataframe(
+                                    survey_df,
+                                    use_container_width=True,
+                                    hide_index=True,
+                                    column_config={
+                                        "Question": st.column_config.TextColumn("Question", width="medium"),
+                                        "Answer": st.column_config.TextColumn("Response", width="medium")
+                                    }
+                                )
 
         except Exception as e:
             st.error(f"Error displaying survey responses: {str(e)}")
