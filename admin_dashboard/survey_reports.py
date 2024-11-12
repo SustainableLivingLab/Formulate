@@ -487,40 +487,53 @@ def show_survey_reports():
                         help="Percentage of responses with a negative sentiment score. Indicates the proportion of negative feedback."
                     )
 
-                    # Keyword Extraction
-                    st.markdown("### 🔑 Keyword Extraction")
-                    stop_words = set(stopwords.words('english'))
-                    keywords = open_ended["answer"].apply(lambda x: [word for word in x.split() if word.lower() not in stop_words])
-                    all_keywords = [word for sublist in keywords for word in sublist]
-                    keyword_freq = pd.Series(all_keywords).value_counts().head(10).reset_index()
-                    keyword_freq.columns = ['Keyword', 'Count']  # Rename columns for clarity
+                    # Keyword Extraction with Tooltip
+                    st.markdown("""
+                        <div style='position: relative; display: inline-block;'>
+                            <h4>🔑 Keyword Extraction</h4>
+                            <span style='text-decoration: underline; cursor: pointer;'>ℹ️</span>
+                            <div style='visibility: hidden; width: 200px; background-color: rgba(255,255,255,0.9); color: black; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -100px;'>
+                                This section identifies the most frequently mentioned words in the open-ended responses, excluding common stopwords. It helps highlight key themes and topics that participants are discussing.
+                            </div>
+                        </div>
+                        <style>
+                            div:hover > div {
+                                visibility: visible;
+                            }
+                        </style>
+                    """, unsafe_allow_html=True)
 
-                    # Plotting the keyword frequency
-                    fig = px.bar(keyword_freq, x='Keyword', y='Count', title="Top Keywords")
-                    fig.update_layout(
-                        xaxis_title="Keyword",
-                        yaxis_title="Count",
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        font={'color': 'white'}
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
+                    # Word Cloud with Tooltip
+                    st.markdown("""
+                        <div style='position: relative; display: inline-block;'>
+                            <h4>☁️ Word Cloud</h4>
+                            <span style='text-decoration: underline; cursor: pointer;'>ℹ️</span>
+                            <div style='visibility: hidden; width: 200px; background-color: rgba(255,255,255,0.9); color: black; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -100px;'>
+                                The word cloud visualizes the most common terms in the open-ended feedback. Larger words appear more frequently, providing a quick overview of prevalent topics and sentiments.
+                            </div>
+                        </div>
+                        <style>
+                            div:hover > div {
+                                visibility: visible;
+                            }
+                        </style>
+                    """, unsafe_allow_html=True)
 
-                    # Word Cloud Visualization
-                    st.markdown("### ☁️ Word Cloud")
-                    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(all_keywords))
-                    st.image(wordcloud.to_array(), use_column_width=True)
-
-                    # Topic Modeling (LDA)
-                    st.markdown("### 🗂️ Topic Modeling")
-                    # Prepare data for LDA
-                    dictionary = corpora.Dictionary(keywords)
-                    corpus = [dictionary.doc2bow(text) for text in keywords]
-                    lda_model = models.LdaModel(corpus, num_topics=3, id2word=dictionary, passes=15)
-                    
-                    topics = lda_model.print_topics(num_words=5)
-                    for i, topic in enumerate(topics):
-                        st.write(f"**Topic {i+1}:** {topic[1]}")
+                    # Topic Modeling with Tooltip
+                    st.markdown("""
+                        <div style='position: relative; display: inline-block;'>
+                            <h4>🗂️ Topic Modeling</h4>
+                            <span style='text-decoration: underline; cursor: pointer;'>ℹ️</span>
+                            <div style='visibility: hidden; width: 200px; background-color: rgba(255,255,255,0.9); color: black; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -100px;'>
+                                Topic modeling identifies groups of words that frequently occur together in the responses, representing underlying themes. Each topic is a collection of words with associated weights, indicating their importance to the topic.
+                            </div>
+                        </div>
+                        <style>
+                            div:hover > div {
+                                visibility: visible;
+                            }
+                        </style>
+                    """, unsafe_allow_html=True)
 
                     # Sentiment Trends
                     st.markdown("### 📈 Sentiment Trends")
