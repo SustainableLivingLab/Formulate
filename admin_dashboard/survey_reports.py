@@ -456,7 +456,7 @@ def show_survey_reports():
                                     <li>0.3 to 1.0: Positive</li>
                                 </ul>
                             </div>
-                        """, unsafe_allow_html=True)
+                        """, unsafe_allow_html=True, help="This guide explains the sentiment score ranges: Negative, Neutral, and Positive.")
 
                     # Detailed Sentiment Metrics
                     metrics_cols = st.columns(3)
@@ -476,17 +476,20 @@ def show_survey_reports():
                     metrics_cols[0].metric(
                         "Positive Responses",
                         f"{positive_pct:.1f}%",
-                        delta=f"{sentiment_counts.get('Positive', 0) // 2} responses"
+                        delta=f"{sentiment_counts.get('Positive', 0) // 2} responses",
+                        help="Percentage of responses with a positive sentiment score. Indicates the proportion of positive feedback."
                     )
                     metrics_cols[1].metric(
                         "Neutral Responses",
                         f"{neutral_pct:.1f}%",
-                        delta=f"{sentiment_counts.get('Neutral', 0) // 2} responses"
+                        delta=f"{sentiment_counts.get('Neutral', 0) // 2} responses",
+                        help="Percentage of responses with a neutral sentiment score. Indicates the proportion of neutral feedback."
                     )
                     metrics_cols[2].metric(
                         "Negative Responses",
                         f"{negative_pct:.1f}%",
-                        delta=f"{sentiment_counts.get('Negative', 0) // 2} responses"
+                        delta=f"{sentiment_counts.get('Negative', 0) // 2} responses",
+                        help="Percentage of responses with a negative sentiment score. Indicates the proportion of negative feedback."
                     )
 
                     # Sentiment Over Time Analysis
@@ -526,7 +529,8 @@ def show_survey_reports():
                         paper_bgcolor='rgba(0,0,0,0)',
                         plot_bgcolor='rgba(0,0,0,0)',
                         font={'color': 'white'},
-                        hovermode='x unified'
+                        hovermode='x unified',
+                        help="This chart shows the trends in sentiment polarity and objectivity over time, helping to identify changes in feedback tone."
                     )
                     fig.update_yaxes(title_text="Sentiment Score", secondary_y=False)
                     fig.update_yaxes(title_text="Objectivity Level", secondary_y=True)
@@ -538,10 +542,10 @@ def show_survey_reports():
                         <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-top: 20px;'>
                             <h4>🔍 Key Insights</h4>
                             <ul>
-                                <li>Overall sentiment is {}</li>
-                                <li>Responses are {} objective ({}% objectivity score)</li>
-                                <li>Most {} responses recorded on {}</li>
-                                <li>Sentiment trend is {}</li>
+                                <li>Overall sentiment is {} <span title="This indicates the general tone of the feedback, whether it's positive, neutral, or negative.">ℹ️</span></li>
+                                <li>Responses are {} objective ({}% objectivity score) <span title="Objectivity score reflects how factual or opinion-based the responses are.">ℹ️</span></li>
+                                <li>Most {} responses recorded on {} <span title="Identifies the day with the highest number of positive or negative responses.">ℹ️</span></li>
+                                <li>Sentiment trend is {} <span title="Shows whether the sentiment is improving, declining, or stable over time.">ℹ️</span></li>
                             </ul>
                         </div>
                     """.format(
