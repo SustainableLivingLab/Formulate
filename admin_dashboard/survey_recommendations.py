@@ -4,25 +4,6 @@ from utils.create_database_tables import fetch_survey_responses, get_survey_data
 from ai.ai_service import generate_AI_summarisation
 import json
 
-# Hide Streamlit's default styling for menu, footer, etc.
-hide_streamlit_style = """
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-div.stButton > button:first-child {
-    background-color: #4CAF50; /* Green */
-    color: white;
-    border-radius: 5px;
-    padding: 10px 20px;
-}
-div.stButton > button:first-child:hover {
-    background-color: #45a049;
-}
-</style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
 
 def show_survey_recommendations():
     st.title("📊 Survey Recommendations")
