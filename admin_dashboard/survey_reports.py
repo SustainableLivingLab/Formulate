@@ -445,11 +445,11 @@ def show_survey_reports():
                         st.markdown("""
                             <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;'>
                                 <h4>📊 Sentiment Analysis Guide</h4>
-                                <p><strong>Score Range:</strong></p>
+                                <p>This guide helps you understand the sentiment scores derived from the responses:</p>
                                 <ul>
-                                    <li>-1.0 to -0.3: Negative</li>
-                                    <li>-0.3 to 0.3: Neutral</li>
-                                    <li>0.3 to 1.0: Positive</li>
+                                    <li>-1.0 to -0.3: Negative - Indicates a generally unfavorable sentiment.</li>
+                                    <li>-0.3 to 0.3: Neutral - Indicates a balanced or indifferent sentiment.</li>
+                                    <li>0.3 to 1.0: Positive - Indicates a generally favorable sentiment.</li>
                                 </ul>
                             </div>
                         """, unsafe_allow_html=True)
@@ -534,10 +534,10 @@ def show_survey_reports():
                         <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-top: 20px;'>
                             <h4>🔍 Key Insights</h4>
                             <ul>
-                                <li>Overall sentiment is {} <span title="This indicates the general tone of the feedback, whether it's positive, neutral, or negative.">ℹ️</span></li>
-                                <li>Responses are {} objective ({}% objectivity score) <span title="Objectivity score reflects how factual or opinion-based the responses are.">ℹ️</span></li>
-                                <li>Most {} responses recorded on {} <span title="Identifies the day with the highest number of positive or negative responses.">ℹ️</span></li>
-                                <li>Sentiment trend is {} <span title="Shows whether the sentiment is improving, declining, or stable over time.">ℹ️</span></li>
+                                <li>Overall sentiment is {}: This indicates the general tone of the feedback, whether it's positive, neutral, or negative.</li>
+                                <li>Responses are {} objective ({}% objectivity score): Objectivity score reflects how factual or opinion-based the responses are.</li>
+                                <li>Most {} responses recorded on {}: Identifies the day with the highest number of positive or negative responses.</li>
+                                <li>Sentiment trend is {}: Shows whether the sentiment is improving, declining, or stable over time.</li>
                             </ul>
                         </div>
                     """.format(
