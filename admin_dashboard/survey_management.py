@@ -29,8 +29,14 @@ def show_survey_management():
 
     st.write("---")
 
+    st.subheader("🆕 Create New Survey")
+
     # Section for creating a new survey
-    with st.expander("✨ Create New Survey"):
+    with st.expander("✨ Survey Setup Assistance"):
+
+        st.markdown(
+            "###### 👉 Please provide the following information based on the details of your existing course material. This will help tailor the survey questions to meet your training objectives and audience needs."
+        )
 
         # 1. Survey Title
         st.write("**1. What is the title of the survey?**")
@@ -289,7 +295,7 @@ def show_survey_management():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Active Surveys")
+        st.subheader("🟢 Active Surveys")
         active_surveys = fetch_active_surveys(trainer_username=trainer_username)
         if active_surveys:
             for survey in active_surveys:
@@ -345,7 +351,7 @@ def show_survey_management():
             st.info("No active surveys available.")
 
     with col2:
-        st.subheader("Closed Surveys")
+        st.subheader("⛔ Closed Surveys")
         closed_surveys = fetch_closed_surveys(trainer_username=trainer_username)
         if closed_surveys:
             for survey in closed_surveys:

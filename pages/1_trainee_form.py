@@ -104,6 +104,7 @@ def render_open_ended(question):
     single_line_questions = [
         "What is your full name?",
         "What is your email address?",
+        "Which school, organization, or institution are you affiliated with? (e.g., Student - Grade 10, Teacher, Manager)",
         "Which school, organization, or institution are you affiliated with?",
     ]
 
@@ -299,7 +300,7 @@ def main():
         profile_questions = get_profile_questions()
 
         for i, question in enumerate(profile_questions["questions"], 1):
-            st.subheader(f"🔹 Question {i}")
+            st.caption(f"🔹 Question {i}")
             question_type = question["type"]
 
             if question_type == "multiple_choice":
@@ -317,7 +318,7 @@ def main():
         st.header("📋 Survey Questions")
         survey_responses = {}
         for i, question in enumerate(questions, 1):
-            st.subheader(f"🔸 Question {i}")
+            st.caption(f"🔸 Question {i}")
             question_type = question["type"].lower()
 
             if question_type == "multiple_choice":
