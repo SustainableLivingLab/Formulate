@@ -323,7 +323,7 @@ def show_survey_management():
                             """,
                             unsafe_allow_html=True
                         )
-                        if st.button("🗑️ Delete", key=f"delete_active_{survey['survey_id']}", 
+                        if st.button("🗑️", key=f"delete_active_{survey['survey_id']}", 
                                    help="Delete this survey", use_container_width=True):
                             if delete_survey(survey['survey_id']):
                                 st.success("Survey deleted successfully!")
