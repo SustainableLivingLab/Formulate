@@ -325,13 +325,13 @@ def show_survey_responses():
                                             "Question",
                                             width="medium",
                                             help="Survey questions",
-                                            max_chars=1000  # Allow more characters to be displayed
+                                            max_chars=500  # Allow more characters to be displayed
                                         ),
                                         "Response": st.column_config.TextColumn(
                                             "Response",
                                             width="medium",
                                             help="Trainee responses",
-                                            max_chars=1000  # Allow more characters to be displayed
+                                            max_chars=500  # Allow more characters to be displayed
                                         )
                                     }
                                 )
