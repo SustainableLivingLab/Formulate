@@ -23,11 +23,6 @@ def show_survey_management():
 
     st.header("📝 Survey Management")
 
-    # Add this near the top of the show_survey_management function, after the st.header
-    st.markdown("""
-        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-straight/css/uicons-regular-straight.css">
-        """, unsafe_allow_html=True)
-
     # Section for creating a new survey
     with st.expander("✨ Create New Survey"):
 
@@ -328,7 +323,7 @@ def show_survey_management():
                             """,
                             unsafe_allow_html=True
                         )
-                        if st.button('<i class="fi fi-rs-trash"></i>', key=f"delete_active_{survey['survey_id']}", 
+                        if st.button("🗑️", key=f"delete_active_{survey['survey_id']}", 
                                    help="Delete this survey", use_container_width=True):
                             if delete_survey(survey['survey_id']):
                                 st.success("Survey deleted successfully!")
@@ -380,7 +375,7 @@ def show_survey_management():
                             """,
                             unsafe_allow_html=True
                         )
-                        if st.button('<i class="fi fi-rs-trash"></i>', key=f"delete_closed_{survey['survey_id']}", 
+                        if st.button("🗑️", key=f"delete_closed_{survey['survey_id']}", 
                                    help="Delete this survey", use_container_width=True):
                             if delete_survey(survey['survey_id']):
                                 st.success("Survey deleted successfully!")
