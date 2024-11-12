@@ -258,7 +258,6 @@ def show_survey_reports():
             tabs = st.tabs([
                 "📊 Response Analysis", 
                 "📝 Text Analysis", 
-                "📈 Trends",
                 "🎯 Insights Dashboard"
             ])
 
@@ -550,63 +549,48 @@ def show_survey_reports():
 
                     # Continue with existing word frequency analysis...
 
+            # Enhanced Insights Dashboard (previously tab[3], now tab[2])
             with tabs[2]:
-                st.subheader("Response Trends")
-                # Group by timestamp and trainee_email to get unique responses per day
-                daily_responses = df.groupby(['timestamp', 'trainee_email']).size().reset_index()
-                daily_responses = daily_responses.groupby(daily_responses['timestamp'].dt.date).size().reset_index()
-                daily_responses.columns = ['date', 'count']
+                st.subheader("🎯 Survey Performance Insights")
                 
-                fig = px.line(
-                    daily_responses,
-                    x='date',
-                    y='count',
-                    title='Daily Response Trend',
-                    markers=True
-                )
-                fig.update_traces(
-                    line_color='#2E86C1',
-                    marker=dict(size=8)
-                )
-                fig.update_layout(
-                    xaxis_title="Date",
-                    yaxis_title="Number of Responses",
-                    height=400
-                )
-                st.plotly_chart(fig, use_container_width=True)
-
-                # Response time distribution
-                fig = px.histogram(
-                    df,
-                    x='timestamp',
-                    title='Response Time Distribution',
-                    nbins=20,
-                    color_discrete_sequence=['#2E86C1']
-                )
-                fig.update_layout(
-                    xaxis_title="Time",
-                    yaxis_title="Number of Responses",
-                    height=400
-                )
-                st.plotly_chart(fig, use_container_width=True)
-
-            # New Insights Dashboard tab
-            with tabs[3]:
-                st.subheader("🎯 Key Insights Dashboard")
-                
-                # Response patterns
+                # Response Pattern Analysis
                 col1, col2 = st.columns(2)
                 with col1:
-                    # Day of week analysis
-                    day_counts = df.groupby(['day_of_week', 'trainee_email']).size().reset_index()
-                    day_counts = day_counts.groupby('day_of_week').size()
-                    fig = px.bar(
-                        x=day_counts.index,
-                        y=day_counts.values,
-                        title="Response Distribution by Day",
-                        labels={'x': 'Day', 'y': 'Count'}
+                    # Enhanced day of week analysis with engagement levels
+                    day_engagement = df.groupby(['day_of_week', 'trainee_email']).agg({
+                        'timestamp': 'count',
+                        'answer': lambda x: len(str(x).split()) if isinstance(x, str) else 1
+                    }).reset_index()
+                    
+                    day_stats = day_engagement.groupby('day_of_week').agg({
+                        'timestamp': 'sum',
+                        'answer': 'mean'
+                    }).reset_index()
+                    
+                    fig = make_subplots(specs=[[{"secondary_y": True}]])
+                    
+                    fig.add_trace(
+                        go.Bar(
+                            x=day_stats['day_of_week'],
+                            y=day_stats['timestamp'],
+                            name="Response Count",
+                            marker_color='#2E86C1'
+                        ),
+                        secondary_y=False
                     )
+                    
+                    fig.add_trace(
+                        go.Scatter(
+                            x=day_stats['day_of_week'],
+                            y=day_stats['answer'],
+                            name="Engagement Score",
+                            line=dict(color="#E74C3C", width=3)
+                        ),
+                        secondary_y=True
+                    )
+                    
                     fig.update_layout(
+                        title="Daily Engagement Pattern",
                         height=300,
                         title_font_color="white",
                         font_color="white",
@@ -616,15 +600,21 @@ def show_survey_reports():
                     st.plotly_chart(fig, use_container_width=True)
 
                 with col2:
-                    # Hour of day analysis
-                    hour_counts = df.groupby(['hour_of_day', 'trainee_email']).size().reset_index()
-                    hour_counts = hour_counts.groupby('hour_of_day').size().sort_index()
-                    fig = px.line(
-                        x=hour_counts.index,
-                        y=hour_counts.values,
-                        title="Response Distribution by Hour",
-                        labels={'x': 'Hour', 'y': 'Count'}
+                    # Response quality over time
+                    quality_metrics = df.groupby(df['timestamp'].dt.date).agg({
+                        'answer': lambda x: np.mean([len(str(i).split()) if isinstance(i, str) else 0 for i in x]),
+                        'trainee_email': 'nunique'
+                    }).reset_index()
+                    
+                    fig = px.scatter(
+                        quality_metrics,
+                        x='timestamp',
+                        y='answer',
+                        size='trainee_email',
+                        title="Response Quality Trend",
+                        labels={'answer': 'Avg Response Length', 'trainee_email': 'Unique Respondents'}
                     )
+                    fig.update_traces(marker=dict(color="#2ECC71"))
                     fig.update_layout(
                         height=300,
                         title_font_color="white",
@@ -634,22 +624,73 @@ def show_survey_reports():
                     )
                     st.plotly_chart(fig, use_container_width=True)
 
-                # Key findings section
+                # Advanced Insights Cards
+                st.markdown("### 📊 Advanced Analytics")
+                insight_cols = st.columns(3)
+                
+                with insight_cols[0]:
+                    st.markdown("""
+                        <div class='insight-card'>
+                            <h4>🎯 Engagement Patterns</h4>
+                            <ul>
+                                <li>Peak Day: {}</li>
+                                <li>Most Engaged Time: {}:00</li>
+                                <li>Avg Response Length: {:.1f} words</li>
+                            </ul>
+                        </div>
+                    """.format(
+                        day_stats.loc[day_stats['timestamp'].idxmax(), 'day_of_week'],
+                        hour_counts.idxmax(),
+                        df['answer'].apply(lambda x: len(str(x).split()) if isinstance(x, str) else 0).mean()
+                    ), unsafe_allow_html=True)
+
+                with insight_cols[1]:
+                    st.markdown("""
+                        <div class='insight-card'>
+                            <h4>👥 Participant Behavior</h4>
+                            <ul>
+                                <li>Unique Participants: {}</li>
+                                <li>Return Rate: {:.1f}%</li>
+                                <li>Avg Session Duration: {:.1f} min</li>
+                            </ul>
+                        </div>
+                    """.format(
+                        df['trainee_email'].nunique(),
+                        (repeat_respondents / unique_respondents) * 100,
+                        avg_response_time * 60
+                    ), unsafe_allow_html=True)
+
+                with insight_cols[2]:
+                    st.markdown("""
+                        <div class='insight-card'>
+                            <h4>📈 Quality Metrics</h4>
+                            <ul>
+                                <li>Completion Rate: {:.1f}%</li>
+                                <li>Engagement Score: {:.1f}%</li>
+                                <li>Response Trend: {}</li>
+                            </ul>
+                        </div>
+                    """.format(
+                        completion_rate,
+                        avg_engagement,
+                        "Improving" if len(response_times) > 1 and response_times[-1] > response_times[0] else "Stable"
+                    ), unsafe_allow_html=True)
+
+                # Key Recommendations
                 st.markdown("""
                     <div class='insight-card'>
-                        <h4>📌 Key Findings</h4>
+                        <h4>🚀 Key Recommendations</h4>
                         <ul>
-                            <li>Most active day: {}</li>
-                            <li>Peak response hour: {}:00</li>
-                            <li>Average response interval: {:.1f} hours</li>
-                            <li>Response trend: {}</li>
+                            <li>Best time to send surveys: {} at {}:00</li>
+                            <li>Optimal survey frequency: Every {} days</li>
+                            <li>Focus areas: {}</li>
                         </ul>
                     </div>
                 """.format(
-                    day_counts.index[0],
+                    day_stats.loc[day_stats['answer'].idxmax(), 'day_of_week'],
                     hour_counts.idxmax(),
-                    avg_response_time,
-                    "Increasing" if len(response_times) > 1 and response_times[-1] > response_times[0] else "Stable"
+                    max(1, int(np.median(response_times) / 24)),
+                    "Open-ended questions" if df[df['type'] == 'open_ended']['answer'].apply(len).mean() > 50 else "Rating questions"
                 ), unsafe_allow_html=True)
 
 if __name__ == "__main__":
