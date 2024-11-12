@@ -84,14 +84,20 @@ def show_survey_responses():
             max-width: 400px;
             word-wrap: break-word;
         }
+        .stTable {
+            width: 100%;
+        }
         .stTable td {
             white-space: normal !important;
             padding: 8px;
             vertical-align: top;
+            text-align: left;
         }
         .stTable th {
             white-space: normal !important;
             padding: 8px;
+            text-align: left !important;
+            background-color: rgba(255, 255, 255, 0.1);
         }
         </style>
     """, unsafe_allow_html=True)
@@ -276,7 +282,12 @@ def show_survey_responses():
                             if profile_data:
                                 # Convert to DataFrame and display
                                 df = pd.DataFrame(profile_data, columns=['Question', 'Response'])
-                                st.write(df.to_html(index=False, escape=False, classes='stTable'), unsafe_allow_html=True)
+                                st.write(df.to_html(
+                                    index=False, 
+                                    escape=False, 
+                                    classes='stTable',
+                                    justify='left'
+                                ), unsafe_allow_html=True)
 
                         # Survey Section
                         if 'survey' in trainee_responses:
@@ -301,7 +312,12 @@ def show_survey_responses():
                             if survey_data:
                                 # Convert to DataFrame and display
                                 df = pd.DataFrame(survey_data, columns=['Question', 'Response'])
-                                st.write(df.to_html(index=False, escape=False, classes='stTable'), unsafe_allow_html=True)
+                                st.write(df.to_html(
+                                    index=False, 
+                                    escape=False, 
+                                    classes='stTable',
+                                    justify='left'
+                                ), unsafe_allow_html=True)
 
         except Exception as e:
             st.error(f"Error displaying survey responses: {str(e)}")
