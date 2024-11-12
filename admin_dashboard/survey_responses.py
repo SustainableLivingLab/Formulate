@@ -1,10 +1,7 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
 from utils.create_database_tables import get_survey_data, fetch_survey_responses
 from datetime import datetime, timedelta
-import numpy as np
 
 def parse_datetime(datetime_str):
     """Safely parse datetime string to datetime object"""
@@ -46,43 +43,6 @@ def show_survey_responses():
             padding: 15px;
             border-radius: 10px;
             text-align: center;
-        }
-        .response-card {
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 10px 0;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .highlight-text {
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        .filter-section {
-            background: rgba(255,255,255,0.03);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-        }
-        .insight-pill {
-            background: rgba(76, 175, 80, 0.1);
-            padding: 5px 10px;
-            border-radius: 15px;
-            margin: 5px;
-            display: inline-block;
-            border: 1px solid rgba(76, 175, 80, 0.2);
-        }
-        .stDataFrame td {
-            white-space: normal !important;
-            min-width: 200px;
-            max-width: 400px;
-            word-wrap: break-word;
-        }
-        .stDataFrame th {
-            white-space: normal !important;
-            min-width: 200px;
-            max-width: 400px;
-            word-wrap: break-word;
         }
         .stTable {
             width: 100%;
@@ -129,8 +89,6 @@ def show_survey_responses():
         try:
             st.session_state.survey_data = get_survey_data(survey_id)
             st.session_state.responses = fetch_survey_responses(survey_id)
-            # st.write(f"Debug - Number of responses fetched: {len(st.session_state.responses)}")
-            # st.write("Debug - First response structure:", st.session_state.responses[0] if st.session_state.responses else "No responses")
             if st.session_state.responses:
                 st.session_state.filtered_responses = st.session_state.responses.copy()
         except Exception as e:
@@ -251,7 +209,6 @@ def show_survey_responses():
 
             # 4. Individual Responses
             st.markdown("### 📝 Detailed Responses")
-            # st.write(f"Debug - Number of filtered responses: {len(filtered_responses)}")
 
             for response in filtered_responses:
                 submission_time = parse_datetime(response.get('submission_datetime'))
@@ -332,8 +289,6 @@ def show_survey_responses():
             ### 💡 Tips for exploring responses:
             - Use filters to find specific responses
             - Check the timeline for response patterns
-            - Look for insights in the analytics tab
-            - Export responses for further analysis
         """)
 
 if __name__ == "__main__":
