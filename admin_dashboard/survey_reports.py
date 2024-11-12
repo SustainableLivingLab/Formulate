@@ -184,7 +184,38 @@ def show_survey_reports():
             completion_rate = round((total_responses / total_responses) * 100, 1)
             avg_response_time = np.mean(response_times) if response_times else 0
 
-            # Metrics Row with descriptions
+            # Calculate unique and insightful metrics
+            total_responses = len(responses)
+            
+            # Most Active Time Window
+            df['hour'] = df['timestamp'].dt.hour
+            busy_hours = df.groupby('hour').size()
+            peak_hour_start = busy_hours.idxmax()
+            peak_window = f"{peak_hour_start:02d}:00-{(peak_hour_start+1):02d}:00"
+            peak_percentage = (busy_hours.max() / len(df)) * 100
+
+            # Response Diversity
+            unique_respondents = df['trainee_email'].nunique()
+            repeat_respondents = sum(df.groupby('trainee_email').size() > 1)
+            diversity_score = (unique_respondents / total_responses) * 100
+
+            # Question Engagement Score
+            question_engagement = {}
+            for _, response in df.iterrows():
+                if response['type'] == 'open_ended':
+                    # Score based on word count
+                    words = len(str(response['answer']).split())
+                    question_engagement[response['question']] = question_engagement.get(response['question'], [])
+                    question_engagement[response['question']].append(min(words / 10, 1))  # Cap at 1, 10 words = full score
+                elif response['type'] == 'likert_scale':
+                    # Score based on non-neutral answers (1,2 or 4,5 vs 3)
+                    score = abs(float(response['answer']) - 3) / 2  # Convert to 0-1 scale
+                    question_engagement[response['question']] = question_engagement.get(response['question'], [])
+                    question_engagement[response['question']].append(score)
+
+            avg_engagement = np.mean([np.mean(scores) for scores in question_engagement.values()]) * 100
+
+            # Metrics Row with creative insights
             st.markdown('<div class="metric-container">', unsafe_allow_html=True)
             metrics_cols = st.columns([1, 1, 1, 1])
             with metrics_cols[0]:
@@ -197,28 +228,28 @@ def show_survey_reports():
             
             with metrics_cols[1]:
                 fig = create_metric_card(
-                    "Completion Rate", 
-                    completion_rate, 
+                    "Peak Activity Time", 
+                    peak_percentage,
                     suffix="%",
-                    description="Completion success"
+                    description=f"at {peak_window}"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
             with metrics_cols[2]:
                 fig = create_metric_card(
-                    "Avg Response Time", 
-                    avg_response_time,
-                    suffix="h",
-                    description="Between responses"
+                    "Response Diversity", 
+                    diversity_score,
+                    suffix="%",
+                    description=f"{repeat_respondents} repeat participants"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
             with metrics_cols[3]:
-                engagement_score = (completion_rate * total_responses) / 100
                 fig = create_metric_card(
                     "Engagement Score", 
-                    engagement_score,
-                    description="Participation metric"
+                    avg_engagement,
+                    suffix="%",
+                    description="Based on response quality"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
