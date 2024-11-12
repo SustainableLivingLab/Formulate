@@ -34,12 +34,12 @@ def surveyQuestions(SYSTEM_PROMPT: str, survey_data: Dict[Any, Any]) -> Dict[str
                 {
                     "role": "user",
                     "content": f"""
-                     Provide the  Survey Questions Generation based on a comprehensive analysis ,adhering to the following guidelines:
-                1. ensure the output in json structure
-                2. Ensure the text in formal British English, ensuring advanced grammar, precision, and professionalism tone              
-                3. Develop a set of {survey_data["questionCount"]} questions, ensuring a diverse range of question types, including multiple-choice, checkbox, Likert scale, and open-ended questions.
+                     Generate a structured survey, with a focus on assessing baseline knowledge and specific learning needs. Adhere to these guidelines:
+                1. Output the survey in JSON format.
+                2. Use formal British English for clarity and professionalism.
+                3. Create a set of {survey_data["questionCount"]} questions, incorporating a range of types (multiple-choice, checkbox, Likert scale, open-ended).
 
-                Structure Guide as the reference : 
+                Use this structure guide:
 
                 1. Multiple Choice:
                     {multiple_choice}
@@ -61,74 +61,37 @@ def surveyQuestions(SYSTEM_PROMPT: str, survey_data: Dict[Any, Any]) -> Dict[str
             temperature=0.5,
             presence_penalty=0.6,
             top_p=0.8,
-            n=1,  # Number of responses to generate at a time
+            n=1,
         )
-        # Cek apakah output dari completion kosong atau null
+        
         surveyQuestionsResult = surveyQuestions.choices[0].message.content.strip()
-        if not surveyQuestionsResult:  # if there is no output, do retry
-
+        if not surveyQuestionsResult:
             raise print("Chat Completion output in {section} is empty, retrying...")
 
-        surveyQuestionsResult = surveyQuestions.choices[0].message.content
         print(f"{section} : OK")
-
         return surveyQuestionsResult
-    except openai.AuthenticationError as e:
-        print(f"Your API key or token was invalid, expired, or revoked : {e}")
 
+    except openai.AuthenticationError as e:
+        print(f"Invalid or expired API key: {e}")
         raise
     except openai.BadRequestError as e:
-        print(
-            f"Your request was malformed or missing some required parameters, such as a token or an input in {section} : {e}"
-        )
-
-        raise
-    except openai.ConflictError as e:
-        print(f"The resource was updated by another request in {section} : {e}")
-
-        raise
-    except openai.InternalServerError as e:
-        print(f"Issue on our side while completing in {section} : {e}")
-
-        raise
-    except openai.NotFoundError as e:
-        print(f"Requested resource does not exist while completing in {section} : {e}")
-
-        raise
-    except openai.APITimeoutError as e:
-        print(f"Request timed out in {section} : {e}")
-
-        raise
-    except openai.UnprocessableEntityError as e:
-        print(
-            f"Unable to process the request despite the format being correct in {section}: {e}"
-        )
-
-        raise
-    except openai.PermissionDeniedError as e:
-        print(
-            f"You don't have access to the requested resource while completing the {section}: {e}"
-        )
-
+        print(f"Malformed request in {section}: {e}")
         raise
     except openai.APIError as e:
-        print(f"OpenAI API returned an API Error in {section}: {e}")
-
-        raise  # Lempar ulang error
+        print(f"OpenAI API returned an error in {section}: {e}")
+        raise
     except openai.APIConnectionError as e:
-        print(f"Failed to connect to OpenAI API in {section}: {e}")
-
-        raise  # Lempar ulang error
+        print(f"Connection error in {section}: {e}")
+        raise
     except openai.RateLimitError as e:
-        print(f"OpenAI API request exceeded rate limit in {section}: {e}")
-        raise  # Lempar ulang error
+        print(f"Rate limit exceeded in {section}: {e}")
+        raise
 
 
 def analysis_Trainee_Response(SYSTEM_PROMPT: str, survey_responses: str):
-    print(f"DEBUG: Received survey_response in AI summarization: {survey_responses}")
+    print(f"DEBUG: Received survey_response for summarization: {survey_responses}")
 
-    section = "Analysed summarisation Trainer Questionare"
-
+    section = "Analysed summarisation Trainer Questionnaire"
     try:
         analysisTQ = client.chat.completions.create(
             model=model,
@@ -140,36 +103,29 @@ def analysis_Trainee_Response(SYSTEM_PROMPT: str, survey_responses: str):
                 {
                     "role": "user",
                     "content": f"""
+                Building on prior survey insights, continue by analyzing and summarizing responses in-depth, focusing on the following areas to refine training outcomes and improve future sessions:
 
-                1. Analyze and summarize the responses provided by professional education trainee to the recent questionnaire. 
-                2 The data would be anlysed is json.dumps file which contains severals response from the trainee.
-                
-                
-                The analysis should be presented in two main sections:
+                1. Detailed Survey Outcomes:
+                   - Extended Analysis: Go beyond surface-level insights by highlighting nuanced trends, discrepancies, and recurring patterns in trainee feedback.
+                   - Course Strengths and Gaps: Identify specific course elements that were most effective or posed challenges. Provide actionable data points where possible.
 
-                  - **Survey Outcome** – Identify and evaluate the key insights shared by trainers. Focus on any recurring themes, patterns, or notable points that reflect common perspectives or diverging views. Additionally, interpret how these insights might impact the effectiveness of current learning objectives.
+                2. Iterative Modifications to Learning Objectives:
+                   - Based on trends and outcomes, suggest targeted adjustments to course learning objectives, specifying the competencies that would benefit most.
+                   - Future-Oriented Recommendations: Identify additional elements or skills to incorporate into future training programs based on unmet trainee needs or evolving industry standards.
+                   - Include clear examples for each suggestion, such as “Introduce interactive group tasks on X” or “Provide supplementary material for advanced learners on topic Y.”
 
-                  - **Recommended Modifications to Learning Objectives** – Based on the survey feedback, propose and justify specific, actionable changes to improve clarity, engagement, and measurable impact of the learning objectives. These modifications should aim to help learners better understand, apply, and master the content.
+                3. Long-Term Curriculum Improvements:
+                   - Summarize opportunities for improving the curriculum based on the aggregated feedback from this and previous analyses.
+                   - Consistency and Scalability Recommendations: Highlight areas that can streamline content customization across multiple training cohorts, ensuring consistent quality and ease of adjustment.
+                   - Focus on scalable solutions that support efficient course customization without constant re-evaluation by senior trainers.
 
-                3. Structure each section in short, highlighted bullet points to enhance clarity and readability.
+                Data for analysis: {survey_responses}
 
-                **Data for analysis**: {survey_responses}
+                Expected JSON Output Format: {analysed_data}
 
-                **Response Format (JSON)**:
-                Provide a response strictly in JSON format, with each section following this structure:
-
-
-                {analysed_data}
-
-                Ensure the response in JSON format following the example structure above, with each question type clearly indicated.
-
-
-                IMPORTANT CONSTRAINT
-
-                1. do not provide any other output than in json formated structure question guidance
-
-
-
+                IMPORTANT:
+                - Maintain output in JSON format as specified.
+                - Ensure insights are practical and support actionable curriculum adjustments.
                 """,
                 },
             ],
@@ -178,65 +134,28 @@ def analysis_Trainee_Response(SYSTEM_PROMPT: str, survey_responses: str):
             temperature=0.5,
             presence_penalty=0.6,
             top_p=0.8,
-            n=1,  # Number of responses to generate at a time
+            n=1,
         )
 
-        # Cek apakah output dari completion kosong atau null
         TQ_analysis = analysisTQ.choices[0].message.content.strip()
-        if not TQ_analysis:  # if there is no output, do retry
-
+        if not TQ_analysis:
             raise print("Chat Completion output in {section} is empty, retrying...")
 
-        TQ_analysis = analysisTQ.choices[0].message.content
         print(f"{section} : OK")
-
         return TQ_analysis
-    except openai.AuthenticationError as e:
-        print(f"Your API key or token was invalid, expired, or revoked : {e}")
 
+    except openai.AuthenticationError as e:
+        print(f"Invalid or expired API key: {e}")
         raise
     except openai.BadRequestError as e:
-        print(
-            f"Your request was malformed or missing some required parameters, such as a token or an input in {section} : {e}"
-        )
-
-        raise
-    except openai.ConflictError as e:
-        print(f"The resource was updated by another request in {section} : {e}")
-
-        raise
-    except openai.InternalServerError as e:
-        print(f"Issue on our side while completing in {section} : {e}")
-
-        raise
-    except openai.NotFoundError as e:
-        print(f"Requested resource does not exist while completing in {section} : {e}")
-
-        raise
-    except openai.APITimeoutError as e:
-        print(f"Request timed out in {section} : {e}")
-
-        raise
-    except openai.UnprocessableEntityError as e:
-        print(
-            f"Unable to process the request despite the format being correct in {section}: {e}"
-        )
-
-        raise
-    except openai.PermissionDeniedError as e:
-        print(
-            f"You don't have access to the requested resource while completing the {section}: {e}"
-        )
-
+        print(f"Malformed request in {section}: {e}")
         raise
     except openai.APIError as e:
-        print(f"OpenAI API returned an API Error in {section}: {e}")
-
-        raise  # Lempar ulang error
+        print(f"OpenAI API error in {section}: {e}")
+        raise
     except openai.APIConnectionError as e:
-        print(f"Failed to connect to OpenAI API in {section}: {e}")
-
-        raise  # Lempar ulang error
+        print(f"Connection error in {section}: {e}")
+        raise
     except openai.RateLimitError as e:
-        print(f"OpenAI API request exceeded rate limit in {section}: {e}")
-        raise  # Lempar ulang error
+        print(f"Rate limit exceeded in {section}: {e}")
+        raise

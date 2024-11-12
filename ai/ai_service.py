@@ -10,28 +10,28 @@ import streamlit as st
 def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, Any]:
     SYSTEM_PROMPT = system_content_prompt(survey_data)
     try:
-
-        surveyQuestion = surveyQuestions(
+        survey_question = surveyQuestions(
             SYSTEM_PROMPT=SYSTEM_PROMPT, survey_data=survey_data
         )
 
-        # store the ai result into json format
-        return surveyQuestion
+        # Store the AI-generated result in JSON format and return it
+        return json.loads(survey_question)
 
     except Exception as e:
-        print(e)
+        print(f"Error generating survey questions: {e}")
+        return {}
 
 
 # CODE TO GENERATE AI SUMMARY
-def generate_AI_summarisation(survey_data: str):
+def generate_AI_summarisation(survey_data: str) -> Dict[str, Any]:
     try:
-        AI_summarastion = analysis_Trainee_Response(
+        ai_summarisation = analysis_Trainee_Response(
             SYSTEM_PROMPT=SYSTEM_PROMPT2, survey_responses=survey_data
         )
 
-        print(f"DEBUG : AI summarisation result {AI_summarastion}")
-        return AI_summarastion
+        print(f"DEBUG: AI summarisation result: {ai_summarisation}")
+        return json.loads(ai_summarisation)
 
-    # TO DO, in where this code will be executed?
     except Exception as e:
-        print(e)
+        print(f"Error generating AI summarisation: {e}")
+        return {}
