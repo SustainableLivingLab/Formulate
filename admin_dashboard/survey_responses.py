@@ -227,77 +227,81 @@ def show_survey_responses():
             st.write(f"Debug - Number of filtered responses: {len(filtered_responses)}")
 
             for response in filtered_responses:
-                st.write("Debug - Processing response:", response.get('trainee_email'))
                 submission_time = parse_datetime(response.get('submission_datetime'))
                 submission_display = submission_time.strftime('%Y-%m-%d %H:%M:%S') if submission_time else 'Time not available'
                 
                 with st.expander(f"Response from {response.get('trainee_email', 'Unknown User')} - {submission_display}"):
                     trainee_responses = response.get('trainee_responses', {})
-                    st.write("Debug - Trainee responses structure:", trainee_responses)
                     
                     if isinstance(trainee_responses, dict):
-                        # Profile Section
-                        if 'Profile' in trainee_responses:
+                        # Profile Section (note the lowercase 'profile')
+                        if 'profile' in trainee_responses:
                             st.markdown("#### 👤 Profile Information")
                             profile_data = []
-                            profile_responses = trainee_responses['Profile']
-                            st.write("Debug - Profile responses:", profile_responses)
+                            profile_responses = trainee_responses['profile']
                             
                             for q_id, answer_data in profile_responses.items():
                                 if isinstance(answer_data, dict):
                                     question = answer_data.get('question', '')
                                     answer = answer_data.get('answer', '')
-                                    st.write(f"Debug - Processing Q: {question}, A: {answer}")
                                     
                                     if isinstance(answer, list):
                                         answer = ", ".join(str(item) for item in answer)
-                                    elif answer is None:
-                                        answer = "No response"
+                                    elif isinstance(answer, (int, float)):
+                                        # Handle Likert scale answers
+                                        if answer_data.get('type') == 'likert_scale':
+                                            answer = f"{answer}/5"
+                                    
                                     profile_data.append({
                                         "Question": question,
-                                        "Answer": str(answer)
+                                        "Response": str(answer)
                                     })
                             
                             if profile_data:
                                 st.dataframe(
                                     pd.DataFrame(profile_data),
                                     use_container_width=True,
-                                    hide_index=True
+                                    hide_index=True,
+                                    column_config={
+                                        "Question": st.column_config.TextColumn("Question", width="medium"),
+                                        "Response": st.column_config.TextColumn("Response", width="medium")
+                                    }
                                 )
 
-                        # Survey Section
-                        if 'Survey' in trainee_responses:
+                        # Survey Section (note the lowercase 'survey')
+                        if 'survey' in trainee_responses:
                             st.markdown("#### 📋 Survey Responses")
                             survey_data = []
-                            survey_responses = trainee_responses['Survey']
-                            st.write("Debug - Survey responses:", survey_responses)
+                            survey_responses = trainee_responses['survey']
                             
                             for q_id, answer_data in survey_responses.items():
                                 if isinstance(answer_data, dict):
                                     question = answer_data.get('question', '')
                                     answer = answer_data.get('answer', '')
+                                    answer_type = answer_data.get('type', '')
                                     
                                     # Format different answer types
                                     if isinstance(answer, list):
                                         answer = ", ".join(str(item) for item in answer)
-                                    elif isinstance(answer, (int, float)):
+                                    elif isinstance(answer, (int, float)) and answer_type == 'likert_scale':
                                         scale = answer_data.get('scale', {})
-                                        if scale:
-                                            max_label = scale.get('max_label', '')
-                                            answer = f"{answer} - {max_label}"
-                                    elif answer is None:
-                                        answer = "No response"
-                                        
+                                        max_label = scale.get('max_label', '')
+                                        answer = f"{answer}/5 - {max_label}"
+                                    
                                     survey_data.append({
                                         "Question": question,
-                                        "Answer": str(answer)
+                                        "Response": str(answer)
                                     })
                             
                             if survey_data:
                                 st.dataframe(
                                     pd.DataFrame(survey_data),
                                     use_container_width=True,
-                                    hide_index=True
+                                    hide_index=True,
+                                    column_config={
+                                        "Question": st.column_config.TextColumn("Question", width="medium"),
+                                        "Response": st.column_config.TextColumn("Response", width="medium")
+                                    }
                                 )
 
         except Exception as e:
