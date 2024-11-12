@@ -562,12 +562,12 @@ def show_survey_reports():
                 with col1:
                     # Enhanced day of week analysis with engagement levels
                     day_engagement = df.groupby(['day_of_week', 'trainee_email']).agg({
-                        'timestamp': 'count',
+                        'timestamp': 'size',
                         'answer': lambda x: len(str(x).split()) if isinstance(x, str) else 1
                     }).reset_index()
                     
                     day_stats = day_engagement.groupby('day_of_week').agg({
-                        'timestamp': 'sum',
+                        'timestamp': 'count',
                         'answer': 'mean'
                     }).reset_index()
                     
