@@ -32,12 +32,12 @@ def show_survey_responses():
     # Modern, clean CSS styling
     st.markdown("""
         <style>
-        .response-header {
-            background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-        }
+        # .response-header {
+        #     background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        #     padding: 20px;
+        #     border-radius: 15px;
+        #     margin-bottom: 25px;
+        # }
         .quick-stats {
             background: rgba(255,255,255,0.05);
             padding: 15px;
@@ -79,7 +79,7 @@ def show_survey_responses():
         st.session_state.filtered_responses = None
 
     # Modern header with survey info
-    st.markdown('<div class="response-header">', unsafe_allow_html=True)
+    # st.markdown('<div class="response-header">', unsafe_allow_html=True)
     st.title("📝 Survey Response Explorer")
     
     # Survey selector with modern layout
