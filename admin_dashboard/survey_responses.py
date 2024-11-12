@@ -72,6 +72,18 @@ def show_survey_responses():
             display: inline-block;
             border: 1px solid rgba(76, 175, 80, 0.2);
         }
+        .stDataFrame td {
+            white-space: normal !important;
+            min-width: 200px;
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+        .stDataFrame th {
+            white-space: normal !important;
+            min-width: 200px;
+            max-width: 400px;
+            word-wrap: break-word;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -257,20 +269,23 @@ def show_survey_responses():
                                     })
                             
                             if profile_data:
+                                df = pd.DataFrame(profile_data)
                                 st.dataframe(
-                                    pd.DataFrame(profile_data),
+                                    df,
                                     use_container_width=True,
                                     hide_index=True,
                                     column_config={
                                         "Question": st.column_config.TextColumn(
                                             "Question",
-                                            width="large",
-                                            help="Profile questions"
+                                            width="medium",
+                                            help="Profile questions",
+                                            max_chars=1000  # Allow more characters to be displayed
                                         ),
                                         "Response": st.column_config.TextColumn(
                                             "Response",
-                                            width="large",
-                                            help="Trainee responses"
+                                            width="medium",
+                                            help="Trainee responses",
+                                            max_chars=1000  # Allow more characters to be displayed
                                         )
                                     }
                                 )
@@ -300,20 +315,23 @@ def show_survey_responses():
                                     })
                             
                             if survey_data:
+                                df = pd.DataFrame(survey_data)
                                 st.dataframe(
-                                    pd.DataFrame(survey_data),
+                                    df,
                                     use_container_width=True,
                                     hide_index=True,
                                     column_config={
                                         "Question": st.column_config.TextColumn(
                                             "Question",
-                                            width="large",
-                                            help="Survey questions"
+                                            width="medium",
+                                            help="Survey questions",
+                                            max_chars=1000  # Allow more characters to be displayed
                                         ),
                                         "Response": st.column_config.TextColumn(
                                             "Response",
-                                            width="large",
-                                            help="Trainee responses"
+                                            width="medium",
+                                            help="Trainee responses",
+                                            max_chars=1000  # Allow more characters to be displayed
                                         )
                                     }
                                 )
