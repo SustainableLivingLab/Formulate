@@ -24,7 +24,7 @@ def show_survey_management():
     st.title("📝 Survey Management")
 
     st.markdown(
-        "##### 👉 Effortlessly create and managers surveys tailored to your audience."
+        "##### 👉 Effortlessly create and manage surveys tailored to your audience."
     )
 
     st.write("---")
