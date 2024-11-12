@@ -44,6 +44,16 @@ def show_survey_responses():
             border-radius: 10px;
             text-align: center;
         }
+        .quick-stats h1 {
+            font-size: 1.5rem !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .quick-stats p {
+            margin: 5px 0 0 0 !important;
+            font-size: 0.9rem !important;
+        }
         .stTable {
             width: 100%;
         }
