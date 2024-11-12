@@ -553,6 +553,10 @@ def show_survey_reports():
             with tabs[2]:
                 st.subheader("🎯 Survey Performance Insights")
                 
+                # Calculate hour and day counts
+                hour_counts = df.groupby(df['timestamp'].dt.hour).size()
+                day_counts = df.groupby(df['timestamp'].dt.day_name()).size()
+                
                 # Response Pattern Analysis
                 col1, col2 = st.columns(2)
                 with col1:
