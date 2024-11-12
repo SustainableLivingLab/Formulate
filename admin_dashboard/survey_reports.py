@@ -225,8 +225,7 @@ def show_survey_reports():
                     description="Survey submissions",
                     help="The total number of completed survey submissions received. This metric helps you understand the level of engagement with your survey."
                 )
-                st.plotly_chart(fig, use_container_width=True, 
-                    help="Shows the absolute count of all survey responses received so far. A higher number indicates greater participation.")
+                st.plotly_chart(fig, use_container_width=True)
             
             with metrics_cols[1]:
                 fig = create_metric_card(
@@ -236,8 +235,7 @@ def show_survey_reports():
                     description=f"at {peak_window}",
                     help="The time window when most responses were submitted, helping identify optimal survey timing. This insight can guide you in scheduling future surveys for maximum engagement."
                 )
-                st.plotly_chart(fig, use_container_width=True,
-                    help="Indicates when participants are most likely to respond, useful for scheduling future surveys.")
+                st.plotly_chart(fig, use_container_width=True)
             
             with metrics_cols[2]:
                 fig = create_metric_card(
@@ -247,8 +245,7 @@ def show_survey_reports():
                     description=f"{repeat_respondents} repeat participants",
                     help="Measures how varied your respondent pool is, with higher percentages indicating more unique participants. This insight helps track the breadth of engagement across different participants."
                 )
-                st.plotly_chart(fig, use_container_width=True,
-                    help="Shows the balance between new and returning participants, helping track engagement breadth.")
+                st.plotly_chart(fig, use_container_width=True)
             
             with metrics_cols[3]:
                 fig = create_metric_card(
@@ -258,8 +255,7 @@ def show_survey_reports():
                     description="Based on response quality",
                     help="A composite score measuring response completeness, detail level, and thoughtfulness. This insight reflects how thoroughly participants are engaging with the survey questions."
                 )
-                st.plotly_chart(fig, use_container_width=True,
-                    help="Indicates how thoroughly participants are engaging with the survey questions.")
+                st.plotly_chart(fig, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
             # Create tabs with enhanced analysis
@@ -456,7 +452,7 @@ def show_survey_reports():
                                     <li>0.3 to 1.0: Positive</li>
                                 </ul>
                             </div>
-                        """, unsafe_allow_html=True, help="This guide explains the sentiment score ranges: Negative, Neutral, and Positive.")
+                        """, unsafe_allow_html=True)
 
                     # Detailed Sentiment Metrics
                     metrics_cols = st.columns(3)
@@ -529,15 +525,11 @@ def show_survey_reports():
                         paper_bgcolor='rgba(0,0,0,0)',
                         plot_bgcolor='rgba(0,0,0,0)',
                         font={'color': 'white'},
-                        hovermode='x unified',
-                        help="This chart shows the trends in sentiment polarity and objectivity over time, helping to identify changes in feedback tone."
+                        hovermode='x unified'
                     )
-                    fig.update_yaxes(title_text="Sentiment Score", secondary_y=False)
-                    fig.update_yaxes(title_text="Objectivity Level", secondary_y=True)
-                    
                     st.plotly_chart(fig, use_container_width=True)
 
-                    # Key Insights Box
+                    # Explanation for Sentiment and Objectivity Trends
                     st.markdown("""
                         <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-top: 20px;'>
                             <h4>🔍 Key Insights</h4>
@@ -558,8 +550,6 @@ def show_survey_reports():
                         else "declining" if sentiment_time['polarity'].corr(pd.Series(range(len(sentiment_time)))) < -0.1 
                         else "stable"
                     ), unsafe_allow_html=True)
-
-                    # Continue with existing word frequency analysis...
 
             # Enhanced Insights Dashboard (previously tab[3], now tab[2])
             with tabs[2]:
