@@ -55,14 +55,16 @@ def show_login_page():
 
 # Enhanced Dashboard with Sidebar and Navigation
 def show_dashboard():
-    st.title("Formulate 📚")
+    st.title(f"Formulate 📚 - Hello, {st.session_state['username']}! 👋")
+
+    # st.header(f"Hello, {st.session_state['username']}! 👋")
 
     st.sidebar.image("./Images/trainer.png")
-    st.sidebar.header("Formulate - Admin Dashboard")
+    st.sidebar.header("Your Survey & Insights Hub")
 
     # Sidebar navigation
     section = st.sidebar.radio(
-        "Select a section",
+        "Navigate Your Dashboard",
         [
             "📝 Survey Management",
             "📋 Survey Responses",

@@ -131,6 +131,12 @@ def show_survey_reports():
 
     # Header with survey info
     st.title("📊 Survey Analytics Dashboard")
+
+    st.markdown(
+        "##### 👉 Analyze survey data with comprehensive visualizations and insights."
+    )
+
+    st.write("---")
     
     # Survey selector with recent surveys list
     col1, col2 = st.columns([4, 1])

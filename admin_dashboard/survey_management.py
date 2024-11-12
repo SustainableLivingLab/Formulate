@@ -21,7 +21,13 @@ def show_survey_management():
     # Get trainer_username from session state
     trainer_username = st.session_state["username"]
 
-    st.header("📝 Survey Management")
+    st.title("📝 Survey Management")
+
+    st.markdown(
+        "##### 👉 Effortlessly create and managers surveys tailored to your audience."
+    )
+
+    st.write("---")
 
     # Section for creating a new survey
     with st.expander("✨ Create New Survey"):
@@ -293,7 +299,7 @@ def show_survey_management():
                     st.write(f"**Expires At**: {survey['expiration_datetime']}")
                     survey_link = f"https://formulate.streamlit.app/trainee_form?id={survey['survey_id']}"
                     st.write(f"**Survey ID**: {survey['survey_id']}")
-                    
+
                     # Create a row with link and delete button
                     col_link, col_delete = st.columns([4, 1])
                     with col_link:
@@ -321,11 +327,15 @@ def show_survey_management():
                             }
                             </style>
                             """,
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
-                        if st.button("🗑️", key=f"delete_active_{survey['survey_id']}", 
-                                   help="Delete this survey", use_container_width=True):
-                            if delete_survey(survey['survey_id']):
+                        if st.button(
+                            "🗑️",
+                            key=f"delete_active_{survey['survey_id']}",
+                            help="Delete this survey",
+                            use_container_width=True,
+                        ):
+                            if delete_survey(survey["survey_id"]):
                                 st.success("Survey deleted successfully!")
                                 st.rerun()
                             else:
@@ -345,7 +355,7 @@ def show_survey_management():
                     st.write(f"**Expired On**: {survey['expiration_datetime']}")
                     survey_link = f"https://formulate.streamlit.app/trainee_form?id={survey['survey_id']}"
                     st.write(f"**Survey ID**: {survey['survey_id']}")
-                    
+
                     # Create a row with link and delete button
                     col_link, col_delete = st.columns([4, 1])
                     with col_link:
@@ -373,11 +383,15 @@ def show_survey_management():
                             }
                             </style>
                             """,
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
-                        if st.button("🗑️", key=f"delete_closed_{survey['survey_id']}", 
-                                   help="Delete this survey", use_container_width=True):
-                            if delete_survey(survey['survey_id']):
+                        if st.button(
+                            "🗑️",
+                            key=f"delete_closed_{survey['survey_id']}",
+                            help="Delete this survey",
+                            use_container_width=True,
+                        ):
+                            if delete_survey(survey["survey_id"]):
                                 st.success("Survey deleted successfully!")
                                 st.rerun()
                             else:

@@ -6,27 +6,28 @@ import json
 
 
 def show_survey_recommendations():
-    st.title("📊 Survey Recommendations")
+    st.title("📈 Survey Recommendations")
     st.markdown(
-        "### Obtain insights and actionable recommendations from your survey responses."
+        "##### 👉 Obtain insights and actionable recommendations from your survey responses."
     )
+
     st.write("---")
 
     # Input for Survey ID
     survey_id = st.text_input(
-        "Enter Survey ID",
+        "🔍 Enter Survey ID",
         placeholder="e.g., 123e4567-e89b-12d3-a456-426614174000",
-        help="Enter the unique Survey ID to retrieve responses and generate recommendations.",
+        help="📝 Enter the unique Survey ID to retrieve responses and generate recommendations.",
     )
 
     # Retrieve Survey Data and Responses on button click
-    if st.button("Generate Recommendations"):
+    if st.button("🚀 Generate Recommendations"):
         if survey_id:
-            with st.spinner("Retrieving data and generating recommendations..."):
+            with st.spinner("🔄 Retrieving data and generating recommendations..."):
                 # Fetch survey data (title, description, questions, etc.)
                 survey_data = get_survey_data(survey_id)
                 if survey_data:
-                    st.success("Survey data retrieved successfully!")
+                    st.success("✅ Survey data retrieved successfully!")
                     st.write("---")
 
                     # Fetch trainee responses for the survey
@@ -57,9 +58,9 @@ def show_survey_recommendations():
                             # Display Survey Outcomes and Recommendations in tabs
                             tab1, tab2, tab3 = st.tabs(
                                 [
-                                    "Survey Outcomes",
-                                    "Recommended Modifications",
-                                    "Additional Observations",
+                                    "📝 Survey Outcomes",
+                                    "🔧 Recommended Modifications",
+                                    "📌 Additional Observations",
                                 ]
                             )
 
@@ -73,7 +74,7 @@ def show_survey_recommendations():
                                 # Display Summary as a table
                                 summary_df = pd.DataFrame(
                                     survey_outcomes.get("Summary", []),
-                                    columns=["Key Insights"],
+                                    columns=["💡 Key Insights"],
                                 )
                                 st.write(
                                     summary_df.to_html(
@@ -83,7 +84,7 @@ def show_survey_recommendations():
                                 )
 
                                 # Display Positive Aspects and Areas for Improvement in separate columns
-                                st.markdown("#### Balanced Feedback")
+                                st.markdown("### ⚖️ Balanced Feedback")
                                 pos_aspects = survey_outcomes.get(
                                     "Balanced Feedback", {}
                                 ).get("Positive Aspects", [])
@@ -93,10 +94,10 @@ def show_survey_recommendations():
 
                                 col1, col2 = st.columns(2)
                                 with col1:
-                                    st.markdown("##### Positive Aspects")
+                                    st.markdown("#### Positive Aspects")
                                     st.write(
                                         pd.DataFrame(
-                                            pos_aspects, columns=["Aspect"]
+                                            pos_aspects, columns=["✨ Aspect"]
                                         ).to_html(
                                             index=False, escape=False, justify="left"
                                         ),
@@ -104,11 +105,11 @@ def show_survey_recommendations():
                                     )
 
                                 with col2:
-                                    st.markdown("##### Areas for Improvement")
+                                    st.markdown("#### Areas for Improvement")
                                     st.write(
                                         pd.DataFrame(
                                             improv_areas,
-                                            columns=["Area for Improvement"],
+                                            columns=["⚠️ Area for Improvement"],
                                         ).to_html(
                                             index=False, escape=False, justify="left"
                                         ),
@@ -118,7 +119,7 @@ def show_survey_recommendations():
                             # Tab 2: Recommended Modifications
                             with tab2:
                                 st.subheader(
-                                    "🔧 Recommended Modifications to Learning Objectives"
+                                    "✨ Recommended Modifications to Learning Objectives"
                                 )
                                 recommended_modifications = recommendations.get(
                                     "Recommended Modifications to Learning Objectives",
@@ -143,7 +144,8 @@ def show_survey_recommendations():
 
                                 if additional_observations:
                                     observations_df = pd.DataFrame(
-                                        additional_observations, columns=["Observation"]
+                                        additional_observations,
+                                        columns=["🔍 Observation"],
                                     )
                                     st.write(
                                         observations_df.to_html(
@@ -153,14 +155,14 @@ def show_survey_recommendations():
                                     )
                         else:
                             st.error(
-                                "Failed to generate recommendations. Please try again."
+                                "⚠️ Failed to generate recommendations. Please try again."
                             )
                     else:
-                        st.info("No responses available for this survey.")
+                        st.info("ℹ️ No responses available for this survey.")
                 else:
-                    st.error("Survey data not found. Please check the Survey ID.")
+                    st.error("❌ Survey data not found. Please check the Survey ID.")
         else:
-            st.warning("Please enter a valid Survey ID.")
+            st.warning("⚠️ Please enter a valid Survey ID.")
 
 
 # Run the function to display the page

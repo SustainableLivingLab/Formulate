@@ -80,7 +80,13 @@ def show_survey_responses():
 
     # Modern header with survey info
     # st.markdown('<div class="response-header">', unsafe_allow_html=True)
-    st.title("📝 Survey Response Explorer")
+    st.title("📋 Survey Response Explorer")
+
+    st.markdown(
+        "##### 👉 View individual survey responses to understand your audience’s feedback."
+    )
+
+    st.write("---")
     
     # Survey selector with modern layout
     col1, col2 = st.columns([4, 1])
