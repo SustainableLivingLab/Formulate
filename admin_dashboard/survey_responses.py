@@ -102,6 +102,8 @@ def show_survey_responses():
         try:
             st.session_state.survey_data = get_survey_data(survey_id)
             st.session_state.responses = fetch_survey_responses(survey_id)
+            st.write(f"Debug - Number of responses fetched: {len(st.session_state.responses)}")
+            st.write("Debug - First response structure:", st.session_state.responses[0] if st.session_state.responses else "No responses")
             if st.session_state.responses:
                 st.session_state.filtered_responses = st.session_state.responses.copy()
         except Exception as e:
@@ -222,23 +224,31 @@ def show_survey_responses():
 
             # 4. Individual Responses
             st.markdown("### 📝 Detailed Responses")
+            st.write(f"Debug - Number of filtered responses: {len(filtered_responses)}")
+
             for response in filtered_responses:
+                st.write("Debug - Processing response:", response.get('trainee_email'))
                 submission_time = parse_datetime(response.get('submission_datetime'))
                 submission_display = submission_time.strftime('%Y-%m-%d %H:%M:%S') if submission_time else 'Time not available'
                 
                 with st.expander(f"Response from {response.get('trainee_email', 'Unknown User')} - {submission_display}"):
                     trainee_responses = response.get('trainee_responses', {})
+                    st.write("Debug - Trainee responses structure:", trainee_responses)
+                    
                     if isinstance(trainee_responses, dict):
                         # Profile Section
                         if 'Profile' in trainee_responses:
                             st.markdown("#### 👤 Profile Information")
                             profile_data = []
                             profile_responses = trainee_responses['Profile']
+                            st.write("Debug - Profile responses:", profile_responses)
                             
                             for q_id, answer_data in profile_responses.items():
                                 if isinstance(answer_data, dict):
                                     question = answer_data.get('question', '')
                                     answer = answer_data.get('answer', '')
+                                    st.write(f"Debug - Processing Q: {question}, A: {answer}")
+                                    
                                     if isinstance(answer, list):
                                         answer = ", ".join(str(item) for item in answer)
                                     elif answer is None:
@@ -260,6 +270,7 @@ def show_survey_responses():
                             st.markdown("#### 📋 Survey Responses")
                             survey_data = []
                             survey_responses = trainee_responses['Survey']
+                            st.write("Debug - Survey responses:", survey_responses)
                             
                             for q_id, answer_data in survey_responses.items():
                                 if isinstance(answer_data, dict):
