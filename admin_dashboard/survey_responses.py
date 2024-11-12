@@ -249,10 +249,12 @@ def show_survey_responses():
                         # Profile Section
                         if 'profile' in trainee_responses:
                             st.markdown("#### 👤 Profile Information")
-                            profile_data = []
-                            profile_responses = trainee_responses['profile']
                             
-                            for q_id, answer_data in profile_responses.items():
+                            # Debug: Print raw profile data
+                            st.write("Debug - Profile Data:", trainee_responses['profile'])
+                            
+                            # Try alternative display method using markdown
+                            for q_id, answer_data in trainee_responses['profile'].items():
                                 if isinstance(answer_data, dict):
                                     question = answer_data.get('question', '')
                                     answer = answer_data.get('answer', '')
@@ -263,40 +265,22 @@ def show_survey_responses():
                                         if answer_data.get('type') == 'likert_scale':
                                             answer = f"{answer}/5"
                                     
-                                    profile_data.append({
-                                        "Question": question,
-                                        "Response": str(answer)
-                                    })
-                            
-                            if profile_data:
-                                df = pd.DataFrame(profile_data)
-                                st.dataframe(
-                                    df,
-                                    use_container_width=True,
-                                    hide_index=True,
-                                    column_config={
-                                        "Question": st.column_config.TextColumn(
-                                            "Question",
-                                            width="medium",
-                                            help="Profile questions",
-                                            max_chars=1000  # Allow more characters to be displayed
-                                        ),
-                                        "Response": st.column_config.TextColumn(
-                                            "Response",
-                                            width="medium",
-                                            help="Trainee responses",
-                                            max_chars=1000  # Allow more characters to be displayed
-                                        )
-                                    }
-                                )
+                                    # Display using markdown instead of dataframe
+                                    st.markdown(f"""
+                                        **Question:** {question}  
+                                        **Response:** {answer}
+                                        ---
+                                    """)
 
                         # Survey Section
                         if 'survey' in trainee_responses:
                             st.markdown("#### 📋 Survey Responses")
-                            survey_data = []
-                            survey_responses = trainee_responses['survey']
                             
-                            for q_id, answer_data in survey_responses.items():
+                            # Debug: Print raw survey data
+                            st.write("Debug - Survey Data:", trainee_responses['survey'])
+                            
+                            # Try alternative display method using markdown
+                            for q_id, answer_data in trainee_responses['survey'].items():
                                 if isinstance(answer_data, dict):
                                     question = answer_data.get('question', '')
                                     answer = answer_data.get('answer', '')
@@ -309,32 +293,12 @@ def show_survey_responses():
                                         max_label = scale.get('max_label', '')
                                         answer = f"{answer}/5 - {max_label}"
                                     
-                                    survey_data.append({
-                                        "Question": question,
-                                        "Response": str(answer)
-                                    })
-                            
-                            if survey_data:
-                                df = pd.DataFrame(survey_data)
-                                st.dataframe(
-                                    df,
-                                    use_container_width=True,
-                                    hide_index=True,
-                                    column_config={
-                                        "Question": st.column_config.TextColumn(
-                                            "Question",
-                                            width="medium",
-                                            help="Survey questions",
-                                            max_chars=50  # Allow more characters to be displayed
-                                        ),
-                                        "Response": st.column_config.TextColumn(
-                                            "Response",
-                                            width="medium",
-                                            help="Trainee responses",
-                                            max_chars=50  # Allow more characters to be displayed
-                                        )
-                                    }
-                                )
+                                    # Display using markdown instead of dataframe
+                                    st.markdown(f"""
+                                        **Question:** {question}  
+                                        **Response:** {answer}
+                                        ---
+                                    """)
 
         except Exception as e:
             st.error(f"Error displaying survey responses: {str(e)}")
