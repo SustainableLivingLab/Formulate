@@ -84,6 +84,15 @@ def show_survey_responses():
             max-width: 400px;
             word-wrap: break-word;
         }
+        .stTable td {
+            white-space: normal !important;
+            padding: 8px;
+            vertical-align: top;
+        }
+        .stTable th {
+            white-space: normal !important;
+            padding: 8px;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -249,11 +258,8 @@ def show_survey_responses():
                         # Profile Section
                         if 'profile' in trainee_responses:
                             st.markdown("#### 👤 Profile Information")
+                            profile_data = []
                             
-                            # Debug: Print raw profile data
-                            st.write("Debug - Profile Data:", trainee_responses['profile'])
-                            
-                            # Try alternative display method using markdown
                             for q_id, answer_data in trainee_responses['profile'].items():
                                 if isinstance(answer_data, dict):
                                     question = answer_data.get('question', '')
@@ -265,21 +271,18 @@ def show_survey_responses():
                                         if answer_data.get('type') == 'likert_scale':
                                             answer = f"{answer}/5"
                                     
-                                    # Display using markdown instead of dataframe
-                                    st.markdown(f"""
-                                        **Question:** {question}  
-                                        **Response:** {answer}
-                                        ---
-                                    """)
+                                    profile_data.append([question, str(answer)])
+                            
+                            if profile_data:
+                                # Convert to DataFrame and display
+                                df = pd.DataFrame(profile_data, columns=['Question', 'Response'])
+                                st.write(df.to_html(index=False, escape=False, classes='stTable'), unsafe_allow_html=True)
 
                         # Survey Section
                         if 'survey' in trainee_responses:
                             st.markdown("#### 📋 Survey Responses")
+                            survey_data = []
                             
-                            # Debug: Print raw survey data
-                            st.write("Debug - Survey Data:", trainee_responses['survey'])
-                            
-                            # Try alternative display method using markdown
                             for q_id, answer_data in trainee_responses['survey'].items():
                                 if isinstance(answer_data, dict):
                                     question = answer_data.get('question', '')
@@ -293,12 +296,12 @@ def show_survey_responses():
                                         max_label = scale.get('max_label', '')
                                         answer = f"{answer}/5 - {max_label}"
                                     
-                                    # Display using markdown instead of dataframe
-                                    st.markdown(f"""
-                                        **Question:** {question}  
-                                        **Response:** {answer}
-                                        ---
-                                    """)
+                                    survey_data.append([question, str(answer)])
+                            
+                            if survey_data:
+                                # Convert to DataFrame and display
+                                df = pd.DataFrame(survey_data, columns=['Question', 'Response'])
+                                st.write(df.to_html(index=False, escape=False, classes='stTable'), unsafe_allow_html=True)
 
         except Exception as e:
             st.error(f"Error displaying survey responses: {str(e)}")
