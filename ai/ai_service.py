@@ -15,7 +15,7 @@ def generate_survey_questions(survey_data: Dict[Any, Any]) -> Dict[str, Any]:
         )
 
         # Store the AI-generated result in JSON format and return it
-        return json.loads(survey_question)
+        return survey_question
 
     except Exception as e:
         print(f"Error generating survey questions: {e}")
