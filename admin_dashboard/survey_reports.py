@@ -223,13 +223,7 @@ def show_survey_reports():
                     "Total Responses", 
                     total_responses,
                     description="Survey submissions",
-                    help="""
-                    Total number of completed survey submissions.
-                    • Includes both partial and complete responses
-                    • Helps track overall participation
-                    • Useful for calculating response rates
-                    • Key indicator of survey reach
-                    """
+                    help="The total number of completed survey submissions received"
                 )
                 st.plotly_chart(fig, use_container_width=True, 
                     help="Shows the absolute count of all survey responses received so far")
@@ -240,13 +234,7 @@ def show_survey_reports():
                     peak_percentage,
                     suffix="%",
                     description=f"at {peak_window}",
-                    help="""
-                    Time period with highest response submission rate.
-                    • Shows when participants are most active
-                    • Percentage indicates portion of responses during peak
-                    • Useful for timing future surveys
-                    • Helps optimize notification timing
-                    """
+                    help="The time window when most responses were submitted, helping identify optimal survey timing"
                 )
                 st.plotly_chart(fig, use_container_width=True,
                     help="Indicates when participants are most likely to respond, useful for scheduling future surveys")
@@ -257,13 +245,7 @@ def show_survey_reports():
                     diversity_score,
                     suffix="%",
                     description=f"{repeat_respondents} repeat participants",
-                    help="""
-                    Measure of variety in respondent pool.
-                    • Higher % = More unique participants
-                    • Shows balance of new vs returning respondents
-                    • Helps track engagement breadth
-                    • Identifies if survey reaches diverse audience
-                    """
+                    help="Measures how varied your respondent pool is, with higher percentages indicating more unique participants"
                 )
                 st.plotly_chart(fig, use_container_width=True,
                     help="Shows the balance between new and returning participants, helping track engagement breadth")
@@ -274,13 +256,7 @@ def show_survey_reports():
                     avg_engagement,
                     suffix="%",
                     description="Based on response quality",
-                    help="""
-                    Composite score of response quality and completeness.
-                    • Considers answer length and detail
-                    • Measures thoughtfulness of responses
-                    • Higher % indicates better engagement
-                    • Helps identify engaging questions
-                    """
+                    help="A composite score measuring response completeness, detail level, and thoughtfulness"
                 )
                 st.plotly_chart(fig, use_container_width=True,
                     help="Indicates how thoroughly participants are engaging with the survey questions")
