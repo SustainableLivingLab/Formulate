@@ -408,7 +408,7 @@ def show_survey_reports():
                     col1, col2 = st.columns([2, 1])
                     
                     with col1:
-                        # Enhanced Sentiment Analysis with explanation
+                        # Sentiment Analysis
                         sentiments = open_ended["answer"].apply(
                             lambda x: TextBlob(x).sentiment
                         )
@@ -442,78 +442,44 @@ def show_survey_reports():
                         st.plotly_chart(fig, use_container_width=True)
 
                     with col2:
-                        # Keyword Extraction
-                        st.markdown("### 🔑 Keyword Extraction")
-                        stop_words = set(stopwords.words('english'))
-                        keywords = open_ended["answer"].apply(lambda x: [word for word in x.split() if word.lower() not in stop_words])
-                        all_keywords = [word for sublist in keywords for word in sublist]
-                        keyword_freq = pd.Series(all_keywords).value_counts().head(10)
-                        st.write(keyword_freq)
+                        # Sentiment Analysis Guide
+                        st.markdown("""
+                            <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;'>
+                                <h4>📊 Sentiment Analysis Guide</h4>
+                                <p>This guide helps you understand the sentiment scores derived from the responses:</p>
+                                <ul>
+                                    <li>-1.0 to -0.3: Negative - Indicates a generally unfavorable sentiment.</li>
+                                    <li>-0.3 to 0.3: Neutral - Indicates a balanced or indifferent sentiment.</li>
+                                    <li>0.3 to 1.0: Positive - Indicates a generally favorable sentiment.</li>
+                                </ul>
+                            </div>
+                        """, unsafe_allow_html=True)
 
-                        # Word Cloud Visualization
-                        st.markdown("### ☁️ Word Cloud")
-                        wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(all_keywords))
-                        st.image(wordcloud.to_array(), use_column_width=True)
+                    # Keyword Extraction
+                    st.markdown("### 🔑 Keyword Extraction")
+                    stop_words = set(stopwords.words('english'))
+                    keywords = open_ended["answer"].apply(lambda x: [word for word in x.split() if word.lower() not in stop_words])
+                    all_keywords = [word for sublist in keywords for word in sublist]
+                    keyword_freq = pd.Series(all_keywords).value_counts().head(10)
+                    st.write(keyword_freq)
 
-                        # Topic Modeling (LDA)
-                        st.markdown("### 🗂️ Topic Modeling")
-                        # Prepare data for LDA
-                        dictionary = corpora.Dictionary(keywords)
-                        corpus = [dictionary.doc2bow(text) for text in keywords]
-                        lda_model = models.LdaModel(corpus, num_topics=3, id2word=dictionary, passes=15)
-                        
-                        topics = lda_model.print_topics(num_words=5)
-                        for i, topic in enumerate(topics):
-                            st.write(f"**Topic {i+1}:** {topic[1]}")
+                    # Word Cloud Visualization
+                    st.markdown("### ☁️ Word Cloud")
+                    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(all_keywords))
+                    st.image(wordcloud.to_array(), use_column_width=True)
 
-                    # Sentiment Interpretation
-                    st.markdown("""
-                        <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;'>
-                            <h4>📊 Sentiment Analysis Guide</h4>
-                            <p>This guide helps you understand the sentiment scores derived from the responses:</p>
-                            <ul>
-                                <li>-1.0 to -0.3: Negative - Indicates a generally unfavorable sentiment.</li>
-                                <li>-0.3 to 0.3: Neutral - Indicates a balanced or indifferent sentiment.</li>
-                                <li>0.3 to 1.0: Positive - Indicates a generally favorable sentiment.</li>
-                            </ul>
-                        </div>
-                    """, unsafe_allow_html=True)
-
-                    # Detailed Sentiment Metrics
-                    metrics_cols = st.columns(3)
+                    # Topic Modeling (LDA)
+                    st.markdown("### 🗂️ Topic Modeling")
+                    # Prepare data for LDA
+                    dictionary = corpora.Dictionary(keywords)
+                    corpus = [dictionary.doc2bow(text) for text in keywords]
+                    lda_model = models.LdaModel(corpus, num_topics=3, id2word=dictionary, passes=15)
                     
-                    # Calculate sentiment distributions
-                    sentiment_counts = sentiments.apply(lambda x: (
-                        "Positive" if x.polarity > 0.3 
-                        else "Negative" if x.polarity < -0.3 
-                        else "Neutral"
-                    )).value_counts()
-                    
-                    total_responses = len(sentiments)
-                    positive_pct = (sentiment_counts.get("Positive", 0) / total_responses) * 100
-                    negative_pct = (sentiment_counts.get("Negative", 0) / total_responses) * 100
-                    neutral_pct = (sentiment_counts.get("Neutral", 0) / total_responses) * 100
+                    topics = lda_model.print_topics(num_words=5)
+                    for i, topic in enumerate(topics):
+                        st.write(f"**Topic {i+1}:** {topic[1]}")
 
-                    metrics_cols[0].metric(
-                        "Positive Responses",
-                        f"{positive_pct:.1f}%",
-                        delta=f"{sentiment_counts.get('Positive', 0) // 2} responses",
-                        help="Percentage of responses with a positive sentiment score. Indicates the proportion of positive feedback."
-                    )
-                    metrics_cols[1].metric(
-                        "Neutral Responses",
-                        f"{neutral_pct:.1f}%",
-                        delta=f"{sentiment_counts.get('Neutral', 0) // 2} responses",
-                        help="Percentage of responses with a neutral sentiment score. Indicates the proportion of neutral feedback."
-                    )
-                    metrics_cols[2].metric(
-                        "Negative Responses",
-                        f"{negative_pct:.1f}%",
-                        delta=f"{sentiment_counts.get('Negative', 0) // 2} responses",
-                        help="Percentage of responses with a negative sentiment score. Indicates the proportion of negative feedback."
-                    )
-
-                    # Sentiment Over Time Analysis
+                    # Sentiment Trends
                     st.markdown("### 📈 Sentiment Trends")
                     sentiment_time = pd.DataFrame({
                         'timestamp': open_ended['timestamp'],
@@ -554,7 +520,7 @@ def show_survey_reports():
                     )
                     st.plotly_chart(fig, use_container_width=True)
 
-                    # Explanation for Sentiment and Objectivity Trends
+                    # Key Insights
                     st.markdown("""
                         <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-top: 20px;'>
                             <h4>🔍 Key Insights</h4>
