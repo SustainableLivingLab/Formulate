@@ -652,17 +652,5 @@ def show_survey_reports():
                     "Increasing" if len(response_times) > 1 and response_times[-1] > response_times[0] else "Stable"
                 ), unsafe_allow_html=True)
 
-                # Export options
-                st.markdown("### 📤 Export Options")
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button("📊 Export as Excel"):
-                        # Add Excel export functionality
-                        pass
-                with col2:
-                    if st.button("📑 Export as PDF Report"):
-                        # Add PDF export functionality
-                        pass
-
 if __name__ == "__main__":
     show_survey_reports()
