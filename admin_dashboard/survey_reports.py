@@ -455,6 +455,38 @@ def show_survey_reports():
                             </div>
                         """, unsafe_allow_html=True)
 
+                    # Sentiment Metrics
+                    sentiment_counts = sentiments.apply(lambda x: (
+                        "Positive" if x.polarity > 0.3 
+                        else "Negative" if x.polarity < -0.3 
+                        else "Neutral"
+                    )).value_counts()
+
+                    total_responses = len(sentiments)
+                    positive_pct = (sentiment_counts.get("Positive", 0) / total_responses) * 100
+                    negative_pct = (sentiment_counts.get("Negative", 0) / total_responses) * 100
+                    neutral_pct = (sentiment_counts.get("Neutral", 0) / total_responses) * 100
+
+                    metrics_cols = st.columns(3)
+                    metrics_cols[0].metric(
+                        "Positive Responses",
+                        f"{positive_pct:.1f}%",
+                        delta=f"{sentiment_counts.get('Positive', 0) // 2} responses",
+                        help="Percentage of responses with a positive sentiment score. Indicates the proportion of positive feedback."
+                    )
+                    metrics_cols[1].metric(
+                        "Neutral Responses",
+                        f"{neutral_pct:.1f}%",
+                        delta=f"{sentiment_counts.get('Neutral', 0) // 2} responses",
+                        help="Percentage of responses with a neutral sentiment score. Indicates the proportion of neutral feedback."
+                    )
+                    metrics_cols[2].metric(
+                        "Negative Responses",
+                        f"{negative_pct:.1f}%",
+                        delta=f"{sentiment_counts.get('Negative', 0) // 2} responses",
+                        help="Percentage of responses with a negative sentiment score. Indicates the proportion of negative feedback."
+                    )
+
                     # Keyword Extraction
                     st.markdown("### 🔑 Keyword Extraction")
                     stop_words = set(stopwords.words('english'))
