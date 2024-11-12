@@ -221,78 +221,72 @@ def show_survey_responses():
                 st.info("No responses available to display in summary")
 
             # 4. Individual Responses
-            for idx, response in enumerate(filtered_responses, 1):
+            st.markdown("### 📝 Detailed Responses")
+            for response in filtered_responses:
                 submission_time = parse_datetime(response.get('submission_datetime'))
                 submission_display = submission_time.strftime('%Y-%m-%d %H:%M:%S') if submission_time else 'Time not available'
                 
                 with st.expander(f"Response from {response.get('trainee_email', 'Unknown User')} - {submission_display}"):
                     trainee_responses = response.get('trainee_responses', {})
-                    
-                    if trainee_responses:
-                        # First display Profile section
+                    if isinstance(trainee_responses, dict):
+                        # Profile Section
                         if 'Profile' in trainee_responses:
                             st.markdown("#### 👤 Profile Information")
                             profile_data = []
-                            profile_section = trainee_responses['Profile']
+                            profile_responses = trainee_responses['Profile']
                             
-                            for q_id, answer_data in profile_section.items():
+                            for q_id, answer_data in profile_responses.items():
                                 if isinstance(answer_data, dict):
                                     question = answer_data.get('question', '')
                                     answer = answer_data.get('answer', '')
                                     if isinstance(answer, list):
-                                        answer = ", ".join(answer)
+                                        answer = ", ".join(str(item) for item in answer)
+                                    elif answer is None:
+                                        answer = "No response"
                                     profile_data.append({
                                         "Question": question,
-                                        "Answer": answer
+                                        "Answer": str(answer)
                                     })
                             
                             if profile_data:
-                                profile_df = pd.DataFrame(profile_data)
                                 st.dataframe(
-                                    profile_df,
+                                    pd.DataFrame(profile_data),
                                     use_container_width=True,
-                                    hide_index=True,
-                                    column_config={
-                                        "Question": st.column_config.TextColumn("Question", width="medium"),
-                                        "Answer": st.column_config.TextColumn("Response", width="medium")
-                                    }
+                                    hide_index=True
                                 )
-                        
-                        # Then display Survey section
+
+                        # Survey Section
                         if 'Survey' in trainee_responses:
-                            st.markdown("#### 📝 Survey Responses")
+                            st.markdown("#### 📋 Survey Responses")
                             survey_data = []
-                            survey_section = trainee_responses['Survey']
+                            survey_responses = trainee_responses['Survey']
                             
-                            for q_id, answer_data in survey_section.items():
+                            for q_id, answer_data in survey_responses.items():
                                 if isinstance(answer_data, dict):
                                     question = answer_data.get('question', '')
                                     answer = answer_data.get('answer', '')
                                     
-                                    # Format the answer based on its type
+                                    # Format different answer types
                                     if isinstance(answer, list):
-                                        answer = ", ".join(answer)
+                                        answer = ", ".join(str(item) for item in answer)
                                     elif isinstance(answer, (int, float)):
                                         scale = answer_data.get('scale', {})
                                         if scale:
                                             max_label = scale.get('max_label', '')
                                             answer = f"{answer} - {max_label}"
-                                    
+                                    elif answer is None:
+                                        answer = "No response"
+                                        
                                     survey_data.append({
                                         "Question": question,
-                                        "Answer": answer
+                                        "Answer": str(answer)
                                     })
                             
                             if survey_data:
-                                survey_df = pd.DataFrame(survey_data)
                                 st.dataframe(
-                                    survey_df,
+                                    pd.DataFrame(survey_data),
                                     use_container_width=True,
-                                    hide_index=True,
-                                    column_config={
-                                        "Question": st.column_config.TextColumn("Question", width="medium"),
-                                        "Answer": st.column_config.TextColumn("Response", width="medium")
-                                    }
+                                    hide_index=True
                                 )
 
         except Exception as e:
