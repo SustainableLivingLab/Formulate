@@ -38,6 +38,9 @@ def surveyQuestions(SYSTEM_PROMPT: str, survey_data: Dict[Any, Any]) -> Dict[str
                 1. Output the survey in JSON format.
                 2. Use formal British English for clarity and professionalism.
                 3. Create a set of {survey_data["questionCount"]} questions, incorporating a range of types (multiple-choice, checkbox, Likert scale, open-ended).
+                4. Focus Areas: 
+                - Self-Audit: Incorporate questions encouraging trainees to self-assess their familiarity and comfort level with key topics.
+                - Objective Testing: Add questions that objectively verify trainees’ foundational knowledge and critical competencies related to the subject.
 
                 Use this structure guide:
 
@@ -63,7 +66,7 @@ def surveyQuestions(SYSTEM_PROMPT: str, survey_data: Dict[Any, Any]) -> Dict[str
             top_p=0.8,
             n=1,
         )
-        
+
         surveyQuestionsResult = surveyQuestions.choices[0].message.content.strip()
         if not surveyQuestionsResult:
             raise print("Chat Completion output in {section} is empty, retrying...")
