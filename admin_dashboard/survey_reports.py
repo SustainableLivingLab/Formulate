@@ -468,17 +468,17 @@ def show_survey_reports():
                     metrics_cols[0].metric(
                         "Positive Responses",
                         f"{positive_pct:.1f}%",
-                        delta=f"{sentiment_counts.get('Positive', 0)} responses"
+                        delta=f"{sentiment_counts.get('Positive', 0) // 2} responses"
                     )
                     metrics_cols[1].metric(
                         "Neutral Responses",
                         f"{neutral_pct:.1f}%",
-                        delta=f"{sentiment_counts.get('Neutral', 0)} responses"
+                        delta=f"{sentiment_counts.get('Neutral', 0) // 2} responses"
                     )
                     metrics_cols[2].metric(
                         "Negative Responses",
                         f"{negative_pct:.1f}%",
-                        delta=f"{sentiment_counts.get('Negative', 0)} responses"
+                        delta=f"{sentiment_counts.get('Negative', 0) // 2} responses"
                     )
 
                     # Sentiment Over Time Analysis
