@@ -441,52 +441,15 @@ def show_survey_reports():
                         # Sentiment Interpretation
                         st.markdown("""
                             <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;'>
-                                <h4>📊 Sentiment Analysis Explained</h4>
-                                <p><strong>Polarity Score (-1 to +1):</strong></p>
+                                <h4>📊 Sentiment Analysis Guide</h4>
+                                <p><strong>Score Range:</strong></p>
                                 <ul>
-                                    <li>-1.0 to -0.3: Strong negative emotions/criticism</li>
-                                    <li>-0.3 to 0.3: Neutral or balanced feedback</li>
-                                    <li>0.3 to 1.0: Strong positive feedback/praise</li>
-                                </ul>
-                                <p><strong>Objectivity Score (0 to 100%):</strong></p>
-                                <ul>
-                                    <li>0-30%: Highly subjective (opinions, emotions)</li>
-                                    <li>30-70%: Balanced perspective</li>
-                                    <li>70-100%: Highly objective (facts, observations)</li>
-                                </ul>
-                                <p><strong>Response Quality Indicators:</strong></p>
-                                <ul>
-                                    <li>Detailed: {avg_words:.1f} words per response</li>
-                                    <li>Structured: {avg_sentences:.1f} sentences per response</li>
+                                    <li>-1.0 to -0.3: Negative</li>
+                                    <li>-0.3 to 0.3: Neutral</li>
+                                    <li>0.3 to 1.0: Positive</li>
                                 </ul>
                             </div>
-                        """.format(
-                            avg_words=df[df['type'] == 'open_ended']['answer'].str.split().str.len().mean(),
-                            avg_sentences=df[df['type'] == 'open_ended']['answer'].apply(lambda x: len(TextBlob(x).sentences)).mean()
-                        ), unsafe_allow_html=True)
-
-                    # Add response quality metrics
-                    quality_cols = st.columns(3)
-                    with quality_cols[0]:
-                        st.metric(
-                            "Response Detail",
-                            f"{avg_sentence_length:.1f}",
-                            "words per sentence",
-                            help="Higher numbers indicate more detailed responses"
-                        )
-                    with quality_cols[1]:
-                        st.metric(
-                            "Response Clarity",
-                            f"{(1 - avg_subjectivity) * 100:.1f}%",
-                            help="Higher percentages indicate clearer, more objective responses"
-                        )
-                    with quality_cols[2]:
-                        st.metric(
-                            "Engagement Level",
-                            f"{avg_word_count:.0f}",
-                            "words per response",
-                            help="Higher numbers indicate more engaged respondents"
-                        )
+                        """, unsafe_allow_html=True)
 
                     # Detailed Sentiment Metrics
                     metrics_cols = st.columns(3)
