@@ -215,23 +215,25 @@ def show_survey_reports():
 
             avg_engagement = np.mean([np.mean(scores) for scores in question_engagement.values()]) * 100
 
-            # Metrics Row with creative insights
-            st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+            # Metrics Row with creative insights and help text
             metrics_cols = st.columns([1, 1, 1, 1])
             with metrics_cols[0]:
                 fig = create_metric_card(
                     "Total Responses", 
                     total_responses,
-                    description="Survey submissions"
+                    description="Survey submissions",
+                    help="Total number of completed survey submissions received from trainees"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True, 
+                    help="Shows the total number of survey responses received so far")
             
             with metrics_cols[1]:
                 fig = create_metric_card(
                     "Peak Activity Time", 
                     peak_percentage,
                     suffix="%",
-                    description=f"at {peak_window}"
+                    description=f"at {peak_window}",
+                    help="The time period when most responses are submitted. Useful for identifying when trainees are most engaged"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
@@ -240,7 +242,8 @@ def show_survey_reports():
                     "Response Diversity", 
                     diversity_score,
                     suffix="%",
-                    description=f"{repeat_respondents} repeat participants"
+                    description=f"{repeat_respondents} repeat participants",
+                    help="Measures the variety of respondents. A higher percentage indicates responses from a broader range of participants"
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
@@ -249,10 +252,10 @@ def show_survey_reports():
                     "Engagement Score", 
                     avg_engagement,
                     suffix="%",
-                    description="Based on response quality"
+                    description="Based on response quality",
+                    help="Overall engagement score calculated from response length, detail level, and participation patterns"
                 )
                 st.plotly_chart(fig, use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
 
             # Create tabs with enhanced analysis
             tabs = st.tabs([
