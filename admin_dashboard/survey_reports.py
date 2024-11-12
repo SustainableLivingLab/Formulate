@@ -493,7 +493,17 @@ def show_survey_reports():
                     keywords = open_ended["answer"].apply(lambda x: [word for word in x.split() if word.lower() not in stop_words])
                     all_keywords = [word for sublist in keywords for word in sublist]
                     keyword_freq = pd.Series(all_keywords).value_counts().head(10)
-                    st.write(keyword_freq)
+
+                    # Plotting the keyword frequency
+                    fig = px.bar(keyword_freq.reset_index(), x='index', y=0, labels={'index': 'Keyword', 0: 'Count'}, title="Top Keywords")
+                    fig.update_layout(
+                        xaxis_title="Keyword",
+                        yaxis_title="Count",
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        font={'color': 'white'}
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
 
                     # Word Cloud Visualization
                     st.markdown("### ☁️ Word Cloud")
