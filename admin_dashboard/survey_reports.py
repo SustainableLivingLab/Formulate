@@ -401,45 +401,154 @@ def show_survey_reports():
                 st.subheader("Text Analysis")
                 open_ended = df[df["type"] == "open_ended"]
                 if not open_ended.empty:
-                    # Sentiment Analysis
-                    sentiments = open_ended["answer"].apply(
-                        lambda x: TextBlob(x).sentiment.polarity
+                    col1, col2 = st.columns([2, 1])
+                    
+                    with col1:
+                        # Enhanced Sentiment Analysis with explanation
+                        sentiments = open_ended["answer"].apply(
+                            lambda x: TextBlob(x).sentiment
+                        )
+                        avg_polarity = sentiments.apply(lambda x: x.polarity).mean()
+                        avg_subjectivity = sentiments.apply(lambda x: x.subjectivity).mean()
+                        
+                        fig = go.Figure(go.Indicator(
+                            mode="gauge+number",
+                            value=avg_polarity,
+                            title={'text': "Average Sentiment Score", 'font': {'color': 'white'}},
+                            gauge={
+                                'axis': {'range': [-1, 1], 'tickcolor': "white"},
+                                'bar': {'color': "#2E86C1"},
+                                'steps': [
+                                    {'range': [-1, -0.3], 'color': "#E74C3C"},
+                                    {'range': [-0.3, 0.3], 'color': "#F7DC6F"},
+                                    {'range': [0.3, 1], 'color': "#2ECC71"}
+                                ],
+                                'threshold': {
+                                    'line': {'color': "white", 'width': 4},
+                                    'thickness': 0.75,
+                                    'value': avg_polarity
+                                }
+                            }
+                        ))
+                        fig.update_layout(
+                            height=300,
+                            paper_bgcolor='rgba(0,0,0,0)',
+                            font={'color': 'white'}
+                        )
+                        st.plotly_chart(fig, use_container_width=True)
+
+                    with col2:
+                        # Sentiment Interpretation
+                        st.markdown("""
+                            <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;'>
+                                <h4>📊 Sentiment Analysis Guide</h4>
+                                <p><strong>Score Range:</strong></p>
+                                <ul>
+                                    <li>-1.0 to -0.3: Negative</li>
+                                    <li>-0.3 to 0.3: Neutral</li>
+                                    <li>0.3 to 1.0: Positive</li>
+                                </ul>
+                            </div>
+                        """, unsafe_allow_html=True)
+
+                    # Detailed Sentiment Metrics
+                    metrics_cols = st.columns(3)
+                    
+                    # Calculate sentiment distributions
+                    sentiment_counts = sentiments.apply(lambda x: (
+                        "Positive" if x.polarity > 0.3 
+                        else "Negative" if x.polarity < -0.3 
+                        else "Neutral"
+                    )).value_counts()
+                    
+                    total_responses = len(sentiments)
+                    positive_pct = (sentiment_counts.get("Positive", 0) / total_responses) * 100
+                    negative_pct = (sentiment_counts.get("Negative", 0) / total_responses) * 100
+                    neutral_pct = (sentiment_counts.get("Neutral", 0) / total_responses) * 100
+
+                    metrics_cols[0].metric(
+                        "Positive Responses",
+                        f"{positive_pct:.1f}%",
+                        delta=f"{sentiment_counts.get('Positive', 0)} responses"
+                    )
+                    metrics_cols[1].metric(
+                        "Neutral Responses",
+                        f"{neutral_pct:.1f}%",
+                        delta=f"{sentiment_counts.get('Neutral', 0)} responses"
+                    )
+                    metrics_cols[2].metric(
+                        "Negative Responses",
+                        f"{negative_pct:.1f}%",
+                        delta=f"{sentiment_counts.get('Negative', 0)} responses"
+                    )
+
+                    # Sentiment Over Time Analysis
+                    st.markdown("### 📈 Sentiment Trends")
+                    sentiment_time = pd.DataFrame({
+                        'timestamp': open_ended['timestamp'],
+                        'polarity': sentiments.apply(lambda x: x.polarity),
+                        'subjectivity': sentiments.apply(lambda x: x.subjectivity)
+                    })
+                    
+                    fig = make_subplots(specs=[[{"secondary_y": True}]])
+                    
+                    # Add polarity line
+                    fig.add_trace(
+                        go.Scatter(
+                            x=sentiment_time['timestamp'],
+                            y=sentiment_time['polarity'].rolling(window=3).mean(),
+                            name="Sentiment (Polarity)",
+                            line=dict(color="#2ECC71", width=3)
+                        )
                     )
                     
-                    fig = go.Figure(go.Indicator(
-                        mode="gauge+number",
-                        value=sentiments.mean(),
-                        title={'text': "Average Sentiment Score"},
-                        gauge={
-                            'axis': {'range': [-1, 1]},
-                            'bar': {'color': "#2E86C1"},
-                            'steps': [
-                                {'range': [-1, -0.3], 'color': "#E74C3C"},
-                                {'range': [-0.3, 0.3], 'color': "#F7DC6F"},
-                                {'range': [0.3, 1], 'color': "#2ECC71"}
-                            ],
-                            'threshold': {
-                                'line': {'color': "red", 'width': 4},
-                                'thickness': 0.75,
-                                'value': sentiments.mean()
-                            }
-                        }
-                    ))
-                    fig.update_layout(height=300)
+                    # Add subjectivity line
+                    fig.add_trace(
+                        go.Scatter(
+                            x=sentiment_time['timestamp'],
+                            y=sentiment_time['subjectivity'].rolling(window=3).mean(),
+                            name="Objectivity Level",
+                            line=dict(color="#E74C3C", width=3, dash='dash')
+                        ),
+                        secondary_y=True
+                    )
+                    
+                    fig.update_layout(
+                        title="Sentiment and Objectivity Trends",
+                        height=400,
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        font={'color': 'white'},
+                        hovermode='x unified'
+                    )
+                    fig.update_yaxes(title_text="Sentiment Score", secondary_y=False)
+                    fig.update_yaxes(title_text="Objectivity Level", secondary_y=True)
+                    
                     st.plotly_chart(fig, use_container_width=True)
 
-                    # Word frequency analysis using Plotly
-                    words = ' '.join(open_ended['answer']).lower().split()
-                    word_freq = pd.Series(words).value_counts().head(10)
-                    
-                    fig = px.bar(
-                        x=word_freq.index,
-                        y=word_freq.values,
-                        title="Top 10 Most Common Words",
-                        labels={'x': 'Word', 'y': 'Frequency'}
-                    )
-                    fig.update_layout(height=400)
-                    st.plotly_chart(fig, use_container_width=True)
+                    # Key Insights Box
+                    st.markdown("""
+                        <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-top: 20px;'>
+                            <h4>🔍 Key Insights</h4>
+                            <ul>
+                                <li>Overall sentiment is {}</li>
+                                <li>Responses are {} objective ({}% objectivity score)</li>
+                                <li>Most {} responses recorded on {}</li>
+                                <li>Sentiment trend is {}</li>
+                            </ul>
+                        </div>
+                    """.format(
+                        "positive" if avg_polarity > 0.3 else "negative" if avg_polarity < -0.3 else "neutral",
+                        "highly" if avg_subjectivity < 0.3 else "moderately" if avg_subjectivity < 0.7 else "less",
+                        round((1 - avg_subjectivity) * 100, 1),
+                        "positive" if positive_pct > negative_pct else "negative",
+                        sentiment_time.groupby(sentiment_time['timestamp'].dt.date)['polarity'].mean().idxmax().strftime('%Y-%m-%d'),
+                        "improving" if sentiment_time['polarity'].corr(pd.Series(range(len(sentiment_time)))) > 0.1 
+                        else "declining" if sentiment_time['polarity'].corr(pd.Series(range(len(sentiment_time)))) < -0.1 
+                        else "stable"
+                    ), unsafe_allow_html=True)
+
+                    # Continue with existing word frequency analysis...
 
             with tabs[2]:
                 st.subheader("Response Trends")
