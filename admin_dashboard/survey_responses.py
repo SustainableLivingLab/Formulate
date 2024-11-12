@@ -224,7 +224,7 @@ def show_survey_responses():
 
             # 4. Individual Responses
             st.markdown("### 📝 Detailed Responses")
-            st.write(f"Debug - Number of filtered responses: {len(filtered_responses)}")
+            # st.write(f"Debug - Number of filtered responses: {len(filtered_responses)}")
 
             for response in filtered_responses:
                 submission_time = parse_datetime(response.get('submission_datetime'))
@@ -234,7 +234,7 @@ def show_survey_responses():
                     trainee_responses = response.get('trainee_responses', {})
                     
                     if isinstance(trainee_responses, dict):
-                        # Profile Section (note the lowercase 'profile')
+                        # Profile Section
                         if 'profile' in trainee_responses:
                             st.markdown("#### 👤 Profile Information")
                             profile_data = []
@@ -248,7 +248,6 @@ def show_survey_responses():
                                     if isinstance(answer, list):
                                         answer = ", ".join(str(item) for item in answer)
                                     elif isinstance(answer, (int, float)):
-                                        # Handle Likert scale answers
                                         if answer_data.get('type') == 'likert_scale':
                                             answer = f"{answer}/5"
                                     
@@ -263,12 +262,20 @@ def show_survey_responses():
                                     use_container_width=True,
                                     hide_index=True,
                                     column_config={
-                                        "Question": st.column_config.TextColumn("Question", width="medium"),
-                                        "Response": st.column_config.TextColumn("Response", width="medium")
+                                        "Question": st.column_config.TextColumn(
+                                            "Question",
+                                            width="large",
+                                            help="Profile questions"
+                                        ),
+                                        "Response": st.column_config.TextColumn(
+                                            "Response",
+                                            width="large",
+                                            help="Trainee responses"
+                                        )
                                     }
                                 )
 
-                        # Survey Section (note the lowercase 'survey')
+                        # Survey Section
                         if 'survey' in trainee_responses:
                             st.markdown("#### 📋 Survey Responses")
                             survey_data = []
@@ -280,7 +287,6 @@ def show_survey_responses():
                                     answer = answer_data.get('answer', '')
                                     answer_type = answer_data.get('type', '')
                                     
-                                    # Format different answer types
                                     if isinstance(answer, list):
                                         answer = ", ".join(str(item) for item in answer)
                                     elif isinstance(answer, (int, float)) and answer_type == 'likert_scale':
@@ -299,8 +305,16 @@ def show_survey_responses():
                                     use_container_width=True,
                                     hide_index=True,
                                     column_config={
-                                        "Question": st.column_config.TextColumn("Question", width="medium"),
-                                        "Response": st.column_config.TextColumn("Response", width="medium")
+                                        "Question": st.column_config.TextColumn(
+                                            "Question",
+                                            width="large",
+                                            help="Survey questions"
+                                        ),
+                                        "Response": st.column_config.TextColumn(
+                                            "Response",
+                                            width="large",
+                                            help="Trainee responses"
+                                        )
                                     }
                                 )
 
