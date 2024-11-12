@@ -114,8 +114,8 @@ def show_survey_responses():
         try:
             st.session_state.survey_data = get_survey_data(survey_id)
             st.session_state.responses = fetch_survey_responses(survey_id)
-            st.write(f"Debug - Number of responses fetched: {len(st.session_state.responses)}")
-            st.write("Debug - First response structure:", st.session_state.responses[0] if st.session_state.responses else "No responses")
+            # st.write(f"Debug - Number of responses fetched: {len(st.session_state.responses)}")
+            # st.write("Debug - First response structure:", st.session_state.responses[0] if st.session_state.responses else "No responses")
             if st.session_state.responses:
                 st.session_state.filtered_responses = st.session_state.responses.copy()
         except Exception as e:
@@ -325,13 +325,13 @@ def show_survey_responses():
                                             "Question",
                                             width="medium",
                                             help="Survey questions",
-                                            max_chars=500  # Allow more characters to be displayed
+                                            max_chars=50  # Allow more characters to be displayed
                                         ),
                                         "Response": st.column_config.TextColumn(
                                             "Response",
                                             width="medium",
                                             help="Trainee responses",
-                                            max_chars=500  # Allow more characters to be displayed
+                                            max_chars=50  # Allow more characters to be displayed
                                         )
                                     }
                                 )
