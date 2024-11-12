@@ -13,6 +13,7 @@ import numpy as np
 # Download nltk stopwords if not already downloaded
 nltk.download('stopwords')
 from nltk.corpus import stopwords
+from gensim import corpora, models
 
 def create_metric_card(title, value, delta=None, suffix="", description=None, help=None):
     display_value = value
@@ -441,18 +442,42 @@ def show_survey_reports():
                         st.plotly_chart(fig, use_container_width=True)
 
                     with col2:
-                        # Sentiment Interpretation
-                        st.markdown("""
-                            <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;'>
-                                <h4>📊 Sentiment Analysis Guide</h4>
-                                <p>This guide helps you understand the sentiment scores derived from the responses:</p>
-                                <ul>
-                                    <li>-1.0 to -0.3: Negative - Indicates a generally unfavorable sentiment.</li>
-                                    <li>-0.3 to 0.3: Neutral - Indicates a balanced or indifferent sentiment.</li>
-                                    <li>0.3 to 1.0: Positive - Indicates a generally favorable sentiment.</li>
-                                </ul>
-                            </div>
-                        """, unsafe_allow_html=True)
+                        # Keyword Extraction
+                        st.markdown("### 🔑 Keyword Extraction")
+                        stop_words = set(stopwords.words('english'))
+                        keywords = open_ended["answer"].apply(lambda x: [word for word in x.split() if word.lower() not in stop_words])
+                        all_keywords = [word for sublist in keywords for word in sublist]
+                        keyword_freq = pd.Series(all_keywords).value_counts().head(10)
+                        st.write(keyword_freq)
+
+                        # Word Cloud Visualization
+                        st.markdown("### ☁️ Word Cloud")
+                        wordcloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(all_keywords))
+                        st.image(wordcloud.to_array(), use_column_width=True)
+
+                        # Topic Modeling (LDA)
+                        st.markdown("### 🗂️ Topic Modeling")
+                        # Prepare data for LDA
+                        dictionary = corpora.Dictionary(keywords)
+                        corpus = [dictionary.doc2bow(text) for text in keywords]
+                        lda_model = models.LdaModel(corpus, num_topics=3, id2word=dictionary, passes=15)
+                        
+                        topics = lda_model.print_topics(num_words=5)
+                        for i, topic in enumerate(topics):
+                            st.write(f"**Topic {i+1}:** {topic[1]}")
+
+                    # Sentiment Interpretation
+                    st.markdown("""
+                        <div style='background-color: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;'>
+                            <h4>📊 Sentiment Analysis Guide</h4>
+                            <p>This guide helps you understand the sentiment scores derived from the responses:</p>
+                            <ul>
+                                <li>-1.0 to -0.3: Negative - Indicates a generally unfavorable sentiment.</li>
+                                <li>-0.3 to 0.3: Neutral - Indicates a balanced or indifferent sentiment.</li>
+                                <li>0.3 to 1.0: Positive - Indicates a generally favorable sentiment.</li>
+                            </ul>
+                        </div>
+                    """, unsafe_allow_html=True)
 
                     # Detailed Sentiment Metrics
                     metrics_cols = st.columns(3)
@@ -657,13 +682,13 @@ def show_survey_reports():
                             <ul>
                                 <li>Unique Participants: {}</li>
                                 <li>Return Rate: {:.1f}%</li>
-                                <li>Avg Session Duration: {:.1f} min</li>
+                                <li>Repeat Participants: {}</li>
                             </ul>
                         </div>
                     """.format(
                         df['trainee_email'].nunique(),
                         (repeat_respondents / unique_respondents) * 100,
-                        avg_response_time * 60
+                        repeat_respondents
                     ), unsafe_allow_html=True)
 
                 with insight_cols[2]:

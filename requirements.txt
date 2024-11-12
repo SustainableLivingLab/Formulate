@@ -12,3 +12,5 @@ textblob
 scikit-learn
 wordcloud
 plotly==5.18.0
+nltk
+gensim
