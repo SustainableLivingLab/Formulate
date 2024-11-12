@@ -492,10 +492,11 @@ def show_survey_reports():
                     stop_words = set(stopwords.words('english'))
                     keywords = open_ended["answer"].apply(lambda x: [word for word in x.split() if word.lower() not in stop_words])
                     all_keywords = [word for sublist in keywords for word in sublist]
-                    keyword_freq = pd.Series(all_keywords).value_counts().head(10)
+                    keyword_freq = pd.Series(all_keywords).value_counts().head(10).reset_index()
+                    keyword_freq.columns = ['Keyword', 'Count']  # Rename columns for clarity
 
                     # Plotting the keyword frequency
-                    fig = px.bar(keyword_freq.reset_index(), x='index', y=0, labels={'index': 'Keyword', 0: 'Count'}, title="Top Keywords")
+                    fig = px.bar(keyword_freq, x='Keyword', y='Count', title="Top Keywords")
                     fig.update_layout(
                         xaxis_title="Keyword",
                         yaxis_title="Count",
