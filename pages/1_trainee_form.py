@@ -44,7 +44,6 @@ def load_survey_json(file_path=None, survey_id=None):
             st.error("🚫 No surveys available. Please contact the administrator.")
             return None
 
-        # Load the survey JSON file based on survey_id
         if not survey_id or not any(survey_id == f.stem for f in json_files):
             first_json = json_files[0]
             survey_id = first_json.stem
@@ -66,17 +65,15 @@ def load_survey_json(file_path=None, survey_id=None):
 
 
 def render_multiple_choice(question):
-    """Render a multiple choice question without default selection."""
     return st.radio(
         f"{question['question_text']}",
         options=question["options"],
-        index=None,  # This removes default selection
+        index=None,
         key=f"mc_{question['question_text']}",
     )
 
 
 def render_checkbox(question):
-    """Render a checkbox question."""
     selected_options = []
     st.write(f"{question['question_text']}")
     for option in question["options"]:
@@ -86,7 +83,6 @@ def render_checkbox(question):
 
 
 def render_likert_scale(question):
-    """Render a Likert scale question with numerical labels and specific text at the ends."""
     scale = question["scale"]
     label = (
         f"{question['question_text']}\n({scale['min_label']} → {scale['max_label']})"
@@ -100,7 +96,6 @@ def render_likert_scale(question):
 
 
 def render_open_ended(question):
-    """Render an open-ended question with appropriate input field size."""
     single_line_questions = [
         "What is your full name?",
         "What is your email address?",
@@ -123,12 +118,12 @@ def render_open_ended(question):
 
 
 def get_profile_questions():
-    """Return a versatile set of profile questions for diverse audiences."""
     return {
         "questions": [
             {
                 "type": "open_ended",
                 "question_text": "What is your full name?",
+                "required": True,
             },
             {
                 "type": "open_ended",
@@ -138,10 +133,12 @@ def get_profile_questions():
             {
                 "type": "open_ended",
                 "question_text": "What is your current role or grade level? (e.g., Student - Grade 10, Teacher, Manager)",
+                "required": True,
             },
             {
                 "type": "open_ended",
                 "question_text": "Which school, organization, or institution are you affiliated with?",
+                "required": True,
             },
             {
                 "type": "multiple_choice",
@@ -154,6 +151,7 @@ def get_profile_questions():
                     "Out of general interest",
                     "Other",
                 ],
+                "required": True,
             },
             {
                 "type": "multiple_choice",
@@ -164,6 +162,7 @@ def get_profile_questions():
                     "Knowledgeable",
                     "Very experienced",
                 ],
+                "required": True,
             },
             {
                 "type": "checkbox",
@@ -176,6 +175,7 @@ def get_profile_questions():
                     "Quizzes and interactive exercises",
                     "Other",
                 ],
+                "required": True,
             },
             {
                 "type": "likert_scale",
@@ -185,10 +185,12 @@ def get_profile_questions():
                     "max_label": "Very confident",
                     "range": [1, 2, 3, 4, 5],
                 },
+                "required": True,
             },
             {
                 "type": "open_ended",
                 "question_text": "Are there specific topics or skills you hope to learn in this training?",
+                "required": True,
             },
             {
                 "type": "checkbox",
@@ -201,6 +203,7 @@ def get_profile_questions():
                     "Time constraints",
                     "No challenges faced",
                 ],
+                "required": True,
             },
             {
                 "type": "likert_scale",
@@ -210,10 +213,12 @@ def get_profile_questions():
                     "max_label": "Very comfortable",
                     "range": [1, 2, 3, 4, 5],
                 },
+                "required": True,
             },
             {
                 "type": "open_ended",
                 "question_text": "What personal goals or achievements do you hope to gain from this training?",
+                "required": True,
             },
         ]
     }
@@ -226,7 +231,6 @@ def show_thank_you_message():
         st.success("🎉 Thank you for completing the survey!")
         st.write("Your responses have been recorded successfully.")
         st.write("You may close this window now.")
-        # Add some styling to center the message
         st.markdown(
             """
             <style>
@@ -287,6 +291,8 @@ def main():
         st.markdown("---")
 
         questions = survey_data.get("generated_questions", {}).get("questions", [])
+        for question in questions:
+            question.setdefault("required", True)
     except Exception as e:
         st.error("🚫 Error loading survey questions. Please try again later.")
         return
@@ -295,6 +301,8 @@ def main():
         st.header("👤 Profile Information")
         profile_responses = {}
         profile_questions = get_profile_questions()
+
+        incomplete_responses = []
 
         for i, question in enumerate(profile_questions["questions"], 1):
             st.caption(f"🔹 Question {i}")
@@ -310,6 +318,9 @@ def main():
                 response = render_open_ended(question)
 
             profile_responses[f"Q{i}"] = response
+            if question.get("required") and not response:
+                incomplete_responses.append(f"Profile Question {i}")
+
             st.markdown("---")
 
         st.header("📋 Survey Questions")
@@ -328,9 +339,18 @@ def main():
                 response = render_open_ended(question)
 
             survey_responses[f"Q{i}"] = response
+            if question.get("required") and not response:
+                incomplete_responses.append(f"Survey Question {i}")
+
             st.markdown("---")
 
         if st.form_submit_button("✅ Submit Survey"):
+            if incomplete_responses:
+                st.error(
+                    f"❗ Please complete all required questions: {', '.join(incomplete_responses)}"
+                )
+                return
+
             trainee_email = profile_responses.get("Q2", "")
             if not trainee_email:
                 st.error("❗ Please provide your email address.")
