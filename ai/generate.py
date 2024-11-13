@@ -34,7 +34,7 @@ def surveyQuestions(SYSTEM_PROMPT: str, survey_data: Dict[Any, Any]) -> Dict[str
                 {
                     "role": "user",
                     "content": f"""
-                            Generate a structured survey, with a focus on assessing baseline knowledge and specific learning needs. Adhere to these guidelines:
+                            Generate a structured survey adhering to these guidelines:
                             1. Output the survey in JSON format strictly.
                             2. Use formal British English for clarity and professionalism.
                             3. Create a set of {survey_data["questionCount"]} questions, incorporating a range of types (multiple-choice, checkbox, Likert scale, open-ended).
