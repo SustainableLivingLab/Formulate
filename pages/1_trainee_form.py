@@ -5,6 +5,7 @@ from pathlib import Path
 import os
 from datetime import datetime
 import time
+import random
 
 # Get project root directory (parent of pages/)
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -99,7 +100,7 @@ def render_open_ended(question):
     single_line_questions = [
         "What is your full name?",
         "What is your email address?",
-        "Which school, organization, or institution are you affiliated with? (e.g., Student - Grade 10, Teacher, Manager)",
+        "What do you teach in your current role?",
         "Which school, organization, or institution are you affiliated with?",
     ]
 
@@ -132,12 +133,12 @@ def get_profile_questions():
             },
             {
                 "type": "open_ended",
-                "question_text": "What is your current role or grade level? (e.g., Student - Grade 10, Teacher, Manager)",
+                "question_text": "Which school, organization, or institution are you affiliated with?",
                 "required": True,
             },
             {
                 "type": "open_ended",
-                "question_text": "Which school, organization, or institution are you affiliated with?",
+                "question_text": "What do you teach in your current role?",
                 "required": True,
             },
             {
@@ -150,17 +151,6 @@ def get_profile_questions():
                     "For career advancement",
                     "Out of general interest",
                     "Other",
-                ],
-                "required": True,
-            },
-            {
-                "type": "multiple_choice",
-                "question_text": "How would you describe your familiarity with the topic of this training?",
-                "options": [
-                    "Beginner",
-                    "Somewhat familiar",
-                    "Knowledgeable",
-                    "Very experienced",
                 ],
                 "required": True,
             },
@@ -178,21 +168,6 @@ def get_profile_questions():
                 "required": True,
             },
             {
-                "type": "likert_scale",
-                "question_text": "How confident do you feel about learning new material on this topic?",
-                "scale": {
-                    "min_label": "Not confident",
-                    "max_label": "Very confident",
-                    "range": [1, 2, 3, 4, 5],
-                },
-                "required": True,
-            },
-            {
-                "type": "open_ended",
-                "question_text": "Are there specific topics or skills you hope to learn in this training?",
-                "required": True,
-            },
-            {
                 "type": "checkbox",
                 "question_text": "What challenges, if any, have you faced in learning similar topics before? (Select all that apply)",
                 "options": [
@@ -203,21 +178,6 @@ def get_profile_questions():
                     "Time constraints",
                     "No challenges faced",
                 ],
-                "required": True,
-            },
-            {
-                "type": "likert_scale",
-                "question_text": "How comfortable are you with using digital tools or online platforms for learning?",
-                "scale": {
-                    "min_label": "Not comfortable",
-                    "max_label": "Very comfortable",
-                    "range": [1, 2, 3, 4, 5],
-                },
-                "required": True,
-            },
-            {
-                "type": "open_ended",
-                "question_text": "What personal goals or achievements do you hope to gain from this training?",
                 "required": True,
             },
         ]
@@ -311,6 +271,9 @@ def main():
 
         for question in questions:
             question.setdefault("required", True)
+
+        # Shuffle questions to randomize order
+        random.shuffle(questions)
     except Exception as e:
         st.error(f"🚫 Error loading survey questions: {str(e)}")
         return
