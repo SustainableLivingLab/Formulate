@@ -290,11 +290,29 @@ def main():
 
         st.markdown("---")
 
-        questions = survey_data.get("generated_questions", {}).get("questions", [])
+        # Handle both structure types
+        generated_questions = survey_data.get("generated_questions", {})
+        if isinstance(generated_questions, dict):
+            if "survey" in generated_questions:
+                # Handle second structure
+                questions = generated_questions["survey"]["questions"]
+                # Optionally display additional survey info
+                if "title" in generated_questions["survey"]:
+                    st.title(generated_questions["survey"]["title"])
+                if "description" in generated_questions["survey"]:
+                    st.info(generated_questions["survey"]["description"])
+                if "instructions" in generated_questions["survey"]:
+                    st.warning(generated_questions["survey"]["instructions"])
+            else:
+                # Handle first structure
+                questions = generated_questions.get("questions", [])
+        else:
+            questions = []
+
         for question in questions:
             question.setdefault("required", True)
     except Exception as e:
-        st.error("🚫 Error loading survey questions. Please try again later.")
+        st.error(f"🚫 Error loading survey questions: {str(e)}")
         return
 
     with st.form("survey_form"):
