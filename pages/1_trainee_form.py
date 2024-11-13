@@ -359,7 +359,7 @@ def main():
             }
 
             profile_responses_without_email = {
-                k: v for k, v in profile_responses_with_questions.items() if k != "Q1"
+                k: v for k, v in profile_responses_with_questions.items() if k != "Q2"
             }
 
             combined_responses = {
