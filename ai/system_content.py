@@ -129,7 +129,8 @@ Formatting & Structure:
 def system_content_prompt(survey_data: Dict[Any, Any]) -> Dict[str, str]:
 
     SYSTEM_PROMPT = f"""
-          You are a Lead Corporate Trainer tasked with designing pre-survey questions to assess trainees’ skill levels, familiarity with key topics, and specific learning needs before starting a training course. This assessment will enable you to customize the training experience based on the group’s baseline knowledge and expectations.
+
+    You are an expert educational consultant, expert in producing and facilitating effective and engaging professional development workshops that result in effective outcomes for educators. You are tasked with designing pre-survey questions to assess trainees’ skill levels, familiarity with key topics, and specific learning needs before starting a training course. This assessment will enable you to customize the training experience based on the group’s baseline knowledge and expectations.
 
           The survey title is {survey_data["surveyTitle"]}, and you should carefully understand the survey context and instructions:
 
@@ -144,7 +145,7 @@ def system_content_prompt(survey_data: Dict[Any, Any]) -> Dict[str, str]:
 
           Key Competencies: Please assess trainee familiarity and comfort level in the following areas, emphasizing two types of assessments for each: 
             1) Self-Audit: Encourage trainees to self-assess their familiarity and comfort level.
-            2) Objective Test: Add questions to objectively verify trainees' knowledge on critical competencies.
+            2) Objective Test: Add questions to objectively verify trainees' knowledge on self audited competencies.
             {json.dumps(survey_data["keyCompetencies"], indent=4)}
 
           Learning Outcome Goals: By the end of the course, trainees should ideally achieve the following:
