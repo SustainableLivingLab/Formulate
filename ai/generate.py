@@ -34,27 +34,24 @@ def surveyQuestions(SYSTEM_PROMPT: str, survey_data: Dict[Any, Any]) -> Dict[str
                 {
                     "role": "user",
                     "content": f"""
-                     Generate a structured survey, with a focus on assessing baseline knowledge and specific learning needs. Adhere to these guidelines:
-                1. Output the survey in JSON format.
-                2. Use formal British English for clarity and professionalism.
-                3. Create a set of {survey_data["questionCount"]} questions, incorporating a range of types (multiple-choice, checkbox, Likert scale, open-ended).
-                4. Focus Areas: 
-                - Self-Audit: Incorporate questions encouraging trainees to self-assess their familiarity and comfort level with key topics.
-                - Objective Testing: Add questions that objectively verify trainees’ foundational knowledge and critical competencies related to the subject.
+                            Generate a structured survey, with a focus on assessing baseline knowledge and specific learning needs. Adhere to these guidelines:
+                            1. Output the survey in JSON format strictly.
+                            2. Use formal British English for clarity and professionalism.
+                            3. Create a set of {survey_data["questionCount"]} questions, incorporating a range of types (multiple-choice, checkbox, Likert scale, open-ended).
 
-                Use this structure guide:
+                            Use this structure guide:
 
-                1. Multiple Choice:
-                    {multiple_choice}
+                            1. Multiple Choice:
+                                {multiple_choice}
 
-                2. Checkbox (Select All That Apply):
-                    {checkbox}
+                            2. Checkbox (Select All That Apply):
+                                {checkbox}
 
-                3. Likert Scale (1–5):
-                    {likert_scale}
+                            3. Likert Scale (1–5):
+                                {likert_scale}
 
-                4. Open-Ended (Short Answer):
-                    {open_ended}
+                            4. Open-Ended (Short Answer):
+                                {open_ended}
 
                 """,
                 },
