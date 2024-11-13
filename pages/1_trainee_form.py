@@ -129,7 +129,6 @@ def get_profile_questions():
             {
                 "type": "open_ended",
                 "question_text": "What is your full name?",
-                "required": True,
             },
             {
                 "type": "open_ended",
@@ -139,12 +138,10 @@ def get_profile_questions():
             {
                 "type": "open_ended",
                 "question_text": "What is your current role or grade level? (e.g., Student - Grade 10, Teacher, Manager)",
-                "required": True,
             },
             {
                 "type": "open_ended",
                 "question_text": "Which school, organization, or institution are you affiliated with?",
-                "required": True,
             },
             {
                 "type": "multiple_choice",
