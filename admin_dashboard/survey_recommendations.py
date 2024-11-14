@@ -84,7 +84,7 @@ def show_survey_recommendations():
                                 )
 
                                 # Display Positive Aspects and Areas for Improvement in separate columns
-                                st.markdown("### ⚖️ Balanced Feedback")
+                                st.markdown("### ⚖️ Feedback")
                                 pos_aspects = survey_outcomes.get(
                                     "Balanced Feedback", {}
                                 ).get("Positive Aspects", [])
